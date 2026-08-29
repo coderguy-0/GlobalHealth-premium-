@@ -1,0 +1,6 @@
+{
+  "name": "GlobalHealth",
+  "description": "Multilingual health, wellness, nutrition, fitness, and preventive healthcare platform with AI assistant, medical directories, and interactive health tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,39 @@
+import { MedicalTest } from '../../types';
+import { HEMATOLOGY_COAGULATION_TESTS } from './hematologyTests';
+import { KIDNEY_URINE_TESTS } from './kidneyUrineTests';
+import { GASTRO_LIVER_TESTS } from './gastroLiverTests';
+import { METABOLISM_CARDIO_TESTS } from './metabolismCardioTests';
+import { ENDOCRINE_HORMONE_TESTS } from './endocrineHormoneTests';
+import { INFECTIOUS_DISEASE_TESTS } from './infectiousDiseaseTests';
+import { IMMUNOLOGY_ALLERGY_TESTS } from './immunologyAllergyTests';
+import { CANCER_GENETICS_TESTS } from './cancerGeneticsTests';
+import { REPRODUCTIVE_OBSTETRIC_TESTS } from './reproductiveObstetricTests';
+import { FLUID_TOXICOLOGY_SPECIALIZED_TESTS } from './fluidToxicologySpecializedTests';
+
+export {
+  HEMATOLOGY_COAGULATION_TESTS,
+  KIDNEY_URINE_TESTS,
+  GASTRO_LIVER_TESTS,
+  METABOLISM_CARDIO_TESTS,
+  ENDOCRINE_HORMONE_TESTS,
+  INFECTIOUS_DISEASE_TESTS,
+  IMMUNOLOGY_ALLERGY_TESTS,
+  CANCER_GENETICS_TESTS,
+  REPRODUCTIVE_OBSTETRIC_TESTS,
+  FLUID_TOXICOLOGY_SPECIALIZED_TESTS,
+};
+
+export const ALL_1000_MEDICAL_TESTS: MedicalTest[] = [
+  ...HEMATOLOGY_COAGULATION_TESTS,
+  ...KIDNEY_URINE_TESTS,
+  ...GASTRO_LIVER_TESTS,
+  ...METABOLISM_CARDIO_TESTS,
+  ...ENDOCRINE_HORMONE_TESTS,
+  ...INFECTIOUS_DISEASE_TESTS,
+  ...IMMUNOLOGY_ALLERGY_TESTS,
+  ...CANCER_GENETICS_TESTS,
+  ...REPRODUCTIVE_OBSTETRIC_TESTS,
+  ...FLUID_TOXICOLOGY_SPECIALIZED_TESTS,
+];
+
+export const TOTAL_MEDICAL_TESTS_COUNT = ALL_1000_MEDICAL_TESTS.length;

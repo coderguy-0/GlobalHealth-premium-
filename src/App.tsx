@@ -1,0 +1,764 @@
+import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
+import { Newspaper as NewspaperIcon, UserPlus } from 'lucide-react';
+import { NavigationTab } from './types';
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
+import { MedicalDisclaimer } from './components/MedicalDisclaimer';
+import { HeroSection } from './components/HeroSection';
+import { DiseasesView } from './components/DiseasesView';
+import { InteractiveBodyAndVitalityHub } from './components/InteractiveBodyAndVitalityHub';
+import { MedicinesView } from './components/MedicinesView';
+import { MedicalTestsView } from './components/MedicalTestsView';
+import { NutritionLibraryView } from './components/NutritionLibraryView';
+import { WellnessFitnessView } from './components/WellnessFitnessView';
+import { CalculatorsView } from './components/CalculatorsView';
+import { AIAssistantView } from './components/AIAssistantView';
+import { HospitalsDoctorsView } from './components/HospitalsDoctorsView';
+import { MedicalMapView } from './components/medical-map/MedicalMapView';
+import { CommunityView } from './components/CommunityView';
+import { NewsView } from './components/NewsView';
+import { LanguageModal } from './components/LanguageModal';
+import { AuthGate } from './components/auth/AuthGate';
+import { ProtectedScreen, AuthLoading, SessionExpiredModal } from './components/auth/ProtectedScreen';
+import { WorkspaceOverlay } from './components/WorkspaceOverlay';
+import { PortalCredentialForm } from './components/portals/PortalCredentialForm';
+import { NewsStaffSignupScreen } from './components/news/NewsWorkspaceAccessScreens';
+import { NewsManagementLogin } from './components/NewsManagementLogin';
+import { useLocalization } from './context/LocalizationContext';
+import { useAuth } from './context/AuthContext';
+import { newsAuthService } from './services/newsAuthService';
+
+// Heavy workspaces (portals, CMS, health-records suite) are code-split so the
+// public homepage never downloads them until a visitor actually opens one.
+const NewsManagementCMS = lazy(() =>
+  import('./components/NewsManagementCMS').then((m) => ({ default: m.NewsManagementCMS }))
+);
+const DashboardView = lazy(() =>
+  import('./components/DashboardView').then((m) => ({ default: m.DashboardView }))
+);
+const AppointmentsView = lazy(() =>
+  import('./components/AppointmentsView').then((m) => ({ default: m.AppointmentsView }))
+);
+const MyHistoryView = lazy(() =>
+  import('./components/MyHistoryView').then((m) => ({ default: m.MyHistoryView }))
+);
+const HospitalPortalView = lazy(() =>
+  import('./components/hospital-portal/HospitalPortalView').then((m) => ({ default: m.HospitalPortalView }))
+);
+const MedAuthView = lazy(() =>
+  import('./components/medauth/MedAuthView').then((m) => ({ default: m.MedAuthView }))
+);
+const PharmacyPortalApp = lazy(() =>
+  import('./components/pharmacy-portal/PharmacyPortalApp').then((m) => ({ default: m.PharmacyPortalApp }))
+);
+const PrivacyConsentView = lazy(() =>
+  import('./components/PrivacyConsentView').then((m) => ({ default: m.PrivacyConsentView }))
+);
+const DoctorAccessConsentPage = lazy(() =>
+  import('./components/DoctorAccessConsentPage').then((m) => ({ default: m.DoctorAccessConsentPage }))
+);
+const DoctorConsentConsole = lazy(() =>
+  import('./components/DoctorConsentConsole').then((m) => ({ default: m.DoctorConsentConsole }))
+);
+const NewsAuthorityPortal = lazy(() =>
+  import('./components/NewsAuthorityPortal').then((m) => ({ default: m.NewsAuthorityPortal }))
+);
+const PersonalDetailsView = lazy(() =>
+  import('./components/PersonalDetailsView').then((m) => ({ default: m.PersonalDetailsView }))
+);
+
+/** Shared spinner shown while a lazy workspace chunk loads. */
+const RouteFallback: React.FC = () => (
+  <div className="flex min-h-[60vh] w-full items-center justify-center bg-white">
+    <div className="flex flex-col items-center gap-3">
+      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-slate-200 border-t-emerald-600" />
+      <span className="text-xs font-bold text-slate-500">Loading workspace…</span>
+    </div>
+  </div>
+);
+
+export type DashboardViewMode = 'details' | 'dashboard' | 'ehr' | 'saved';
+
+// Tabs that expose personal/private data and require an authenticated session.
+// NOTE: news-admin is intentionally NOT here — editorial staff authenticate via
+// the News Management credential gate, not the patient sign-in.
+const PROTECTED_TABS: NavigationTab[] = ['dashboard', 'appointments', 'privacy', 'my-history'];
+
+// Portal workspaces render edge-to-edge; health-records destinations use the
+// framed overlay with the health-records sub-navigation.
+const FULLSCREEN_OVERLAY_TABS: NavigationTab[] = [
+  'hospital-portal',
+  'doctor-portal',
+  'medauth',
+  'pharmacy-portal',
+  'news-admin',
+  'news-management',
+  'news-authority',
+  'doctor-console',
+];
+
+// Destinations that overlap the public website instead of replacing it.
+const OVERLAY_TABS: NavigationTab[] = [
+  'dashboard',
+  'privacy',
+  'doctor-consent',
+  'hospital-portal',
+  'doctor-portal',
+  'medauth',
+  'pharmacy-portal',
+  'news-admin',
+  'news-authority',
+  'news-management',
+  'doctor-console',
+];
+
+const isOverlayTab = (tab: NavigationTab) => OVERLAY_TABS.includes(tab);
+
+// Human-readable copy for each protected destination (used by the gate UI).
+const PROTECTED_COPY: Partial<Record<NavigationTab, { title: string; feature: string }>> = {
+  'my-history': {
+    title: 'Your Health & Security History',
+    feature: 'review who accessed your record, what was requested, and your consent decisions'
+  },
+  appointments: {
+    title: 'Your Medical Appointments',
+    feature: 'schedule appointments, check clinical schedules, and manage telehealth sessions'
+  },
+  dashboard: {
+    title: 'Your Personal Health Dashboard',
+    feature: 'view your private health dashboard and manage doctor access'
+  },
+  privacy: {
+    title: 'Doctors & Health Access',
+    feature: 'review doctor access requests and manage your health-record privacy'
+  }
+};
+
+const OVERLAY_META: Partial<Record<NavigationTab, { title: string; subtitle: string; badge: string; theme: 'light' | 'dark' }>> = {
+  dashboard: {
+    title: 'My Health Records',
+    subtitle: 'Personal health dashboard and doctor access',
+    badge: 'FHIR R4 Aligned',
+    theme: 'light',
+  },
+  privacy: {
+    title: 'My Health Records',
+    subtitle: 'Doctor access, consent tokens and sharing rules',
+    badge: 'Patient Controlled',
+    theme: 'light',
+  },
+  'doctor-consent': {
+    title: 'My Health Records',
+    subtitle: 'Doctor access, consent tokens and sharing rules',
+    badge: 'Patient Controlled',
+    theme: 'light',
+  },
+  medauth: {
+    title: 'Doctor Portal',
+    subtitle: 'State Board Registry & Private Doctor Portal — MedAuth Engine™',
+    badge: 'MedAuth Engine™',
+    theme: 'light',
+  },
+  'doctor-portal': {
+    title: 'Doctor Portal',
+    subtitle: 'State Board Registry & Private Doctor Portal — MedAuth Engine™',
+    badge: 'MedAuth Engine™',
+    theme: 'light',
+  },
+  'doctor-console': {
+    title: 'Verified Doctor Console',
+    subtitle: 'Authorized patient-record access and consent requests',
+    badge: 'Verified MD',
+    theme: 'light',
+  },
+  'hospital-portal': {
+    title: 'Hospital Portal',
+    subtitle: 'Inpatient bed telemetry, multi-wing capacity, ambulance dispatch & staff management',
+    badge: 'GlobalHealth Enterprise',
+    theme: 'light',
+  },
+  'pharmacy-portal': {
+    title: 'Pharmacy Porter',
+    subtitle: 'Authorized Pharmacy Portal Website & Verified Pharmacy Partners',
+    badge: 'Enterprise v4.2',
+    theme: 'dark',
+  },
+  'news-management': {
+    title: 'News Management',
+    subtitle: 'Editorial CMS workspace & Verified Authority Portal',
+    badge: 'Editorial CMS',
+    theme: 'dark',
+  },
+  'news-admin': {
+    title: 'News Management',
+    subtitle: 'Editorial CMS workspace for public health announcements',
+    badge: 'Editorial CMS',
+    theme: 'light',
+  },
+  'news-authority': {
+    title: 'Verified Authority Portal',
+    subtitle: 'Public health agencies and institutional announcements',
+    badge: 'Verified Authority',
+    theme: 'light',
+  },
+};
+
+export default function App() {
+  const { currentLanguage, direction } = useLocalization();
+  const { user: currentUser, initializing, requireAuth, gateOpen, logout } = useAuth();
+  const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
+  const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
+  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('login');
+  // Editorial staff unlock for the News Management workspace (validated via
+  // newsAuthService — independent of the patient account gate).
+  const [newsStaffUnlocked, setNewsStaffUnlocked] = useState(false);
+
+  // News Management pre-login account screens: null = editorial sign-in card,
+  // 'signup' = apply for a staff account, 'forgot' = password recovery.
+  const [newsGateScreen, setNewsGateScreen] = useState<'signup' | 'forgot' | null>(null);
+  // Marks an explicit pharmacy deep-link (landing/apply/track/dashboard) coming
+  // from the public Medicines directory, so the Portals menu default (login)
+  // does not clobber it.
+  const pharmacyDeepLinkRef = useRef<'landing' | 'apply' | 'track' | 'login' | 'dashboard' | null>(null);
+  // Saved library is strictly per-user. Keyed namespacing + reset on identity
+  // change guarantees one account never sees another's saved content and that
+  // logging out fully clears the visible saved library.
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const scope = currentUser ? `user_${currentUser.id}` : 'guest';
+    try {
+      const stored = localStorage.getItem(`globalhealth_${scope}_saved_library`);
+      setSavedIds(stored ? JSON.parse(stored) : []);
+    } catch {
+      setSavedIds([]);
+    }
+  }, [currentUser?.id]);
+
+  const persistSaved = (ids: string[]) => {
+    const scope = currentUser ? `user_${currentUser.id}` : 'guest';
+    try {
+      if (ids.length) localStorage.setItem(`globalhealth_${scope}_saved_library`, JSON.stringify(ids));
+      else localStorage.removeItem(`globalhealth_${scope}_saved_library`);
+    } catch {
+      // ignore storage failures
+    }
+  };
+  const [targetNewsArticleId, setTargetNewsArticleId] = useState<string | undefined>(undefined);
+
+
+
+  // ---- Hash-based deep linking + back-button protection for protected URLs ----
+  const VALID_TABS: NavigationTab[] = [
+    'home', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
+    'calculators', 'ai-assistant', 'hospitals', 'doctors', 'medical-map', 'community',
+    'news', 'news-admin', 'dashboard', 'hospital-portal', 'doctor-portal', 'medauth',
+    'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth'
+  ];
+
+  const tabFromHash = useCallback((): NavigationTab | null => {
+    const raw = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+    if (!raw) return null;
+    return (VALID_TABS as string[]).includes(raw) ? (raw as NavigationTab) : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const applyingHashRef = useRef(false);
+
+  useEffect(() => {
+    const apply = () => {
+      if (applyingHashRef.current) return;
+      const tab = tabFromHash();
+      if (!tab) return;
+      if (isOverlayTab(tab)) {
+        setOverlayTab(tab);
+        setCurrentTabState((prev) => (isOverlayTab(prev) ? 'home' : prev));
+      } else {
+        setOverlayTab(null);
+        setCurrentTabState(tab);
+      }
+    };
+    apply();
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
+  }, [tabFromHash]);
+
+  const [dashboardViewMode, setDashboardViewMode] = useState<DashboardViewMode>('dashboard');
+
+  // Re-lock the News Management workspace whenever the visitor leaves it, so
+  // opening the portal again always starts at the editorial sign-in.
+  useEffect(() => {
+    if (overlayTab !== 'news-management' && overlayTab !== 'news-admin') {
+      setNewsStaffUnlocked(false);
+      setNewsGateScreen(null);
+    }
+  }, [overlayTab]);
+
+  // Track the destination the visitor wanted when the gate was shown.
+  const intendedTabRef = useRef<NavigationTab | null>(null);
+  const intendedModeRef = useRef<DashboardViewMode | undefined>(undefined);
+  const openGate = useCallback(
+    (intent: { tab?: string; feature?: string } | null, mode: 'login' | 'signup') => {
+      intendedTabRef.current = (intent?.tab as NavigationTab) || null;
+      requireAuth(intent || {}, mode);
+    },
+    [requireAuth]
+  );
+
+  const writeHash = (tab: NavigationTab) => {
+    const next = `#${tab}`;
+    if (window.location.hash.replace(/^#\/?/, '').split('?')[0] !== tab) {
+      applyingHashRef.current = true;
+      window.location.hash = next;
+      window.setTimeout(() => {
+        applyingHashRef.current = false;
+      }, 0);
+    }
+  };
+
+  const closeOverlay = useCallback(() => {
+    setOverlayTab(null);
+    writeHash(currentTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTab]);
+
+  const setCurrentTab = useCallback((tab: NavigationTab, dashboardMode?: DashboardViewMode) => {
+    if (dashboardMode) {
+      setDashboardViewMode(dashboardMode);
+      intendedModeRef.current = dashboardMode;
+    }
+    // Navigating to a protected destination while signed out → show the gate,
+    // preserving the destination so we return after login. Never render private data.
+    if (PROTECTED_TABS.includes(tab) && !currentUser) {
+      const copy = PROTECTED_COPY[tab];
+      openGate({ tab, feature: copy?.feature }, 'login');
+      return;
+    }
+    if (isOverlayTab(tab)) {
+      if (tab === 'pharmacy-portal') {
+        // Deep links from the Medicines directory keep their destination;
+        // everywhere else the partner portal opens on its sign-in screen.
+        const deepLink = pharmacyDeepLinkRef.current;
+        pharmacyDeepLinkRef.current = null;
+        setPharmacyPortalScreen(deepLink || 'login');
+      }
+      setOverlayTab(tab);
+      writeHash(tab);
+      return;
+    }
+    setOverlayTab(null);
+    setCurrentTabState(tab);
+    writeHash(tab);
+  }, [currentUser, openGate]);
+
+  // After a successful gate login, return the user to their intended destination.
+  useEffect(() => {
+    if (currentUser) {
+      const intended = intendedTabRef.current || tabFromHash();
+      if (intended && PROTECTED_TABS.includes(intended)) {
+        if (intendedModeRef.current) setDashboardViewMode(intendedModeRef.current);
+        if (isOverlayTab(intended)) {
+          setOverlayTab(intended);
+          writeHash(intended);
+        } else {
+          setCurrentTabState(intended);
+          writeHash(intended);
+        }
+      }
+      intendedTabRef.current = null;
+      intendedModeRef.current = undefined;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, gateOpen]);
+
+  // All authentication routes through the secure, server-validated gate.
+  // There is no client-side credential checking and no plaintext secret
+  // handling in the browser.
+  const handleOpenAuthModal = (mode: 'login' | 'signup' = 'login') => {
+    requireAuth({ feature: 'access your personal content and private account data' }, mode);
+  };
+
+  const handleToggleSave = (id: string) => {
+    if (!currentUser) {
+      requireAuth({ feature: 'save items to your private library' }, 'login');
+      return;
+    }
+    setSavedIds((prev) => {
+      const next = prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
+      persistSaved(next);
+      return next;
+    });
+  };
+
+  // While the session is being verified, show a neutral loading state for
+  // protected destinations — never flash private content.
+  const isProtected = PROTECTED_TABS.includes(currentTab) || (overlayTab ? PROTECTED_TABS.includes(overlayTab) : false);
+  const showSecureLoading = initializing && isProtected;
+
+  const persistUserPatch = (updated: typeof currentUser) => {
+    if (!updated) return;
+    try {
+      localStorage.setItem('globalhealth_user_session', JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+  };
+
+  const overlayMeta = overlayTab ? OVERLAY_META[overlayTab] : undefined;
+
+  // Health-records destinations share one overlay header with a two-tab
+  // sub-navigation: Personal health dashboard | Doctor access.
+  const isHealthRecordsOverlay =
+    overlayTab === 'dashboard' || overlayTab === 'privacy' || overlayTab === 'doctor-consent';
+
+  const openHealthRecords = (tab: 'dashboard' | 'doctor-access') => {
+    if (tab === 'dashboard') {
+      setDashboardViewMode('dashboard');
+      setOverlayTab('dashboard');
+      writeHash('dashboard');
+    } else {
+      setOverlayTab('doctor-consent');
+      writeHash('doctor-consent');
+    }
+  };
+
+  const healthSubnav = isHealthRecordsOverlay ? (
+    <div className="border-t border-slate-200 bg-white">
+      <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-4 py-1.5 sm:px-6" role="tablist" aria-label="Health records sections">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={overlayTab === 'dashboard'}
+          onClick={() => openHealthRecords('dashboard')}
+          className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition cursor-pointer ${
+            overlayTab === 'dashboard'
+              ? 'bg-teal-700 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          Personal health dashboard
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={overlayTab === 'privacy' || overlayTab === 'doctor-consent'}
+          onClick={() => openHealthRecords('doctor-access')}
+          className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition cursor-pointer ${
+            overlayTab === 'privacy' || overlayTab === 'doctor-consent'
+              ? 'bg-teal-700 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          Doctor access
+        </button>
+      </div>
+    </div>
+  ) : null;
+
+  // Editorial credential gate — shown before the News Management CMS.
+  // Authentication is fully SERVER-SIDE (/api/news/login with real MFA,
+  // rate limiting and audit); an administrator unlocks the CMS, a verified
+  // authority is routed to their own dashboard. No client-side credential
+  // checks and no demo MFA bypass.
+  const renderNewsGate = () => {
+    if (newsGateScreen === 'signup') {
+      return <NewsStaffSignupScreen onBack={() => setNewsGateScreen(null)} />;
+    }
+
+    return (
+      <div className="flex min-h-full items-center justify-center bg-slate-950 p-4">
+        <div className="w-full max-w-md space-y-3">
+          <button
+            type="button"
+            onClick={() => setNewsGateScreen('signup')}
+            className="mx-auto flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 px-3 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition cursor-pointer"
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            Apply for a Verified Authority account
+          </button>
+          <NewsManagementLogin
+            standalone
+            onAuthenticated={(result) => {
+              if (result.accountType === 'admin') {
+                // Seed the CMS workspace session from the SERVER identity.
+                newsAuthService.adoptServerAccount({
+                  accountType: 'admin',
+                  id: result.admin?.adminId || '',
+                  name: result.admin?.name || 'Administrator',
+                  email: result.admin?.email || '',
+                  role: result.admin?.role || 'SUPER_ADMIN'
+                });
+                setNewsStaffUnlocked(true);
+              } else {
+                // Authorities never enter the admin CMS — their dashboard.
+                window.location.hash = 'news-authority';
+              }
+            }}
+            onExit={closeOverlay}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const renderOverlayBody = () => {
+    if (!overlayTab) return null;
+
+    if (showSecureLoading) return <AuthLoading />;
+
+    if (overlayTab === 'dashboard' && !currentUser) {
+      return (
+        <ProtectedScreen
+          title={PROTECTED_COPY['dashboard']?.title}
+          feature={PROTECTED_COPY['dashboard']?.feature}
+        />
+      );
+    }
+
+    if (overlayTab === 'dashboard' && currentUser) {
+      if (dashboardViewMode === 'details') {
+        return (
+          <PersonalDetailsView
+            currentUser={currentUser}
+            onUpdateUser={persistUserPatch}
+          />
+        );
+      }
+      return (
+        <DashboardView
+          savedIds={savedIds}
+          onToggleSave={handleToggleSave}
+          currentUser={currentUser}
+          initialViewMode={dashboardViewMode === 'ehr' || dashboardViewMode === 'saved' ? dashboardViewMode : 'dashboard'}
+          onUpdateUser={persistUserPatch}
+          hideModeSwitcher
+        />
+      );
+    }
+
+    if (overlayTab === 'doctor-consent') {
+      return <DoctorAccessConsentPage onTabChange={setCurrentTab} />;
+    }
+
+    if (overlayTab === 'privacy' && !currentUser) {
+      return (
+        <ProtectedScreen
+          title={PROTECTED_COPY['privacy']?.title}
+          feature={PROTECTED_COPY['privacy']?.feature}
+        />
+      );
+    }
+    if (overlayTab === 'privacy' && currentUser) {
+      return <PrivacyConsentView />;
+    }
+
+    if (overlayTab === 'doctor-console') {
+      return <DoctorConsentConsole onExit={closeOverlay} />;
+    }
+
+    if (overlayTab === 'news-authority') {
+      return <NewsAuthorityPortal onExit={closeOverlay} />;
+    }
+
+    if (overlayTab === 'news-management' || overlayTab === 'news-admin') {
+      return newsStaffUnlocked ? (
+        <NewsManagementCMS onBackToPublicNews={closeOverlay} />
+      ) : (
+        renderNewsGate()
+      );
+    }
+
+    if (overlayTab === 'doctor-portal' || overlayTab === 'medauth') {
+      return <MedAuthView onBackToGlobalHealth={closeOverlay} />;
+    }
+
+    if (overlayTab === 'pharmacy-portal') {
+      return (
+        <PharmacyPortalApp
+          initialScreen={pharmacyPortalScreen}
+          onReturnToMainApp={closeOverlay}
+        />
+      );
+    }
+
+    if (overlayTab === 'hospital-portal') {
+      return <HospitalPortalView onBackToPublic={closeOverlay} />;
+    }
+
+    return null;
+  };
+
+  return (
+    <div 
+      className="flex min-h-screen flex-col bg-white text-slate-900 antialiased font-sans transition-opacity duration-150"
+      dir={direction}
+    >
+      {/* Top Announcement Strip Disclaimer */}
+      <div className="bg-slate-50 border-b border-slate-200/80 py-1.5 px-4">
+        <div className="mx-auto max-w-7xl">
+          <MedicalDisclaimer compact />
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <Navbar
+        currentTab={overlayTab || currentTab}
+        onTabChange={setCurrentTab}
+        savedCount={savedIds.length}
+        currentUser={currentUser}
+        onOpenAuthModal={handleOpenAuthModal}
+        onLogout={async () => {
+          await logout();
+          setOverlayTab(null);
+          setCurrentTabState('home');
+          writeHash('home');
+        }}
+      />
+
+      {/* Primary Main View Container — stays mounted under overlays */}
+      <main className="flex-1">
+        {showSecureLoading && !overlayTab && <AuthLoading />}
+
+        {!showSecureLoading && (
+          <>
+        {currentTab === 'home' && (
+          <>
+            <HeroSection onTabChange={setCurrentTab} />
+            <InteractiveBodyAndVitalityHub onTabChange={setCurrentTab} />
+          </>
+        )}
+
+        {(currentTab === 'nutrition' || currentTab === 'recipes') && (
+          <NutritionLibraryView
+            savedIds={savedIds}
+            onToggleSave={handleToggleSave}
+            onRequestAuth={() => handleOpenAuthModal('login')}
+          />
+        )}
+
+        {currentTab === 'wellness' && (
+          <WellnessFitnessView
+            savedIds={savedIds}
+            onToggleSave={handleToggleSave}
+          />
+        )}
+
+        {currentTab === 'diseases' && (
+          <DiseasesView savedIds={savedIds} onToggleSave={handleToggleSave} />
+        )}
+
+        {currentTab === 'medicines' && (
+          <MedicinesView 
+            savedIds={currentUser ? savedIds : []}
+            onToggleSave={handleToggleSave} 
+            isAuthenticated={!!currentUser}
+            onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+            onNavigateToPharmacyPortal={(screen) => {
+              // Purchasing / orders / prescription upload require an account.
+              const purchaseScreens = ['login', 'dashboard', 'track'];
+              if (screen && purchaseScreens.includes(screen) && !currentUser) {
+                requireAuth({ feature: 'purchase medicines and track your orders' }, 'login');
+                return;
+              }
+              if (screen) {
+                pharmacyDeepLinkRef.current = screen as 'landing' | 'apply' | 'track' | 'login' | 'dashboard';
+              }
+              setCurrentTab('pharmacy-portal');
+            }}
+          />
+        )}
+
+        {currentTab === 'medical-tests' && <MedicalTestsView />}
+
+        {currentTab === 'calculators' && <CalculatorsView />}
+
+        {currentTab === 'ai-assistant' && (
+          <AIAssistantView currentLanguage={currentLanguage} />
+        )}
+
+        {(currentTab === 'doctors' || currentTab === 'hospitals') && (
+          <HospitalsDoctorsView
+            onTabChange={setCurrentTab}
+            isAuthenticated={!!currentUser}
+            onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+          />
+        )}
+
+        {currentTab === 'medical-map' && (
+          <MedicalMapView onNavigateToHospitalProfile={() => setCurrentTab('hospitals')} />
+        )}
+
+        {currentTab === 'community' && (
+          <CommunityView
+            isAuthenticated={!!currentUser}
+            currentUser={currentUser}
+            onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+          />
+        )}
+
+        {currentTab === 'news' && (
+          <NewsView 
+            onOpenAdminCMS={() => setCurrentTab('news-management')} 
+            initialArticleId={targetNewsArticleId}
+          />
+        )}
+
+        {/* Protected: Health & Security History (patient-only, append-only) */}
+        {currentTab === 'my-history' && !currentUser && (
+          <ProtectedScreen
+            title={PROTECTED_COPY['my-history']?.title}
+            feature={PROTECTED_COPY['my-history']?.feature}
+          />
+        )}
+        {currentTab === 'my-history' && currentUser && (
+          <Suspense fallback={<RouteFallback />}>
+            <MyHistoryView />
+          </Suspense>
+        )}
+
+        {/* Protected: personal appointments manager */}
+        {currentTab === 'appointments' && !currentUser && (
+          <ProtectedScreen
+            title={PROTECTED_COPY['appointments']?.title}
+            feature={PROTECTED_COPY['appointments']?.feature}
+          />
+        )}
+        {currentTab === 'appointments' && currentUser && (
+          <Suspense fallback={<RouteFallback />}>
+            <AppointmentsView onTabChange={setCurrentTab} />
+          </Suspense>
+        )}
+          </>
+        )}
+      </main>
+
+      {/* Footer */}
+      <Footer onTabChange={setCurrentTab} />
+
+      {/* Global 100-Language Selector Modal */}
+      <LanguageModal />
+
+      {/* Global Authentication Gate (login / create account / access control) */}
+      <AuthGate />
+
+      {/* Session-expired overlay */}
+      <SessionExpiredModal />
+
+      {/* Specialized portals & health-records workspaces overlap the website */}
+      {overlayTab && overlayMeta && (
+        <WorkspaceOverlay
+          title={overlayMeta.title}
+          subtitle={overlayMeta.subtitle}
+          badge={overlayMeta.badge}
+          theme={overlayMeta.theme}
+          layout={FULLSCREEN_OVERLAY_TABS.includes(overlayTab) ? 'fullscreen' : 'framed'}
+          onClose={closeOverlay}
+          headerExtra={healthSubnav}
+        >
+          <Suspense fallback={<RouteFallback />}>{renderOverlayBody()}</Suspense>
+        </WorkspaceOverlay>
+      )}
+
+    </div>
+  );
+}

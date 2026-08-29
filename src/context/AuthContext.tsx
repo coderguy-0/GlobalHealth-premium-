@@ -1,0 +1,192 @@
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { UserAccount } from '../types';
+import { apiFetch, clearStoredSession, getStoredToken, storeSession } from '../services/authClient';
+
+// Where the user was trying to go / do when they were asked to sign in.
+export interface AuthIntent {
+  // The tab they wanted to open.
+  tab?: string;
+  // Human-readable description of the gated action (for the gate UI).
+  feature?: string;
+  // Optional context (e.g. selected doctor id / time slot) to restore after login.
+  context?: Record<string, unknown>;
+}
+
+interface AuthContextValue {
+  user: UserAccount | null;
+  // True until the initial session check against the server completes.
+  initializing: boolean;
+  // True when the active session has expired server-side.
+  sessionExpired: boolean;
+  // The global auth gate modal state.
+  gateOpen: boolean;
+  gateMode: 'login' | 'signup';
+  gateIntent: AuthIntent | null;
+  // Opens the authentication gate, optionally preserving intended destination.
+  requireAuth: (intent?: AuthIntent, mode?: 'login' | 'signup') => void;
+  closeGate: () => void;
+  setGateMode: (mode: 'login' | 'signup') => void;
+  // Called by login/signup flows with the authenticated user + token.
+  authenticate: (user: UserAccount, token: string) => void;
+  logout: () => Promise<void>;
+  dismissSessionExpired: () => void;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+}
+
+// Maps a server public user (PublicUserAccount) into the app's UserAccount shape.
+function toUserAccount(serverUser: any): UserAccount {
+  const first = serverUser.firstName ?? (serverUser.fullName?.split(' ')[0] || 'Friend');
+  const last = serverUser.lastName ?? '';
+  return {
+    id: serverUser.id,
+    username: serverUser.username || '',
+    fullName: serverUser.fullName || `${first} ${last}`.trim(),
+    email: serverUser.email || '',
+    avatarUrl: serverUser.avatarUrl,
+    phoneNumber: serverUser.phoneNumber,
+    gender: 'Prefer not to say',
+    dietaryPreferences: serverUser.dietaryPreferences ?? [],
+    healthGoals: serverUser.healthGoals ?? [],
+    createdAt: serverUser.createdAt || new Date().toISOString()
+  };
+}
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<UserAccount | null>(null);
+  const [initializing, setInitializing] = useState(true);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [gateOpen, setGateOpen] = useState(false);
+  const [gateMode, setGateMode] = useState<'login' | 'signup'>('login');
+  const [gateIntent, setGateIntent] = useState<AuthIntent | null>(null);
+  // Holds the intent after a successful login so the app can route back.
+  const pendingIntentRef = useRef<AuthIntent | null>(null);
+
+  // On mount: validate any stored token with the server before trusting it.
+  // We never render private data until this resolves.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const token = getStoredToken();
+      if (!token) {
+        setInitializing(false);
+        return;
+      }
+      try {
+        const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
+        if (!cancelled && res?.user) {
+          setUser(toUserAccount(res.user));
+        }
+      } catch {
+        // Token invalid or expired — clear it and stay logged out.
+        clearStoredSession();
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setInitializing(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const requireAuth = useCallback((intent?: AuthIntent, mode: 'login' | 'signup' = 'login') => {
+    setGateIntent(intent || null);
+    pendingIntentRef.current = intent || null;
+    setGateMode(mode);
+    setGateOpen(true);
+  }, []);
+
+  const closeGate = useCallback(() => {
+    setGateOpen(false);
+  }, []);
+
+  const authenticate = useCallback((u: UserAccount, token: string) => {
+    storeSession(token, u);
+    setUser(u);
+    setGateOpen(false);
+    setSessionExpired(false);
+  }, []);
+
+  const logout = useCallback(async () => {
+    const token = getStoredToken();
+    try {
+      if (token) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ sessionId: token })
+        });
+      }
+    } catch {
+      // continue local cleanup regardless
+    }
+    clearStoredSession();
+    setUser(null);
+    pendingIntentRef.current = null;
+    setGateOpen(false);
+  }, []);
+
+  const dismissSessionExpired = useCallback(() => setSessionExpired(false), []);
+
+  // Expose a global hook so any data-fetching code can report a hard 401.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {};
+      clearStoredSession();
+      setUser(null);
+      if (detail.reason === 'expired') setSessionExpired(true);
+    };
+    window.addEventListener('globalhealth:unauthorized', handler);
+    return () => window.removeEventListener('globalhealth:unauthorized', handler);
+  }, []);
+
+  // Multi-tab session safety: react when another tab logs in or out.
+  useEffect(() => {
+    const onStorage = async (e: StorageEvent) => {
+      if (e.key !== 'globalhealth_auth_token') return;
+      const token = getStoredToken();
+      if (!token) {
+        // Logout happened in another tab.
+        clearStoredSession();
+        setUser(null);
+      } else if (token !== e.oldValue) {
+        // Login / session changed in another tab — validate before trusting.
+        try {
+          const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
+          setUser(res?.user ? toUserAccount(res.user) : null);
+        } catch {
+          clearStoredSession();
+          setUser(null);
+        }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const value: AuthContextValue = {
+    user,
+    initializing,
+    sessionExpired,
+    gateOpen,
+    gateMode,
+    gateIntent,
+    requireAuth,
+    closeGate,
+    setGateMode,
+    authenticate,
+    logout,
+    dismissSessionExpired
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export { toUserAccount };
