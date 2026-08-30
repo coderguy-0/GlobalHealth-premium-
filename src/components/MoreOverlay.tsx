@@ -47,7 +47,6 @@ const EXPLORE_ITEMS: OverlayItem[] = [
   { id: 'ov-doctors', tab: 'doctors', label: 'Doctors', description: 'Find verified doctors and specialists.', icon: <Stethoscope className="h-5 w-5" /> },
   { id: 'ov-hospitals', tab: 'hospitals', label: 'Hospitals', description: 'Discover hospitals and medical facilities.', icon: <Building2 className="h-5 w-5" /> },
   { id: 'ov-facilities', tab: 'medical-map', label: 'MAP', description: 'Explore healthcare locations geographically.', icon: <Droplets className="h-5 w-5" /> },
-  { id: 'ov-pharmacies', tab: 'pharmacy-portal', label: 'Pharmacies', description: 'Verified pharmacy partners.', icon: <ShoppingBag className="h-5 w-5" /> },
   { id: 'ov-community', tab: 'community', label: 'Community', description: 'Discussions, topics and educational content.', icon: <Users className="h-5 w-5" /> },
   { id: 'ov-news', tab: 'news', label: 'Health News', description: 'Sourced healthcare updates and research briefs.', icon: <Newspaper className="h-5 w-5" /> },
   { id: 'ov-nutrition', tab: 'nutrition', label: 'Nutrition & Recipes', description: 'Meals, nutrients and balanced plans.', icon: <Salad className="h-5 w-5" /> },

@@ -63,11 +63,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<'health' | null>(null);
   const [moreOverlayOpen, setMoreOverlayOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
   // Subtle shadow appears only after scrolling.
@@ -80,16 +78,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
       if (userRef.current && !userRef.current.contains(e.target as Node)) {
         setUserDropdownOpen(false);
       }
     };
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpenDropdown(null);
         setUserDropdownOpen(false);
         setMobileMenuOpen(false);
         setMoreOverlayOpen(false);
@@ -104,7 +98,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const go = (tab: NavigationTab, mode?: 'details' | 'dashboard' | 'ehr' | 'saved') => {
-    setOpenDropdown(null);
     setUserDropdownOpen(false);
     setMobileMenuOpen(false);
     setMoreOverlayOpen(false);
@@ -121,13 +114,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const healthMenu: MenuItem[] = [
-    { id: 'nav-tests', tab: 'medical-tests', label: 'Lab Tests', icon: <FlaskConical className="h-4 w-4" /> },
-    { id: 'nav-nutrition', tab: 'nutrition', label: 'Nutrition & Recipes', icon: <Salad className="h-4 w-4" /> },
-    { id: 'nav-calculators', tab: 'calculators', label: 'Health Tools', icon: <Calculator className="h-4 w-4" /> },
-    { id: 'nav-wellness', tab: 'wellness', label: 'Wellness & Fitness', icon: <Activity className="h-4 w-4" /> },
-  ];
-
   const moreMenu: MenuItem[] = [
     { id: 'nav-news', tab: 'news', label: 'Health News', icon: <Newspaper className="h-4 w-4" /> },
     { id: 'nav-hospitals', tab: 'hospitals', label: 'Hospitals', icon: <Building2 className="h-4 w-4" /> },
@@ -136,34 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'nav-pharmacy', tab: 'pharmacy-portal', label: 'Pharmacies', icon: <ShoppingBag className="h-4 w-4" /> },
   ];
 
-  const isHealthActive = healthMenu.some((m) => currentTab === m.tab);
   const isMoreActive = moreMenu.some((m) => currentTab === m.tab) || currentTab === 'dashboard' || currentTab === 'privacy' || currentTab === 'doctor-consent' || currentTab === 'my-history' || currentTab === 'doctor-portal' || currentTab === 'hospital-portal' || currentTab === 'medauth' || currentTab === 'news-management' || currentTab === 'news-admin' || currentTab === 'news-authority' || currentTab === 'doctor-console';
-
-  const renderDropdown = (items: MenuItem[]) => (
-    <div
-      className="absolute left-0 top-full z-50 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-lift"
-      role="menu"
-    >
-      {items.map((item) => {
-        const active = currentTab === item.tab;
-        return (
-          <button
-            key={item.id}
-            id={item.id}
-            role="menuitem"
-            type="button"
-            onClick={() => go(item.tab)}
-            className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition ${
-              active ? 'bg-medical-50 text-medical-800' : 'text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <span className={active ? 'text-medical-600' : 'text-slate-400'}>{item.icon}</span>
-            {item.label}
-          </button>
-        );
-      })}
-    </div>
-  );
 
   const navLinkClass = (active: boolean) =>
     `relative flex items-center gap-1 rounded-lg px-2.5 py-2 text-[13px] font-semibold whitespace-nowrap transition duration-150 ${
@@ -209,22 +168,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               Home
             </button>
-
-            {/* Health dropdown */}
-            <div className="relative" ref={openDropdown === 'health' ? dropdownRef : undefined}>
-              <button
-                id="nav-health"
-                type="button"
-                aria-expanded={openDropdown === 'health'}
-                aria-haspopup="menu"
-                onClick={() => setOpenDropdown(openDropdown === 'health' ? null : 'health')}
-                className={navLinkClass(isHealthActive)}
-              >
-                Health
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openDropdown === 'health' ? 'rotate-180' : ''}`} />
-              </button>
-              {openDropdown === 'health' && renderDropdown(healthMenu)}
-            </div>
 
             <button
               id="nav-diseases"
@@ -274,10 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 aria-expanded={moreOverlayOpen}
                 aria-haspopup="dialog"
-                onClick={() => {
-                  setOpenDropdown(null);
-                  setMoreOverlayOpen(!moreOverlayOpen);
-                }}
+                onClick={() => setMoreOverlayOpen(!moreOverlayOpen)}
                 className={navLinkClass(isMoreActive)}
               >
                 <MoreHorizontal className="h-4 w-4" />
