@@ -53,8 +53,8 @@ const AppointmentsView = lazy(() =>
 const MyHistoryView = lazy(() =>
   import('./components/MyHistoryView').then((m) => ({ default: m.MyHistoryView }))
 );
-const HospitalPortalView = lazy(() =>
-  import('./components/hospital-portal/HospitalPortalView').then((m) => ({ default: m.HospitalPortalView }))
+const HospitalPortalApp = lazy(() =>
+  import('./components/hospital-portal/HospitalPortalApp').then((m) => ({ default: m.HospitalPortalApp }))
 );
 const MedAuthView = lazy(() =>
   import('./components/medauth/MedAuthView').then((m) => ({ default: m.MedAuthView }))
@@ -653,7 +653,7 @@ export default function App() {
     }
 
     if (overlayTab === 'hospital-portal') {
-      return <HospitalPortalView onBackToPublic={closeOverlay} />;
+      return <HospitalPortalApp onBackToGlobalHealth={closeOverlay} />;
     }
 
     return null;
