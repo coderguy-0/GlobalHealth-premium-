@@ -55,8 +55,8 @@ export const DoctorAvatar: React.FC<DoctorAvatarProps> = ({
   useEffect(() => {
     if (message) {
       showBubble(message, 5200);
-    } else if (bubble === null) {
-      showBubble(GREETING, 5200);
+    } else {
+      showBubble(GREETING, 4200);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
