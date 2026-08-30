@@ -7846,16 +7846,963 @@ export const REPRODUCTIVE_OBSTETRIC_TESTS: MedicalTest[] = [
     "preparation": "No special diet required unless combined with fasting metabolic panels.",
     "sampleType": "Venous Blood / Serum Specimen",
     "timeToResults": "24 Hours",
-    "description": "A standardxœì]sÛÆ†ïý+vt‘Ê3$m)vâ8Zr,MmWµÔä¢ÍÅX’[XHFÚþ÷¾g_¤ŠJ);$O.¢b÷œ=ï>€`ý›
-EéD2‘™Tf&-„´V"VÒæ©N&â½ºÁ±D¼‘‘2cU¬¥¸R¥‘aóÙÌ¤™P×:TI ú#iqåPËIbl¦ª@[m;8è=øïÀ\«ôZ«›ƒ—â`Õåµ²}¥Ö,ÕgëDf¸®d¦&&ÕdQž„*Ô,5adúZ‰oÄ_G6SYŠ+œ)eÓ8§	Ë(Ç7­Èd:Q™˜ML32ç™È¨pG˜ªhVúJËÄ
-e39Š´Â¶1>uÃ”óT¶'bƒÏLŠ,Ü¨&3I•%'ôpá|Œ_E6U©œ©œlÃñ|¤j'ÝLevnÏ³uœ””Óu3Ç¤3Z8Œ¨0O15eõ$w`‹_XEcãeiÍz"0ø‘d©shO`î’œ§³B˜±°3,á“iËô£J­Ð‰¸V‰É­EÆ„â‰°*Ícn¬’–ÅyL!"gË0rŒ£J'àÔŒÆXe",¡è²‚uÔšÑ¿”_ãPf²'TBËÓ•L£fgt‚ëÇ
-kf"ÀXEy$Óž°YŠ Át"g³NÆî0JŽ“Æ2ÂÚbÜ‘øL§©BèZ=Š\Ïp9ç1+YUÛ<57çÙ/&ýhÉâ£¸,½"NLùI½?{ÿ½*ýwéüWŸ‰uüÉX8"TÈ2KaœÁ8J=¸4”)…“šQÁÜi¢?åÊþ™ÄE Â.™¼œ».Ö}&SŠ‡ijòÉT¸µ×ã|R®0…û]]@JXçõÑá&Žk;C
-¸ßk§•—_Š3=™öqqŸïBæÂÅM¿<ÙŠO9Â@‹*éZu§èÉR3›|)[ô„Žã<1¾*ž¼=>yýöürø¸'Æ‘¹AQŸ‰Y^œ|’Öe\®&ûl O§õ'/ÅßrI'`^3™M]ÆÛãÓI%báW9‘:±Ym©«”ÒEP‰Ã§Ê¶ƒüB¥’X…Xò¸OñyÀ8à+STÐ"N]¢¤µ˜gP[ÈW7‡Òùfêæ¿Z‹Î“kJ÷	%¬Ñ”M¶ˆgpŠu¥&0Úˆ»×Ö´(jXˆyÙæ²ïÊ
-f’‰¡·+UŒÕœ(—·4@–*™¹ßÔ˜|Íe.|âRÀõÍLQy¹nÜ×® t¥ª|¿¹ÜÑonúùìÀ]î×ÒÕ×|äÍ;üª¬åÕÂ*ï“NP$m7Æ",ì8Oïùª„bT¬*BQÃ ‡7áœ ÙgRÙˆd»ÆÔkšù’‚n`RÄ@ËÍ'e%ò+U%ŽGfŸr.®€N24PøÌ;çfj.§&Â7*s­£vÌ…[}×!\DÐÚ~aêà¨"¨g!ÚAˆÌ±þkU»k7´Â¹™6êKFK]_ºì8Ö
-“jn.G|Ä!‘ÜùðJðA`É›óqTŸ¡Þ;-Ÿ/Y¤z„¹ú¯,N²íÛ0Í'íI.¸W%ïMvNþÇU5ÃÈ$ªíçU}¬Ê3ç(,2º‘õ–&GËìçQ«ËMQ\d9Rå®í•éjç’QB5Z©.M”pŽu•a^âŒi‚(¼6¦ÈE|[eh¢ŸUŠQ0-ÂJø¡ô¸”®Óvc€Ä¢È]i$ñ!(¥¨8ÎùŽŽ\¸Æã¾xBë
-5¤ï×˜M¦\"'ë"L°v¤“ÚMÒ:ãö‰ŠÚ¦Ÿ'T“Eaò´,_%(w#Ä'Vî¾mZÏéTÉÒ×ˆ’%¯wy{¤ËýI†˜0ÖýÙ;¯™z­¡à)R—qœÊ/f“ôz”ª”
-&¦Âï¥Ú~´Ã$<i«Ž¹NS‰/Ç,‰Iú:¹––rÅRWT•¢(.EÈÀ<SwÃ âÐFháèÊ©V}Î»¸ÎÁÿGi®IK‰VÐ3*¢¤%­ÎÔã9¯—£ŽLX”·G&3©ZäAVKvïü@ŽT»˜ .ª;vÔ°<äõÚÏ.ôÐ¤ŽÚþùwù“Qg¥lã²ugw™ð­m!×ËdâÎoNóŽp ¦W§j¥s~ôbDZkÏÒ]Ó
- ¤«²âV×XVk»ºu­·"¤²‚Ô Ò|œh§3ô¿C2SðÊcBüwÎsS¬ùùâØu`½ŽÐ"iVU¶Á_6å·ªîÁížˆ´ ò]î-zp	‚@Uý¹.äå„úlµ‡B‹MU+Æ>øÒàjæÂì"Î×HìÒpiÚbz‰âD†©%ÅBìàÃnœ*Øè6µwy€vY$!iW à-m‘ ÍP‡)m•38¸Ë—r«X&†oNÅÂŒËÚ=ô_L&¼j]ñþd
-¨w­Âý¸l*Y;ýlèô…meúT"¹×!©£bÊ4ý>¨‹¤ë=*«N­Ãk®Ý5a×[5·K_¢Î°bn÷vë±q;å³;EÏ,HÅ×Û§¸¤ÐŠb'¨BÑÔB5IQ ±OE¨8gW{üŽ¼á56+ÐºTx_©«:çáÚï´wÞÍÖÇõ§fÿƒƒzäû^½k³·d²mmh[û"Ú<,Ð×¤þÍ%~B0a³êx†ßý¶E¢—×©)3³áj©ŠŒt¬}å§Ú6žh›ÿŽTäK#¡*ÄP¼3ìiÛ=Ÿu¡,ËšÏµVNWÒÕ\ë’ÊYß—`ÕHe7”nU¥¥ÝHN1„UN½ÖoUÜê	 »˜<Ÿ:2…öÎUñ=ÃîÒŒ3f¤çb*¯=9YI+ªàŸÛa	v£\œ_•|fLê†Š"s¦’ËŸx¥¢kñz[’÷ÚÊ»n’^ ¸/‡†êO¶%bÉÉÊ,lÛ}j`i¢<.‚ôœ‰¸˜S|%ÉäG/žµu²¯ÃÜ÷„Lüu:„8%É0˜CEŒ.ê,©NwTu} †^7'ÆsâXÓHˆ@¸ »­åSüQéïƒM›H'QûŸþ‹Žª}"cÕFp¯4ÆMtHù3·3<(1dQ5î ²úÊ,O±éu×]ãÈî‘æ1Ý¥ÃR•PqAã—]¶¡¾	Õ-º^E}ø’ç`Ölœƒ7ªý¼à½‚Ü ‹¯DmÕW2ürešNzpüLœ!«J}ºxœU3Öµ\ß¦/YÛ²ô%Wg”¾€Ò;|´C$}‰…Ò¤3HgîõÊ éj‰9:sôµ8ú’.Æ1:ctÆèÛÑ—¶ý¢è`ˆÎ!ú>Aôe ‚úö3ôã.†~uy¶QvþÎ“8Š\Ò=´ÁÑY®–G‡.D1Ó±Viæ?‡ ’Ÿáú©‰ô>Ô–í"áOÏž‹¾x6xþTÄçòV¾Î«‹Ô:Â¥ÜãÂ=¼vçºh‡?ûŠ/^}ÿ¸­…]¥zöSÊSÚr‘5ØTèÌ×"ÊírçØâ9]ØÛ“°Ã7‰w…à¹¼¼Y>jfxyÃÈ‡ãÞÍÊo’w·®Êœ{s/øæëðm´'‡TÄ,jŒ‹ÃßË¶[Ví(ÓîL]æÙÌ³™g%ž}K¹0ÇfŽ½Çnu,æ×wðë/ ”j3ÔÞ$ÔþÛCw-Õ­êµ_zÁp†Ó§Nïœn“†ÒÛ¥¿í‚Òá"ú¨2“äéâŸýnüáîå£ñÞ»ò€wÇúnzwŒÀ |€¯ðÓ=ìÝaåŽÂq~à›9ò?" _©¢–3,_–wt3çüà73ò­eäüà÷ªâ¶_\}…˜±3cgÆ¾OŒ½^0oß~Þþ¬‹·Ÿ`‡¬‡¥ÎŠ™)ï•k?0y¿kÜfðüúÝë¿AFçXLëhýZÛ‘‡Øï´uGé=?ÚÎäžÉýÜ¯©Ç˜á3Ã_‹áßÙÝ˜æócðŒøñï â¿³öíì_ËŒýû3öß'ì7ÿà Ûày× *P“È`R†Z_ñ0¯„1ŸYß)¹f¤Ì4u¼J
-s´Š½Ò¿W zå~=*‚"£ªìâùïTòR};x!úâèûÁ±˜<	ßŠÿˆ_LìŽŽèÈsü(œLu¦îàÑà)ü?è`÷³ôÕÓ;Õ3>XN·_€JTINûíjïBÊëçEwrÖìàö¿@‹¨ò	ÛÃ·H]×O	×ýå¸ÿúôjøu)~GðlÞwÁÌ~Ù¯rÔ×Aõ7.x}îFUðRáüxÜWa&ÿ?pßeðŽòú5KÓ{¦÷Lï¿½_-¦Ú3´_Úwu6fõw?y¿iAÎlžÙü&ÙülKÝ [Âä»JÛ~¡øU^`Ïž	ü>øNÁà}ûÁûw]àªh÷O¦T‡AõOÌPœ*Ò|f¢’‡ÿ§M×ŸÁN?¿WoÄ¹ÇšoâßcTæú\ÿž¾Û¡·éÜÃòeþü†&ýLúÿˆ¤ÿÞêá?Ãÿµàÿ=ºßà7ñð­€­½Àéß·àí×]‚{:†oð¾q°O7îHø^ÂößKø¾ó->…c¥?!Í
-ÖC¿»géh|`Wît¬ï&ßÈ³|fÿ‹ïáéöÓqþ+™é3Óg¦ÏLßk˜/ñîU*Šù=óûõÞ¸³¼›1«gVÏ¬žYýv³úŽâ¶_\~…˜Á3ƒg¿O¾^0oß~Þþ¢“·7ïLÒŸæùw'¡DÐ>ýÖ®58Óø¡ñk-÷Ã¼.Å€Ìê»ß™‡Ûv	Ý¯e4“|&ùLò™ä{9ôeß¢§>c°Ï`ÿ¾¯Ò_Ñë˜ó3çgÎÏœË9ÿZµnÏ°ÿÚ>á» |€ïìÕ]€õ8ßØþ›?Ü¾)`°ÇB¼ùîâôÁØÿí1ño?â_²ª!ùK®ËÀ¾öÞÙ	.¿Ä6ÆïŒß¿3~÷ŠäAñ{§bÊÎ”ýÊ¾¤s1Lg˜Î0aú¶Âô%%m_˜y‡éŒÆ3ß4¾E0ßvþÃÓ§üRÍš¿ ©]¾|0¾|8æâ;ÃÅ;x“ˆ¼c¦å‹´|…£v	œw˜É:3tfè^È|	†¾RK1Ngœ¾NïègLÖ™¬3Yg²¾åd½£ºíd_áæíÌÛ™·ïoï"ŒÞ·½?úõÇGÿ  ÿÿ "<É
+    "description": "A standardized clinical laboratory assay measuring Newborn Galactosemia Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Galactosemia Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Galactosemia Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Galactosemia Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Galactosemia Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Galactosemia Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Galactosemia Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Galactosemia Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Galactosemia Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-891",
+    "name": "Newborn Biotinidase Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Biotinidase Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Biotinidase Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Biotinidase Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Biotinidase Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Biotinidase Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Biotinidase Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Biotinidase Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Biotinidase Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Biotinidase Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Biotinidase Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-892",
+    "name": "Newborn TSH Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Measures anterior pituitary thyrotropin to evaluate thyroid axis homeostasis.",
+    "normalRange": "0.45 - 4.50 mIU/L (Euthyroid baseline range)",
+    "preparation": "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+    "sampleType": "Serum (Gold Top SST tube)",
+    "timeToResults": "12 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn TSH Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn TSH Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn TSH Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum (gold top sst tube).",
+    "whyImportant": "Accurate assessment of Newborn TSH Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum (Gold Top SST tube) is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn TSH Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn TSH Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "0.45 - 4.50 mIU/L (Euthyroid baseline range)",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn TSH Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn TSH Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn TSH Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-893",
+    "name": "Newborn Phenylketonuria Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Phenylketonuria Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Phenylketonuria Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Phenylketonuria Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Phenylketonuria Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Phenylketonuria Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Phenylketonuria Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Phenylketonuria Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Phenylketonuria Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Phenylketonuria Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Phenylketonuria Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-894",
+    "name": "Newborn Congenital Hypothyroidism Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Congenital Hypothyroidism Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+    "sampleType": "Serum (Gold Top SST tube)",
+    "timeToResults": "12 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Congenital Hypothyroidism Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Congenital Hypothyroidism Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Congenital Hypothyroidism Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum (gold top sst tube).",
+    "whyImportant": "Accurate assessment of Newborn Congenital Hypothyroidism Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum (Gold Top SST tube) is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Congenital Hypothyroidism Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Congenital Hypothyroidism Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Congenital Hypothyroidism Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Congenital Hypothyroidism Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Congenital Hypothyroidism Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-895",
+    "name": "Newborn Hemoglobinopathy Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Measures oxygen-carrying protein in red blood cells to diagnose anemia, blood loss, and polycythemia.",
+    "normalRange": "Men: 13.8 - 17.2 g/dL | Women: 12.1 - 15.1 g/dL | Children: 11.0 - 16.0 g/dL",
+    "preparation": "No fasting required. Avoid strenuous exercise immediately before collection.",
+    "sampleType": "Whole Blood (Lavender Top K2-EDTA tube)",
+    "timeToResults": "12 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Hemoglobinopathy Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Hemoglobinopathy Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Hemoglobinopathy Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in whole blood (lavender top k2-edta tube).",
+    "whyImportant": "Accurate assessment of Newborn Hemoglobinopathy Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Whole Blood (Lavender Top K2-EDTA tube) is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Hemoglobinopathy Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Hemoglobinopathy Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No fasting required. Avoid strenuous exercise immediately before collection.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Men: 13.8 - 17.2 g/dL | Women: 12.1 - 15.1 g/dL | Children: 11.0 - 16.0 g/dL",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Hemoglobinopathy Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Hemoglobinopathy Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Hemoglobinopathy Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-896",
+    "name": "Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Medium-Chain Acyl-CoA Dehydrogenase Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-897",
+    "name": "Newborn Cystic Fibrosis Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Cystic Fibrosis Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Cystic Fibrosis Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Cystic Fibrosis Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Cystic Fibrosis Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Cystic Fibrosis Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Cystic Fibrosis Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Cystic Fibrosis Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Cystic Fibrosis Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Cystic Fibrosis Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Cystic Fibrosis Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-898",
+    "name": "Newborn Congenital Adrenal Hyperplasia Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Newborn Congenital Adrenal Hyperplasia Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Congenital Adrenal Hyperplasia Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Congenital Adrenal Hyperplasia Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Congenital Adrenal Hyperplasia Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Congenital Adrenal Hyperplasia Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Congenital Adrenal Hyperplasia Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Congenital Adrenal Hyperplasia Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Congenital Adrenal Hyperplasia Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Congenital Adrenal Hyperplasia Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Congenital Adrenal Hyperplasia Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-899",
+    "name": "Neonatal G6PD Screen",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Neonatal G6PD Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Neonatal G6PD Screen to support evidence-based diagnostic decisions.",
+    "overview": "Neonatal G6PD Screen is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Neonatal G6PD Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Neonatal G6PD Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Neonatal G6PD Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Neonatal G6PD Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Neonatal G6PD Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Neonatal G6PD Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Neonatal G6PD Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-900",
+    "name": "Neonatal Sepsis Screening Panel",
+    "category": "Reproductive & Obstetric Health",
+    "purpose": "Evaluates Neonatal Sepsis Screening Panel concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Neonatal Sepsis Screening Panel to support evidence-based diagnostic decisions.",
+    "overview": "Neonatal Sepsis Screening Panel is a diagnostic laboratory examination categorized under Reproductive & Obstetric Health. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Neonatal Sepsis Screening Panel is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Neonatal Sepsis Screening Panel provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with reproductive & obstetric health",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Neonatal Sepsis Screening Panel",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Neonatal Sepsis Screening Panel findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Neonatal Sepsis Screening Panel may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Neonatal Sepsis Screening Panel may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Neonatal Sepsis Screening Panel performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

@@ -1,420 +1,417 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { 
-  Search, 
-  Pill, 
-  FlaskConical, 
-  ChefHat, 
-  Newspaper, 
-  Stethoscope, 
-  Sparkles, 
-  ArrowRight, 
-  HelpCircle,
-  Building2
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Search,
+  Mic,
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  Clock,
+  TrendingUp,
+  CornerDownLeft,
+  X,
+  Bot,
 } from 'lucide-react';
 import { NavigationTab } from '../types';
-import { HEALTH_CONDITIONS, MEDICINES, MEDICAL_TESTS, RECIPES, DOCTORS, MEDICAL_LITERACY_CHALLENGES } from '../data/healthData';
-import { newsService } from '../services/newsService';
-import { useLocalization } from '../context/LocalizationContext';
-import type { DirectoryInfographicKind } from './DirectoryInfographicWorkspace';
-
-// The full directory infographic workspace is heavy — only load it when a
-// visitor actually opens one of the directory cards.
-const DirectoryInfographicWorkspace = lazy(() =>
-  import('./DirectoryInfographicWorkspace').then((m) => ({ default: m.DirectoryInfographicWorkspace }))
-);
+import { HEALTH_CONDITIONS, MEDICINES, MEDICAL_TESTS, RECIPES, DOCTORS, HOSPITALS } from '../data/healthData';
+import { Button } from './ui/Button';
+import { SearchSkeleton } from './ui/Skeleton';
 
 interface HeroSectionProps {
   onTabChange: (tab: NavigationTab) => void;
-  onSelectSearchResult?: (type: string, item: any) => void;
 }
 
+interface SearchHit {
+  id: string;
+  type: string;
+  title: string;
+  subtitle: string;
+  tab: NavigationTab;
+}
+
+const RECENT_KEY = 'gh_home_recent_searches_v1';
+
+const SUGGESTIONS = ['Diabetes', 'Blood Pressure', 'Complete Blood Count', 'Paracetamol', 'Cardiologist', 'Hospitals near me'];
+
+/**
+ * Homepage hero: two-column layout with eyebrow, headline, supporting copy,
+ * primary/secondary CTAs and a unified global healthcare search experience.
+ */
 export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
-  const { t, formatNumber, isRTL } = useLocalization();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showResults, setShowResults] = useState(false);
-  const [infographicKind, setInfographicKind] = useState<DirectoryInfographicKind | null>(null);
-
-  // Search indexing across categories
-  const filteredConditions = searchQuery.trim()
-    ? HEALTH_CONDITIONS.filter(c => 
-        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.symptoms.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : [];
-
-  const filteredMedicines = searchQuery.trim()
-    ? MEDICINES.filter(m => 
-        m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.genericName.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
-
-  const filteredTests = searchQuery.trim()
-    ? MEDICAL_TESTS.filter(t => 
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
-
-  const filteredRecipes = searchQuery.trim()
-    ? RECIPES.filter(r => 
-        r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.dietTags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : [];
-
-  const filteredDoctors = searchQuery.trim()
-    ? DOCTORS.filter(d => 
-        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.specialty.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
-
-  const hasSearchHits = 
-    filteredConditions.length > 0 || 
-    filteredMedicines.length > 0 || 
-    filteredTests.length > 0 || 
-    filteredRecipes.length > 0 ||
-    filteredDoctors.length > 0;
-
-  const directoryCards: {
-    tab: NavigationTab;
-    title: string;
-    desc: string;
-    icon: React.ReactNode;
-    accent: string;
-    iconWrap: string;
-    ring: string;
-  }[] = [
-    {
-      tab: 'diseases',
-      title: 'Diseases',
-      desc: 'Guides, symptoms and care',
-      icon: <Stethoscope className="h-5 w-5" />,
-      accent: 'text-rose-700',
-      iconWrap: 'bg-rose-100 text-rose-700',
-      ring: 'hover:border-rose-300 hover:shadow-rose-100',
-    },
-    {
-      tab: 'medicines',
-      title: 'Medicines',
-      desc: 'Directory and safety notes',
-      icon: <Pill className="h-5 w-5" />,
-      accent: 'text-violet-700',
-      iconWrap: 'bg-violet-100 text-violet-700',
-      ring: 'hover:border-violet-300 hover:shadow-violet-100',
-    },
-    {
-      tab: 'medical-tests',
-      title: 'Tests & labs',
-      desc: 'Labs, ranges and prep',
-      icon: <FlaskConical className="h-5 w-5" />,
-      accent: 'text-cyan-700',
-      iconWrap: 'bg-cyan-100 text-cyan-700',
-      ring: 'hover:border-cyan-300 hover:shadow-cyan-100',
-    },
-    {
-      tab: 'nutrition',
-      title: 'Nutrition',
-      desc: 'Meals, nutrients and plans',
-      icon: <ChefHat className="h-5 w-5" />,
-      accent: 'text-lime-700',
-      iconWrap: 'bg-lime-100 text-lime-700',
-      ring: 'hover:border-lime-300 hover:shadow-lime-100',
-    },
-    {
-      tab: 'news',
-      title: 'News',
-      desc: 'Clinical research briefs',
-      icon: <Newspaper className="h-5 w-5" />,
-      accent: 'text-teal-700',
-      iconWrap: 'bg-teal-100 text-teal-700',
-      ring: 'hover:border-teal-300 hover:shadow-teal-100',
-    },
-    {
-      tab: 'doctors',
-      title: 'Hospitals',
-      desc: 'Verified care network',
-      icon: <Building2 className="h-5 w-5" />,
-      accent: 'text-emerald-700',
-      iconWrap: 'bg-emerald-100 text-emerald-700',
-      ring: 'hover:border-emerald-300 hover:shadow-emerald-100',
-    },
-  ];
-
-  // Dynamic News Question Teaser for Current Visit
-  const [currentNewsQuestion, setCurrentNewsQuestion] = useState<any>(null);
+  const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [supportSpeech, setSupportSpeech] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [showSkeleton, setShowSkeleton] = useState(true);
 
   useEffect(() => {
+    const timer = window.setTimeout(() => setShowSkeleton(false), 350);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  // Load recent searches once.
+  useEffect(() => {
     try {
-      const published = newsService.getArticles().filter(a => a.status === 'published');
-      if (published.length === 0) return;
-
-      const visitKey = 'gh_news_visit_counter';
-      const visitCount = parseInt(sessionStorage.getItem(visitKey) || '1', 10);
-      const articleIdx = (visitCount - 1) % published.length;
-      const targetArticle = published[articleIdx] || published[0];
-
-      const matchedChallenge = MEDICAL_LITERACY_CHALLENGES.find(
-        c => c.newsArticleId === targetArticle.id || targetArticle.title.toLowerCase().includes(c.newsHeadline.toLowerCase().slice(0, 15))
-      );
-
-      setCurrentNewsQuestion({
-        article: targetArticle,
-        question: matchedChallenge ? matchedChallenge.question : `Based on recent clinical findings in "${targetArticle.title}", how does this impact daily wellness?`,
-        source: targetArticle.source,
-        category: targetArticle.category
-      });
+      const stored = localStorage.getItem(RECENT_KEY);
+      if (stored) setRecent(JSON.parse(stored).slice(0, 5));
     } catch {
-      // ignore
+      /* ignore */
     }
   }, []);
 
-  const handleScrollToQuestion = () => {
-    const el = document.getElementById('home-news-question-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      onTabChange('news');
+  // Allow the global header "Search" button to focus this field.
+  useEffect(() => {
+    const focusSearch = () => {
+      inputRef.current?.focus();
+      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    window.addEventListener('gh:focus-search', focusSearch);
+    return () => window.removeEventListener('gh:focus-search', focusSearch);
+  }, []);
+
+  useEffect(() => {
+    const w = window as any;
+    setSupportSpeech(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
+  }, []);
+
+  const recordRecent = (term: string) => {
+    const next = [term, ...recent.filter((r) => r !== term)].slice(0, 5);
+    setRecent(next);
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
     }
   };
 
+  const hits = useMemo<SearchHit[]>(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const matches = (text?: string) => (text ? text.toLowerCase().includes(q) : false);
+
+    const conditions = HEALTH_CONDITIONS.filter(
+      (c) => matches(c.title) || matches(c.category) || c.symptoms?.some((s) => matches(s))
+    )
+      .slice(0, 3)
+      .map((c) => ({ id: c.id, type: 'Disease', title: c.title, subtitle: c.category, tab: 'diseases' as NavigationTab }));
+
+    const medicines = MEDICINES.filter((m) => matches(m.name) || matches(m.genericName) || matches(m.category))
+      .slice(0, 3)
+      .map((m) => ({ id: m.id, type: 'Medicine', title: m.name, subtitle: m.genericName, tab: 'medicines' as NavigationTab }));
+
+    const tests = MEDICAL_TESTS.filter((x) => matches(x.name) || matches(x.category))
+      .slice(0, 3)
+      .map((x) => ({ id: x.id, type: 'Lab test', title: x.name, subtitle: x.category, tab: 'medical-tests' as NavigationTab }));
+
+    const doctors = DOCTORS.filter((d) => matches(d.name) || matches(d.specialty) || matches(d.location))
+      .slice(0, 3)
+      .map((d) => ({ id: d.id, type: 'Doctor', title: d.name, subtitle: `${d.specialty} · ${d.location}`, tab: 'doctors' as NavigationTab }));
+
+    const hospitals = HOSPITALS.filter((h) => matches(h.name) || matches(h.city) || matches(h.location))
+      .slice(0, 3)
+      .map((h) => ({ id: h.id, type: 'Hospital', title: h.name, subtitle: `${h.city} · ${h.type}`, tab: 'hospitals' as NavigationTab }));
+
+    const recipes = RECIPES.filter((r) => matches(r.title) || r.dietTags?.some((tag) => matches(tag)))
+      .slice(0, 2)
+      .map((r) => ({ id: r.id, type: 'Recipe', title: r.title, subtitle: `${r.calories} kcal`, tab: 'recipes' as NavigationTab }));
+
+    return [...conditions, ...medicines, ...tests, ...doctors, ...hospitals, ...recipes];
+  }, [query]);
+
+  const grouped = useMemo(() => {
+    const order = ['Disease', 'Medicine', 'Lab test', 'Doctor', 'Hospital', 'Recipe'];
+    const map = new Map<string, SearchHit[]>();
+    hits.forEach((h) => {
+      const list = map.get(h.type) || [];
+      list.push(h);
+      map.set(h.type, list);
+    });
+    return order.map((type) => ({ type, items: map.get(type) || [] })).filter((g) => g.items.length > 0);
+  }, [hits]);
+
+  const openResult = (hit: SearchHit) => {
+    recordRecent(query.trim());
+    setQuery('');
+    setFocused(false);
+    onTabChange(hit.tab);
+  };
+
+  const openSuggestion = (s: string) => {
+    setQuery(s);
+    setFocused(true);
+  };
+
+  const clear = () => {
+    setQuery('');
+    setFocused(true);
+  };
+
+  const runVoice = () => {
+    const w = window as any;
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) return;
+    try {
+      const rec = new SR();
+      rec.lang = 'en-US';
+      rec.interimResults = false;
+      rec.onresult = (e: any) => {
+        const transcript = e.results?.[0]?.[0]?.transcript;
+        if (transcript) {
+          setQuery(transcript);
+          setFocused(true);
+        }
+      };
+      rec.start();
+    } catch {
+      /* unsupported */
+    }
+  };
+
+  const panelOpen = focused && (query.trim() || recent.length > 0);
+
   return (
-    <section className="relative bg-gradient-to-b from-emerald-50/70 via-teal-50/30 to-white py-12 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        {/* Header Title */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/60 px-3.5 py-1 text-xs font-semibold text-emerald-800">
-            <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-            <span>{t('hero.portalBadge')}</span>
-          </div>
+    <section className="relative overflow-hidden bg-white">
+      {/* Soft top light wash — calm, not saturated */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-gradient-to-b from-medical-50/80 via-medical-50/30 to-transparent" aria-hidden="true" />
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            {t('hero.title')}
-          </h1>
+      <div className="gh-container relative">
+        <div className="grid items-center gap-12 py-14 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
+          {/* ---------------- Left: copy + search ---------------- */}
+          <div className="max-w-2xl">
+            <span className="gh-eyebrow">
+              <Sparkles className="h-3.5 w-3.5" />
+              YOUR HEALTH. CONNECTED.
+            </span>
 
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            {t('hero.subtitle')}
-          </p>
+            <h1 className="mt-5 text-[1.85rem] font-bold leading-[1.15] tracking-tight text-slate-900 sm:text-4xl lg:text-[2.75rem]">
+              Healthcare information, discovery and guidance — all in one place.
+            </h1>
 
-          {/* Interactive Unified Search Box */}
-          <div className="relative max-w-2xl mx-auto pt-2">
-            <div className="relative flex items-center rounded-2xl border border-slate-300 bg-white shadow-lg focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition p-1.5">
-              <Search className={`h-5 w-5 text-slate-400 shrink-0 ${isRTL ? 'mr-3 ml-1' : 'ml-3 mr-1'}`} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowResults(true);
-                }}
-                onFocus={() => setShowResults(true)}
-                placeholder={t('hero.searchPlaceholder')}
-                aria-label="Search conditions, medicines, tests and recipes"
-                className="w-full bg-transparent px-3 py-2 text-sm text-slate-800 focus:outline-hidden placeholder:text-slate-400"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setShowResults(false);
-                  }}
-                  className="mx-2 rounded-lg bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200"
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600">
+              GlobalHealth brings trusted health information, medicines, healthcare professionals,
+              medical facilities, laboratory resources, and intelligent assistance together in one
+              simple platform.
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Button size="lg" onClick={() => onTabChange('diseases')}>
+                Explore Healthcare
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button variant="secondary" size="lg" onClick={() => onTabChange('ai-assistant')}>
+                <Bot className="h-4 w-4 text-medical-600" />
+                Ask AI Assistant
+              </Button>
+            </div>
+
+            {/* ---------------- Global search ---------------- */}
+            <div className="relative mt-10" id="gh-home-search">
+              {showSkeleton ? (
+                <SearchSkeleton />
+              ) : (
+                <div
+                  className={`relative flex items-center gap-2 rounded-2xl border bg-white p-2 shadow-soft transition-all duration-200 ${
+                    focused
+                      ? 'scale-[1.01] border-medical-300 shadow-lift'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
                 >
-                  {t('hero.clearSearch')}
-                </button>
+                  <Search className={`h-5 w-5 shrink-0 text-slate-400 ${focused ? 'text-medical-600' : ''}`} aria-hidden="true" />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => window.setTimeout(() => setFocused(false), 180)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && grouped.length > 0) {
+                        openResult(grouped[0].items[0]);
+                      }
+                      if (e.key === 'Escape') setFocused(false);
+                    }}
+                    placeholder="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more…"
+                    aria-label="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more"
+                    className="w-full bg-transparent px-2 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                  />
+                  {supportSpeech && (
+                    <button
+                      type="button"
+                      onClick={runVoice}
+                      aria-label="Search by voice"
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-medical-50 hover:text-medical-600"
+                    >
+                      <Mic className="h-4.5 w-4.5" />
+                    </button>
+                  )}
+                  {query ? (
+                    <button
+                      type="button"
+                      onClick={clear}
+                      aria-label="Clear search"
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : (
+                    <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-400 sm:inline-flex">
+                      <CornerDownLeft className="h-3 w-3" /> to search
+                    </kbd>
+                  )}
+                </div>
+              )}
+
+              {/* Popular categories — visible below the search field */}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                  Popular:
+                </span>
+                {SUGGESTIONS.slice(0, 4).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => openSuggestion(s)}
+                    className="gh-chip"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              {/* ---------------- Search panel ---------------- */}
+              {panelOpen && (
+                <div className="absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lift">
+                  {query.trim() ? (
+                    grouped.length === 0 ? (
+                      <div className="px-5 py-8 text-center">
+                        <p className="text-sm font-semibold text-slate-700">No results for “{query.trim()}”</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Try searching another healthcare topic — a disease, medicine, test or doctor.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="max-h-[26rem] overflow-y-auto p-2">
+                        {grouped.map((g) => (
+                          <div key={g.type} className="mb-1">
+                            <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                              {g.type}s · {g.items.length}
+                            </p>
+                            {g.items.map((hit) => (
+                              <button
+                                key={`${hit.type}-${hit.id}`}
+                                type="button"
+                                onClick={() => openResult(hit)}
+                                className="group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-medical-50"
+                              >
+                                <div className="min-w-0">
+                                  <p className="truncate text-[13px] font-semibold text-slate-800 group-hover:text-medical-800">
+                                    {hit.title}
+                                  </p>
+                                  {hit.subtitle && (
+                                    <p className="truncate text-[11px] text-slate-500">{hit.subtitle}</p>
+                                  )}
+                                </div>
+                                <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-medical-600" />
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  ) : (
+                    <div className="p-3">
+                      {recent.length > 0 && (
+                        <div className="mb-2">
+                          <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Recent searches
+                          </p>
+                          {recent.map((r) => (
+                            <button
+                              key={r}
+                              type="button"
+                              onClick={() => setQuery(r)}
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"
+                            >
+                              <Clock className="h-3.5 w-3.5 text-slate-400" />
+                              {r}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Trending topics
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 px-3 pb-2 pt-1">
+                        {SUGGESTIONS.map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => openSuggestion(s)}
+                            className="gh-chip"
+                          >
+                            <TrendingUp className="h-3 w-3 text-medical-500" />
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
+          </div>
 
-            {/* Live Search Results Dropdown */}
-            {showResults && searchQuery.trim() && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setShowResults(false)} />
-                <div className="absolute left-0 right-0 top-full mt-2 z-40 max-h-96 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl text-left divide-y divide-slate-100 animate-in fade-in duration-150">
-                  {!hasSearchHits && (
-                    <div className="p-4 text-center text-xs text-slate-500">
-                      {t('hero.noResults')} "{searchQuery}". {t('hero.trySearching')}
-                    </div>
-                  )}
-
-                  {filteredConditions.length > 0 && (
-                    <div className="py-2">
-                      <div className="px-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        {t('hero.conditionsHit')} ({formatNumber(filteredConditions.length)})
-                      </div>
-                      {filteredConditions.slice(0, 3).map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => {
-                            onTabChange('diseases');
-                            setShowResults(false);
-                          }}
-                          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50 text-left transition"
-                        >
-                          <div>
-                            <span className="text-xs font-semibold text-slate-900">{c.title}</span>
-                            <span className="ml-2 text-[10px] text-slate-500 font-normal">({c.category})</span>
-                          </div>
-                          <ArrowRight className={`h-3.5 w-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {filteredMedicines.length > 0 && (
-                    <div className="py-2">
-                      <div className="px-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        {t('hero.medicinesHit')} ({formatNumber(filteredMedicines.length)})
-                      </div>
-                      {filteredMedicines.slice(0, 3).map((m) => (
-                        <button
-                          key={m.id}
-                          onClick={() => {
-                            onTabChange('medicines');
-                            setShowResults(false);
-                          }}
-                          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-violet-50 text-left transition"
-                        >
-                          <div>
-                            <span className="text-xs font-semibold text-slate-900">{m.name}</span>
-                            <span className="ml-2 text-[10px] text-slate-500 font-normal">({m.genericName})</span>
-                          </div>
-                          <ArrowRight className={`h-3.5 w-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {filteredTests.length > 0 && (
-                    <div className="py-2">
-                      <div className="px-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        {t('hero.testsHit')} ({formatNumber(filteredTests.length)})
-                      </div>
-                      {filteredTests.slice(0, 3).map((test) => (
-                        <button
-                          key={test.id}
-                          onClick={() => {
-                            onTabChange('medical-tests');
-                            setShowResults(false);
-                          }}
-                          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-cyan-50 text-left transition"
-                        >
-                          <div>
-                            <span className="text-xs font-semibold text-slate-900">{test.name}</span>
-                          </div>
-                          <ArrowRight className={`h-3.5 w-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {filteredRecipes.length > 0 && (
-                    <div className="py-2">
-                      <div className="px-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        {t('hero.recipesHit')} ({formatNumber(filteredRecipes.length)})
-                      </div>
-                      {filteredRecipes.slice(0, 3).map((r) => (
-                        <button
-                          key={r.id}
-                          onClick={() => {
-                            onTabChange('recipes');
-                            setShowResults(false);
-                          }}
-                          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-lime-50 text-left transition"
-                        >
-                          <div>
-                            <span className="text-xs font-semibold text-slate-900">{r.title}</span>
-                          </div>
-                          <ArrowRight className={`h-3.5 w-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+          {/* ---------------- Right: visual panel ---------------- */}
+          <div className="hidden lg:block" aria-hidden="true">
+            <div className="relative mx-auto max-w-md">
+              <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-lift">
+                <div className="flex items-center justify-between">
+                  <span className="gh-eyebrow">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Trusted foundation
+                  </span>
                 </div>
-              </>
-            )}
+                <ul className="mt-6 space-y-4">
+                  {[
+                    ['500+ health conditions', 'Clear, sourced disease guides'],
+                    ['400+ medicines', 'Safety, forms and precautions'],
+                    ['1,000 lab tests', 'Preparation and interpretation context'],
+                    ['Verified facility map', 'Hospitals, clinics and urgent care'],
+                  ].map(([stat, label]) => (
+                    <li key={stat} className="flex items-start gap-3.5">
+                      <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-medical-50 text-medical-600">
+                        <Sparkles className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">{stat}</p>
+                        <p className="text-xs text-slate-500">{label}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 rounded-2xl bg-medical-50/70 p-4">
+                  <p className="text-xs leading-relaxed text-medical-800">
+                    <span className="font-bold">Educational platform.</span> GlobalHealth helps you
+                    understand health information — it does not replace professional medical advice,
+                    diagnosis or emergency care.
+                  </p>
+                </div>
+              </div>
+
+              {/* Floating accent card */}
+              <div className="gh-float absolute -bottom-6 -left-8 hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lift sm:flex">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-medical-600 text-white">
+                  <Bot className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">AI Assistant</p>
+                  <p className="text-[11px] text-slate-500">Ask anything about healthcare</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Miniature symmetric directory cards */}
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {directoryCards.map((card) => (
-            <button
-              key={card.tab}
-              type="button"
-              onClick={() => setInfographicKind(card.tab as DirectoryInfographicKind)}
-              className={`group flex h-full min-h-[148px] flex-col items-center justify-center gap-2.5 rounded-2xl border border-slate-200/90 bg-white px-3 py-4 text-center shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${card.ring}`}
-            >
-              <span className={`grid h-11 w-11 place-items-center rounded-2xl ${card.iconWrap} shadow-sm transition group-hover:scale-105`}>
-                {card.icon}
-              </span>
-              <div className="space-y-0.5">
-                <span className={`block text-[12px] font-extrabold leading-snug tracking-tight ${card.accent}`}>
-                  {card.title}
-                </span>
-                <span className="block text-[10px] font-medium leading-snug text-slate-500">
-                  {card.desc}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Live News Spotlight Teaser Bar */}
-        {currentNewsQuestion && (
-          <button 
-            type="button"
-            onClick={handleScrollToQuestion}
-            className="mt-6 w-full rounded-2xl border border-teal-200/80 bg-white/90 p-4 shadow-sm hover:border-teal-400 hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 shrink-0 group-hover:scale-105 transition">
-                <HelpCircle className="h-5 w-5" />
-              </div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded-md">
-                    {t('hero.liveNewsQuestion')}
-                  </span>
-                  <span className="text-[11px] font-bold text-slate-500 hidden md:inline-block">
-                    {t('hero.changesEveryVisit')} • {currentNewsQuestion.category}
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-700 transition line-clamp-1">
-                  {currentNewsQuestion.question}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-extrabold text-teal-700 flex items-center gap-1 group-hover:translate-x-0.5 transition">
-                {t('hero.answerAndRead')}
-                <ArrowRight className={`h-3.5 w-3.5 ${isRTL ? 'rotate-180' : ''}`} />
-              </span>
-            </div>
-          </button>
-        )}
       </div>
-
-      {infographicKind && (
-        <Suspense
-          fallback={
-            <div className="mt-6 flex h-40 items-center justify-center rounded-2xl border border-slate-200 bg-white/70 text-xs font-bold text-slate-500">
-              Loading directory workspace…
-            </div>
-          }
-        >
-          <DirectoryInfographicWorkspace
-            kind={infographicKind}
-            onClose={() => setInfographicKind(null)}
-            onOpenFullDirectory={(tab) => {
-              setInfographicKind(null);
-              onTabChange(tab);
-            }}
-          />
-        </Suspense>
-      )}
     </section>
   );
 };

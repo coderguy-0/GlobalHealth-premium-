@@ -7921,19 +7921,888 @@ export const INFECTIOUS_DISEASE_TESTS: MedicalTest[] = [
       },
       {
         "question": "Do I need to stop my medications before taking this test?",
-        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of cxúÏù[s€6«ﬂ˚)0yË&3≤€¶iªMv\ªu4”dºv&˚∞€àÑ(lHÇH9jßﬂΩˇ&ÍítWU-ÈÙ¡Æ%¿πüÛãF¨¨Uy)2ÎHñ⁄‰Ó¸—'¬ˇ˜õˇ˝3~˛6¬è_˝üèt¸ËπxT*Wû•rrˆ’∑_<Öwrô)zÔJÂI•ƒ8πy©'&^4ó`ïª†À∆˘TEÿ±r‚J;%ùüäó:≤f¢Mjíˆ¶¢≤Öqı“%ÓqBw˜™2\-ØŸ˜â(çH*+QJõ‡ÓXHºóÖmd* ô≤≤Xú∑Bõ…ÙVÊâﬂïJ†ïπüâWF‹»rfïãp,F/Ág∑JFtU{b´
-iΩ:iëKì¶∏\L‘‘Xµ˛ ‚~¶r5WVD©Œaã4]àÌÙ$UÌÈúÃäTΩ^˛pw•≤:U‚≤æC‹*“ô õÀ±èzmnï´““—Oüâ3ÒÕSÒ¬T÷â«óxΩ¬â∆yTM¸qü4∑∆ EVç¬ï2è•çı/ª9£Ä
-ì
-Èú\¿ë§´¨Œ±∆dWÖ±•PsX%è‘ŸñèE¨eíWÍHƒ¬O¨c†óπV˜ºKh'dÖﬁ©‘{ôÈ‹À&jÔÛTy]–œ≈òé*”
-˜∫⁄âD1[8ˇæ◊ÅÃe∫Ô1SiQkGÀﬁ	µMRÌfêjäWΩ/’'Un$2É◊å≈Ka˜¬öƒ*G‚è∞pLZ≈üµó®ä§√˚¥”y≈˝Lñc7.∑©'ØèÈOL—K&¬nëä…`nù‰–d&T¥'ÆPé¨4ë¡Øº^=8≥˜y].Ñô
-Gû7≈·†∑L⁄∑ Rê¬iÇá∂˛‚jÌù}1Œ»!ﬁ—¢®¬™<£‰Ñı◊âÖ”ì9ÅC`Èv3˘ØäÇ¢e)GBÂdà´§EP≈>v…∞n¶`ìÍ™4≠RiG8µ≠"ÜLΩúΩd#'!?¿éÿ∑égç
-ıë
-5!BõT*I” :3˜„Ú_∆æı±¯≈yØ¢Œ∏Áπÿ’d«(\Hi,ÜKêT8≠é 4W§–û*»W Í,◊Ô*ÂŒˇì?=7dq∏Wû<_Z7d,≤ˇÃö*ô	ok=≠í⁄ﬁ—Le!‚·˙ŒÎEΩá7¯CcÌ/œa8ÿ/à™´F√œ≈ùÃŒ∞xàh!´Ó≤p∏ÿâw%ƒÈ¢	ÆûÕµÙSZSÃnU•]åÑŒ≤*7!ﬂ<æ¸i|ÒŸ?çÔ.ûåƒ45˜"Z¥W‚î7ó∑Ç≤&yß¨˚Ï\ºÅÚöWûãVí.¿π
-JÒŸefN-(‡(Å
-ôHùª≤Û4´¶ RxJbxUπæcﬂ(AiÖπˇ]’GwëU–9ﬁ9(]êgJ¶ÂåÇ,÷¡u ûA!]›kº’Û¬∏MUŸjπTYÁ‡	Ö‰—CnëPãÛI%2pŸîﬁˆK∑ÚÙì%≤UåìπnŸóuÆ2ybËÃ˝úî¡ûâÚ—JîV…“ˇ•¶§Â®w∫õ∂‰rg¶P6‘◊FÅ˝∏ßïPÀ≥nπ)¸ﬂ‹üUEhR~n˙äVoMeÓ´¸uùµ”™†c§E∑@í Dºp”*èÇÓõÑã…b]ÍÈÑπà*hJâ7P"ô)ïYÊãœ®ü^ñ	Lh,¨ﬂSÔeùÇÖöp”ŸD¶.Ê‡mÔ*máö◊9Ú≈∫°JΩ§î˚ôπõô*çØUÈãC´êõ‡ÆNÔæ‘N⁄¿y?e◊û”˜Øâ?FÃ∏p[S–‚V=GÓéçÃRíâ€•ÎÍá˜zÓ—úÕGG¥–ù¶§ïË-åÔHõÀ˛”^í"À{}≠?/Iå∆fÇ≥ˆzﬁ∫çmïÙ9PØ _ôrL˙«™ñã‘‰™ØÁuU´â+ëUH%2Ωó™$]L÷Ò>≠“^Mõ!yèÚ≠G´nTá3uÖO◊µ…àb Jq>,7/SdpÉTÎ™hÜÿ√›™D…|Ø,R6 ˛l7%?lÖVqed@gï{œØ|2§ˆBP©fòhtFÔ‹tÕÒ%Ÿ›—ísÓ¨[ˆñß,hwÎ° 5ùBmóÑ†ÈU©Fæ±@B¨’å≠'h`É∂˚˙Ω+Qåd7Ç	qò†7ﬂh¶‘¿µî§c*)ælS¶≈iJÉ¬é¨d)ó‡`*(Œj˜÷]‰ÒeøΩX*+MÂü§∆Pn9ùœ•£ÉC”>‘6≥àß3*eÿ@<v)Í5ToµBOÁÛV¬5¯9±ï¶∆AHW°π+(_R£Ët©û,iΩﬁ58º∏ø3âI	¢ä ∂ÍË∆. økÀ≥W£$ó∫VhÃﬁxØCê:ÌÎÁ◊˙∑ä ¥üjï›∂e‹3<∑ïÖTˇÕÇ~	›‰àv$ºUuÍuÉxlÎ`;9P≥˜á&G/P(¬HcfËùWfˆ¶·Ñ5«√Ω[ó˘!Eù£ÉØKS‹πÆ*t˙™-†˝¬Gß\è#86Ã™ö‚⁄f„z`†bŸt/®ì∂´∑>+Á”ôUpÔC!·aò¬“4Ü˛¢Ê€~`‡xq≥‡W
-=òü:7IN√u~4¥E»öQO2∑»ëÖ®<‘2 BF^vÍâß”zˆ†4QOrµã∑®aÈ§uæ7ÊI7≠ØÒ›p19–À^ˆ˝T‹u9©Ôw·4A(LX≥3â0â|y£rà#ììú≈®ﬁm∫ÛÈÆF	“7Ÿ–ñØYùõç∂ùÌ.$õ∞îüª>/Tf¸‡∞˛tW(|jæ€Èƒ∑Kp*®'ôØÛîkËh±J,R≠p‰"^ŸÕæ!d<GAÉJ)Ù{Té©^“#S˙r7±¯Z‹ç-xSOBÒjá-∑“€∫ﬁ⁄g®Á`_nÓ›?¬ô0_z‹÷~ázbkÍàÏ∞ÅZ€¶(ù¡ˇIÚ+Ì:MÙ≈I≠zêÆÔÖ´–¯è4\bÃ£Iy9*€∆§Nc!∆z±‹dTü=ù™9u'°¬@™â*ÔijA!*Ú!XŸÜΩáq
-‰;*Ân<Ô6D
-çºM≤}Å°–LKlÊ|?,∆b&Áp¨Õ‹ˆèæª¢∫Wﬁø_◊¯dJ]#%xd°ÚfœCØ°€ésµèı€Â∂ÃÖ√ﬂ
-§øπ^ÁIÚÁ[£Ø/ÔïÅÑπ
-4}c!≤≈RªV∑V•|:^Ì|œ∂A‹Wæ—ÚÎlËû)H®ëÇ8îºhQ/Isπó†…„Á‚"4Ωπ	c?a¶Y™&4‡£∞{g[Ì∆˛(ñ~∫Kﬂ\ﬁÓìFc;Ü–-Œƒ”gÅAÔ7ÓŸe¶’.·r£ï„` $£dF…åí%Ô%w-d&»Cê)Û08fpÃ‡ò¡Ò√«îùNä73&fLÃò¯Ñ0±gLáü9§√/1#Y-m]PN≈]Ü¿⁄+˛°≈|õvZ¶aK0Ü™Q›†Ø«LÔÆ£°‚¥ÂwWÓ¬/Ù‹!Ù–6µ^ŸD›wÅO–Az—÷1]∑?≥–gÙ=uÊÖzZÍ∫\§¯A;¬»B]◊P»\ıV_F–oTN∂¯ﬁ7∞üâ;e´Ï£>ΩcΩ—≤; “◊f<›‚È≠:˙k`ı<∏Ê§vMÁ]Û÷Â;R|Ω5Æa3¬fÑΩwÑ˝Å>âÅ6Ì≠@{ccº˝ºΩ€ö73Ó]2Ó?qñÙ=pæ1≠ùﬂ*>Sr¶‰L…OÅíoÃÃüô?€ƒÃÈÉÛÙ⁄d≈Ω|∂z›∆¸)Î}| zùÊwâ∑ó÷e¥ΩÇ∂WÙs‡ü¡^+◊ë‚l˛46£lFŸeØi_c3∆˛(åΩT∑aÛ'¥ô^"Ω>⁄OhØÕSß≈§WDgÕ<öyÙ)ÒËe∫¿,˙YÙW?øΩßØ˜ËÌ«‰yü‰yG_—_é9ÛÍG®è„+>˙‚0Uf™ÃTô©Úæ> Õ_Ú¡0˘~&öøÂÉ23df»ì!üŒ◊|%fbÃƒòâÒ)c˛¢èq=≈7©tôâuïâei4õ¯ﬂ˙_ˆÇé∑ûÄaÚ>`ÚVÏ/oﬂÄÅsú?¨®G–€d(ÕPö°4CÈ?JL”√òö1ıVLΩΩí1∏fpÕ‡ö¡ı◊€÷i†ÏÎÄ·6√mÜ€ß ∑?Ä"w>Ó˛fÓ~£ÁÚ˝_E∫ó6g»Ωg»Ω§˝ÛÌÂµmØC€´::™Ω,m⁄¥hÔhØkkòe3À˛XñΩ\øc3∆fåÕ˚abÏÂ\ur{U|Ü◊Ø^üºÊ÷áœ≠ˇ>‰÷ó3˝∂ ì*_H1N^Ó
-Wwèal¿O_<Ùß/∫ =\í·v∑◊©Ê±8ÎHq6?Yëë6#ÌáÖ¥◊w<L≤ôdo%Ÿ√ä≈ õü£»˚`)ˆâ?GqòÕNqØìö…6ìm&€ß@∂WòÌ√⁄ﬂn⁄◊6–æf†}\@˚z˜@˚öÅˆ&†}}ú@˚öÅ6m⁄¥˜¥Ø;Ah3–˛X†}Õ@õÅ6m⁄G¥ØOh_3–f†Õ@˚DÅˆ5Ìeqh˝˘Á€Äˆæû∫8ÿìøGdﬂ#2P˙Æ94?Åq#á>íß0E:RÕﬂ¬¸ô˘Û√‰œ¸4FÊœ‚èÛg~"##£ÁCEœG˚ç √uzPôüÃ»Pô°Ú©Be~:„ä∏*ÚÛwü¸  ˇˇ $É¿C
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-591",
+    "name": "Dengue IgG Antibody",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Dengue IgG Antibody) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "24 - 72 Hours (Culture Incubation)",
+    "description": "A standardized clinical laboratory assay measuring Dengue IgG Antibody to support evidence-based diagnostic decisions.",
+    "overview": "Dengue IgG Antibody is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Dengue IgG Antibody is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Dengue IgG Antibody provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Dengue IgG Antibody",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Dengue IgG Antibody findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Dengue IgG Antibody may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Dengue IgG Antibody may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Dengue IgG Antibody performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-592",
+    "name": "Dengue PCR",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Dengue PCR) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Dengue PCR to support evidence-based diagnostic decisions.",
+    "overview": "Dengue PCR is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Dengue PCR is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Dengue PCR provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Dengue PCR",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Dengue PCR findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Dengue PCR may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Dengue PCR may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Dengue PCR performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-593",
+    "name": "Malaria Peripheral Smear",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Evaluates Malaria Peripheral Smear concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Malaria Peripheral Smear to support evidence-based diagnostic decisions.",
+    "overview": "Malaria Peripheral Smear is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Malaria Peripheral Smear is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Malaria Peripheral Smear provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Malaria Peripheral Smear",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Malaria Peripheral Smear findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Malaria Peripheral Smear may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Malaria Peripheral Smear may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Malaria Peripheral Smear performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-594",
+    "name": "Malaria Antigen Test",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Malaria Antigen Test) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Malaria Antigen Test to support evidence-based diagnostic decisions.",
+    "overview": "Malaria Antigen Test is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Malaria Antigen Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Malaria Antigen Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Malaria Antigen Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Malaria Antigen Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Malaria Antigen Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Malaria Antigen Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Malaria Antigen Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-595",
+    "name": "Malaria PCR",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Malaria PCR) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Malaria PCR to support evidence-based diagnostic decisions.",
+    "overview": "Malaria PCR is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Malaria PCR is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Malaria PCR provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Malaria PCR",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Malaria PCR findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Malaria PCR may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Malaria PCR may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Malaria PCR performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-596",
+    "name": "Plasmodium Falciparum Antigen",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Plasmodium Falciparum Antigen) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Plasmodium Falciparum Antigen to support evidence-based diagnostic decisions.",
+    "overview": "Plasmodium Falciparum Antigen is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Plasmodium Falciparum Antigen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Plasmodium Falciparum Antigen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Plasmodium Falciparum Antigen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Plasmodium Falciparum Antigen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Plasmodium Falciparum Antigen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Plasmodium Falciparum Antigen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Plasmodium Falciparum Antigen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-597",
+    "name": "Plasmodium Vivax Antigen",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Plasmodium Vivax Antigen) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Plasmodium Vivax Antigen to support evidence-based diagnostic decisions.",
+    "overview": "Plasmodium Vivax Antigen is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Plasmodium Vivax Antigen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Plasmodium Vivax Antigen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Plasmodium Vivax Antigen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Plasmodium Vivax Antigen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Plasmodium Vivax Antigen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Plasmodium Vivax Antigen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Plasmodium Vivax Antigen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-598",
+    "name": "Chikungunya IgM",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Evaluates Chikungunya IgM concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Chikungunya IgM to support evidence-based diagnostic decisions.",
+    "overview": "Chikungunya IgM is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Chikungunya IgM is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Chikungunya IgM provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Chikungunya IgM",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Chikungunya IgM findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Chikungunya IgM may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Chikungunya IgM may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Chikungunya IgM performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-599",
+    "name": "Chikungunya IgG",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Evaluates Chikungunya IgG concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Chikungunya IgG to support evidence-based diagnostic decisions.",
+    "overview": "Chikungunya IgG is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Chikungunya IgG is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Chikungunya IgG provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Chikungunya IgG",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Chikungunya IgG findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Chikungunya IgG may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Chikungunya IgG may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Chikungunya IgG performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-600",
+    "name": "Chikungunya PCR",
+    "category": "Infectious Disease & Microbiology",
+    "purpose": "Detects infectious etiology (Chikungunya PCR) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Chikungunya PCR to support evidence-based diagnostic decisions.",
+    "overview": "Chikungunya PCR is a diagnostic laboratory examination categorized under Infectious Disease & Microbiology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Chikungunya PCR is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Chikungunya PCR provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with infectious disease & microbiology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Chikungunya PCR",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Chikungunya PCR findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Chikungunya PCR may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Chikungunya PCR may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Chikungunya PCR performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

@@ -4,15 +4,15 @@ import { NavigationTab } from './types';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { MedicalDisclaimer } from './components/MedicalDisclaimer';
-import { HeroSection } from './components/HeroSection';
-import { DiseasesView } from './components/DiseasesView';
-import { InteractiveBodyAndVitalityHub } from './components/InteractiveBodyAndVitalityHub';
+import { HomePage } from './components/home/HomePage';
+import { GlobalHealthAIAssistant } from './components/ai/GlobalHealthAIAssistant';
+import { DiseasesSection } from './components/diseases/DiseasesSection';
 import { MedicinesView } from './components/MedicinesView';
 import { MedicalTestsView } from './components/MedicalTestsView';
 import { NutritionLibraryView } from './components/NutritionLibraryView';
 import { WellnessFitnessView } from './components/WellnessFitnessView';
 import { CalculatorsView } from './components/CalculatorsView';
-import { AIAssistantView } from './components/AIAssistantView';
+
 import { HospitalsDoctorsView } from './components/HospitalsDoctorsView';
 import { MedicalMapView } from './components/medical-map/MedicalMapView';
 import { CommunityView } from './components/CommunityView';
@@ -30,6 +30,9 @@ import { newsAuthService } from './services/newsAuthService';
 
 // Heavy workspaces (portals, CMS, health-records suite) are code-split so the
 // public homepage never downloads them until a visitor actually opens one.
+const AIAssistantView = lazy(() =>
+  import('./components/AIAssistantView').then((m) => ({ default: m.AIAssistantView }))
+);
 const NewsManagementCMS = lazy(() =>
   import('./components/NewsManagementCMS').then((m) => ({ default: m.NewsManagementCMS }))
 );
@@ -208,6 +211,12 @@ export default function App() {
   const { user: currentUser, initializing, requireAuth, gateOpen, logout } = useAuth();
   const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
   const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
+  // Optional prompt pre-filled when a user asks AI from a context page (e.g. a disease).
+  const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
+  // The AI workspace stays mounted after its first open so the guest session
+  // conversation survives page navigation — but it is NOT mounted (nor its
+  // lazy chunk loaded) until the user actually opens the assistant.
+  const [hasOpenedAssistant, setHasOpenedAssistant] = useState(false);
   const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('login');
   // Editorial staff unlock for the News Management workspace (validated via
   // newsAuthService — independent of the patient account gate).
@@ -276,6 +285,7 @@ export default function App() {
       } else {
         setOverlayTab(null);
         setCurrentTabState(tab);
+        if (tab === 'ai-assistant') setHasOpenedAssistant(true);
       }
     };
     apply();
@@ -348,8 +358,20 @@ export default function App() {
     }
     setOverlayTab(null);
     setCurrentTabState(tab);
+    if (tab === 'ai-assistant') setHasOpenedAssistant(true);
     writeHash(tab);
   }, [currentUser, openGate]);
+
+  // Navbar / footer navigation wrapper — clears any contextual AI prompt when
+  // the user opens the assistant directly (not from a context page).
+  const handleNavTabChange = useCallback(
+    (tab: NavigationTab, dashboardMode?: DashboardViewMode) => {
+      if (tab === 'ai-assistant') setAiInitialPrompt(undefined);
+      setCurrentTab(tab, dashboardMode);
+    },
+    [setCurrentTab]
+  );
+
 
   // After a successful gate login, return the user to their intended destination.
   useEffect(() => {
@@ -603,7 +625,7 @@ export default function App() {
       {/* Main Navbar */}
       <Navbar
         currentTab={overlayTab || currentTab}
-        onTabChange={setCurrentTab}
+        onTabChange={handleNavTabChange}
         savedCount={savedIds.length}
         currentUser={currentUser}
         onOpenAuthModal={handleOpenAuthModal}
@@ -622,10 +644,11 @@ export default function App() {
         {!showSecureLoading && (
           <>
         {currentTab === 'home' && (
-          <>
-            <HeroSection onTabChange={setCurrentTab} />
-            <InteractiveBodyAndVitalityHub onTabChange={setCurrentTab} />
-          </>
+          <HomePage
+            onTabChange={setCurrentTab}
+            currentUser={currentUser}
+            onOpenAuth={handleOpenAuthModal}
+          />
         )}
 
         {(currentTab === 'nutrition' || currentTab === 'recipes') && (
@@ -644,7 +667,16 @@ export default function App() {
         )}
 
         {currentTab === 'diseases' && (
-          <DiseasesView savedIds={savedIds} onToggleSave={handleToggleSave} />
+          <DiseasesSection
+            savedIds={savedIds}
+            onToggleSave={handleToggleSave}
+            onNavigate={setCurrentTab}
+            onAskAI={(prompt) => {
+              setAiInitialPrompt(prompt);
+              setCurrentTab('ai-assistant');
+            }}
+            isAuthenticated={!!currentUser}
+          />
         )}
 
         {currentTab === 'medicines' && (
@@ -672,8 +704,26 @@ export default function App() {
 
         {currentTab === 'calculators' && <CalculatorsView />}
 
-        {currentTab === 'ai-assistant' && (
-          <AIAssistantView currentLanguage={currentLanguage} />
+        {/* AI Assistant workspace: the lazy chunk loads on first open, then
+            the workspace stays mounted (hidden) so guest session
+            conversations persist across page navigation. */}
+        {(currentTab === 'ai-assistant' || hasOpenedAssistant) && (
+        <div hidden={currentTab !== 'ai-assistant'} className={currentTab === 'ai-assistant' ? '' : 'hidden'}>
+          <Suspense fallback={<RouteFallback />}>
+            <AIAssistantView
+              currentLanguage={currentLanguage}
+              initialPrompt={aiInitialPrompt}
+              active={currentTab === 'ai-assistant'}
+              onBack={() => setCurrentTab('home')}
+              onNavigate={handleNavTabChange}
+              onLogout={async () => {
+                await logout();
+                setCurrentTabState('home');
+                writeHash('home');
+              }}
+            />
+          </Suspense>
+        </div>
         )}
 
         {(currentTab === 'doctors' || currentTab === 'hospitals') && (
@@ -733,7 +783,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer onTabChange={setCurrentTab} />
+      <Footer onTabChange={handleNavTabChange} />
 
       {/* Global 100-Language Selector Modal */}
       <LanguageModal />
@@ -757,6 +807,17 @@ export default function App() {
         >
           <Suspense fallback={<RouteFallback />}>{renderOverlayBody()}</Suspense>
         </WorkspaceOverlay>
+      )}
+
+      {/* Floating AI Assistant — persistent bottom-right doctor-boy avatar.
+          Hidden inside the AI workspace itself and inside fullscreen overlays. */}
+      {!overlayTab && currentTab !== 'ai-assistant' && (
+        <GlobalHealthAIAssistant
+          onOpen={() => {
+            setAiInitialPrompt(undefined);
+            setCurrentTab('ai-assistant');
+          }}
+        />
       )}
 
     </div>

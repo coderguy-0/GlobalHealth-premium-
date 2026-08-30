@@ -6,7 +6,7 @@
    Tailwind v4 @theme exposes these as utilities (e.g. bg-brand, rounded-card).
    =========================================================================== */
 @theme {
-  /* Brand */
+  /* Brand — verified / success / primary actions */
   --color-brand-50: #ecfdf5;
   --color-brand-100: #d1fae5;
   --color-brand-200: #a7f3d0;
@@ -17,6 +17,21 @@
   --color-brand-700: #047857;
   --color-brand-800: #065f46;
   --color-brand-900: #064e3b;
+
+  /* Medical — deep medical blue/teal used for primary platform identity.
+     Homepage components are themed through these tokens so the whole platform
+     can be re-themed later without rewriting components. */
+  --color-medical-50: #f0f7fa;
+  --color-medical-100: #daeaf0;
+  --color-medical-200: #b9d7e3;
+  --color-medical-300: #8dbccf;
+  --color-medical-400: #5a9cb6;
+  --color-medical-500: #3d829e;
+  --color-medical-600: #2f6a85;
+  --color-medical-700: #2a576d;
+  --color-medical-800: #284a5c;
+  --color-medical-900: #1e3a49;
+  --color-medical-950: #122530;
 
   /* Surfaces */
   --color-surface: #ffffff;
@@ -42,9 +57,14 @@
   /* Shadows */
   --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 4px 16px -4px rgb(15 23 42 / 0.08);
   --shadow-pop: 0 8px 30px -6px rgb(15 23 42 / 0.18);
+  --shadow-soft: 0 1px 3px 0 rgb(15 23 42 / 0.05), 0 1px 2px -1px rgb(15 23 42 / 0.05);
+  --shadow-lift: 0 2px 4px -1px rgb(15 23 42 / 0.06), 0 12px 28px -8px rgb(15 23 42 / 0.14);
 
   /* Display font for headings */
   --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
@@ -60,9 +80,9 @@
 
   /* Accessible, consistent focus ring for keyboard users everywhere */
   :focus-visible {
-    outline: 2px solid var(--color-brand-500);
+    outline: 2px solid var(--color-medical-500);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   /* Honor reduced-motion preferences globally */
@@ -97,5 +117,181 @@
   /* Secondary action button */
   .gh-btn-secondary {
     @apply inline-flex items-center justify-center gap-2 rounded-control border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  /* ---------------- Homepage design system ---------------- */
+
+  /* Page gutter — consistent horizontal rhythm */
+  .gh-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Vertical rhythm for full-width sections */
+  .gh-section {
+    @apply py-14 sm:py-16 lg:py-20;
+  }
+
+  /* Eyebrow label above section headings */
+  .gh-eyebrow {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-medical-100 bg-medical-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-medical-700;
+  }
+
+  /* Section heading (h2) */
+  .gh-h2 {
+    @apply text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-[2rem] lg:leading-tight;
+  }
+
+  /* Section lead paragraph */
+  .gh-lead {
+    @apply mt-3 text-sm leading-relaxed text-slate-600 sm:text-base;
+  }
+
+  /* Hoverable chip (category pills / filters) */
+  .gh-chip {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition duration-150 hover:border-medical-200 hover:bg-medical-50 hover:text-medical-800;
+  }
+
+  .gh-chip-active {
+    @apply border-medical-600 bg-medical-600 text-white hover:bg-medical-700 hover:text-white;
+  }
+
+  /* Base card used across homepage sections */
+  .gh-card-surface {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft transition duration-200;
+  }
+
+  /* Hide scrollbars on horizontal scrollers (kept for touch swipe) */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ---------------- Keyframes (reduced-motion gated) ---------------- */
+
+@keyframes gh-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes gh-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gh-pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gh-float { animation: gh-float 5s ease-in-out infinite; }
+  .gh-fade-up { animation: gh-fade-up 0.5s var(--ease-soft) both; }
+  .gh-pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: var(--color-medical-400);
+    animation: gh-pulse-ring 2.4s ease-out infinite;
+    z-index: -1;
+  }
+}
+
+/* Scroll-reveal driven by IntersectionObserver (class toggled in JS) */
+.gh-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s var(--ease-soft), transform 0.5s var(--ease-soft);
+}
+.gh-reveal.gh-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gh-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Floating AI launcher anchor — bottom-right, safe-area aware, and resized
+   per breakpoint (14px mobile / 24px tablet+). Sits at z-40: below the auth
+   gate (z-90), language modal (z-50), workspaces (z-70) and More overlay. */
+.gh-float-anchor {
+  right: max(0.875rem, env(safe-area-inset-right));
+  bottom: max(0.875rem, env(safe-area-inset-bottom));
+}
+@media (min-width: 640px) {
+  .gh-float-anchor {
+    right: max(1.5rem, env(safe-area-inset-right));
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* AI Assistant typing indicator — three subtle dots (reduced-motion gated) */
+@keyframes gh-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-medical-400);
+    animation: gh-typing-bounce 1.2s ease-in-out infinite;
+  }
+  .gh-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .gh-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gh-typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-medical-400);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Print experience (disease pages & general content)
+ * ------------------------------------------------------------------ */
+@media print {
+  header,
+  footer,
+  aside,
+  .gh-float,
+  .gh-pulse-ring,
+  .no-print,
+  button,
+  nav[aria-label*="On this page"] {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  main,
+  article {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .gh-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  a {
+    color: #0f172a !important;
+    text-decoration: underline;
+  }
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 }
