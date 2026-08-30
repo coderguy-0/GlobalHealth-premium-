@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           scrolled ? 'border-slate-200 shadow-[0_2px_16px_-6px_rgba(15,23,42,0.12)]' : 'border-slate-100'
         }`}
       >
-        <div className="gh-container flex h-16 items-center justify-between gap-3">
+        <div className="gh-container gh-sym-navbar h-16">
           {/* Brand */}
           <button
             id="brand-logo-btn"
@@ -234,8 +234,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </nav>
 
-          {/* Right: utilities (desktop) */}
-          <div className="hidden lg:flex shrink-0 items-center gap-1.5">
+          {/* Right zone: utilities (desktop) + actions (mobile) */}
+          <div className="flex items-center justify-end gap-1.5">
+            <div className="hidden lg:flex shrink-0 items-center gap-1.5">
             <button
               id="navbar-search-btn"
               type="button"
@@ -346,49 +347,50 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </div>
             )}
-          </div>
+            </div>
 
-          {/* Mobile actions */}
-          <div className="flex lg:hidden items-center gap-1.5">
-            <button
-              type="button"
-              onClick={focusHeroSearch}
-              className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
-              aria-label="Search"
-            >
-              <Search className="h-4.5 w-4.5" />
-            </button>
-            {currentUser ? (
+            {/* Mobile actions */}
+            <div className="flex lg:hidden items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => go('dashboard', 'dashboard')}
-                className="grid h-10 w-10 place-items-center rounded-xl bg-medical-50 text-medical-700"
-                aria-label="Your dashboard"
+                onClick={focusHeroSearch}
+                className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
+                aria-label="Search"
               >
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-medical-600 text-[11px] font-extrabold text-white">
-                  {currentUser.fullName?.charAt(0) || currentUser.username?.charAt(0) || 'U'}
-                </span>
+                <Search className="h-4.5 w-4.5" />
               </button>
-            ) : (
+              {currentUser ? (
+                <button
+                  type="button"
+                  onClick={() => go('dashboard', 'dashboard')}
+                  className="grid h-10 w-10 place-items-center rounded-xl bg-medical-50 text-medical-700"
+                  aria-label="Your dashboard"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-medical-600 text-[11px] font-extrabold text-white">
+                    {currentUser.fullName?.charAt(0) || currentUser.username?.charAt(0) || 'U'}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthPage('signup')}
+                  className="flex items-center gap-1.5 rounded-xl bg-medical-600 px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Sign up
+                </button>
+              )}
               <button
+                id="mobile-menu-toggle-btn"
                 type="button"
-                onClick={() => onOpenAuthPage('signup')}
-                className="flex items-center gap-1.5 rounded-xl bg-medical-600 px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileMenuOpen}
               >
-                <UserPlus className="h-4 w-4" />
-                Sign up
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
-            )}
-            <button
-              id="mobile-menu-toggle-btn"
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600"
-              aria-label="Toggle navigation menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            </div>
           </div>
         </div>
 

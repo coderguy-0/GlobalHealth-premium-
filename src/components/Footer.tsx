@@ -43,9 +43,10 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 pb-8 pt-14 text-xs">
       <div className="gh-container">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          {/* Column 1 — brand */}
-          <div className="space-y-4">
+        {/* Symmetric 4-column footer: brand mirrored by three equal link columns */}
+        <div className="gh-sym-grid-4 grid gap-10">
+          {/* Column 1 — brand (centered) */}
+          <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-medical-500 to-medical-700 text-white">
                 <Heart className="h-4.5 w-4.5 fill-white/20" />
@@ -67,8 +68,8 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
             </button>
           </div>
 
-          {/* Column 2 — Explore */}
-          <nav aria-label="Explore">
+          {/* Columns 2–4 — equal, centered link columns */}
+          <nav aria-label="Explore" className="flex flex-col items-center text-center">
             <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-200">Explore</h4>
             <ul className="space-y-2.5">
               {columnLink('Health', () => onTabChange('diseases'))}
@@ -80,8 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
             </ul>
           </nav>
 
-          {/* Column 3 — Platform */}
-          <nav aria-label="Platform">
+          <nav aria-label="Platform" className="flex flex-col items-center text-center">
             <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-200">Platform</h4>
             <ul className="space-y-2.5">
               {columnLink('Community', () => onTabChange('community'))}
@@ -92,8 +92,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
             </ul>
           </nav>
 
-          {/* Column 4 — Company / Information */}
-          <nav aria-label="Company and information">
+          <nav aria-label="Company and information" className="flex flex-col items-center text-center">
             <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-200">Company / Information</h4>
             <ul className="space-y-2.5">
               {columnLink('About', () => setLegalDoc('about'))}
@@ -106,10 +105,11 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
           </nav>
         </div>
 
-        {/* Bottom row */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-slate-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        {/* Symmetric centered bottom bar */}
+        <div className="gh-sym-divider mt-12" />
+        <div className="mt-6 flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11px] text-slate-500">© {new Date().getFullYear()} GlobalHealth. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] text-slate-500">
             <button type="button" onClick={() => onTabChange('privacy-policy')} className="transition hover:text-slate-300">Privacy</button>
             <span aria-hidden="true">•</span>
             <button type="button" onClick={() => onTabChange('terms')} className="transition hover:text-slate-300">Terms</button>
@@ -120,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
           </div>
         </div>
 
-        <p className="mt-6 max-w-4xl text-[11px] leading-relaxed text-slate-600">
+        <p className="mx-auto mt-6 max-w-4xl text-center text-[11px] leading-relaxed text-slate-600">
           GlobalHealth provides educational health information and care-coordination tools. It does
           not provide medical advice, diagnosis or treatment, and is not a substitute for a licensed
           clinician or emergency services. Information on this platform should not be used to make

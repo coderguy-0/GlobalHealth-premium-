@@ -423,8 +423,8 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
 
           <div className="relative z-10 space-y-6 w-full">
             
-            <div className="max-w-3xl space-y-4">
-              <div className="flex flex-wrap items-center gap-2.5">
+            <div className="mx-auto max-w-3xl space-y-4 text-center">
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-bold text-emerald-300">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   <span>Medicine Overview & Drug Directory</span>
@@ -435,29 +435,29 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                 </span>
               </div>
 
-              <div className="space-y-2">
+              <div className="mx-auto space-y-2">
                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                   Medicine & Drugs
                 </h1>
-                <p className="text-xs sm:text-base text-slate-300 leading-relaxed max-w-2xl font-normal">
+                <p className="mx-auto text-xs sm:text-base text-slate-300 leading-relaxed max-w-2xl font-normal">
                   Find detailed medicine information first, explore therapeutic indications, active ingredients, dosage forms, and safety precautions, and purchase safely through our accredited Verified Pharmacy Partners.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-800/80 text-xs">
-                <div className="flex items-center gap-2 text-slate-300">
+                <div className="flex items-center justify-center gap-2 text-slate-300">
                   <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span>100% Genuine Medicines</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
+                <div className="flex items-center justify-center gap-2 text-slate-300">
                   <Clock className="h-4 w-4 text-teal-400 shrink-0" />
                   <span>Express 2-Hr Delivery</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
+                <div className="flex items-center justify-center gap-2 text-slate-300">
                   <Building2 className="h-4 w-4 text-blue-400 shrink-0" />
                   <span>State Licensed Depots</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
+                <div className="flex items-center justify-center gap-2 text-slate-300">
                   <FileText className="h-4 w-4 text-amber-400 shrink-0" />
                   <span>Clinical Pharmacist Review</span>
                 </div>

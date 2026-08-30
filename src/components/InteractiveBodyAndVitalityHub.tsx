@@ -199,7 +199,7 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
           </div>
 
           {/* Organ Selector Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="gh-sym-grid gh-sym-grid-6">
             {organSystems.map((organ) => {
               const isActive = selectedOrgan === organ.id;
               const localizedName = t(organ.nameKey);
@@ -295,10 +295,10 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
 
         {/* SECTION 2: Interactive Biological Age & Longevity Score Simulator */}
         <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/50 to-teal-50/40 p-6 sm:p-10 shadow-md relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             
-            {/* Left Controls (7 Cols) */}
-            <div className="lg:col-span-7 space-y-6">
+            {/* Left Controls (mirrored half) */}
+            <div className="space-y-6">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">
                   <Award className="h-3.5 w-3.5 text-emerald-600" />
@@ -401,8 +401,8 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
               </div>
             </div>
 
-            {/* Right Display Gauge Box (5 Cols) */}
-            <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-emerald-200 shadow-md text-center space-y-6">
+            {/* Right Display Gauge Box (mirrored half) */}
+            <div className="bg-white p-6 rounded-3xl border border-emerald-200 shadow-md text-center space-y-6">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest block">
                   {t('vitality.estimatedBioAge')}
@@ -457,7 +457,7 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
 
         {/* SECTION 3: Age-Based Preventive Health Screening Roadmap */}
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="flex flex-col items-center gap-4 text-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-cyan-100 border border-cyan-200 px-3 py-1 text-xs font-bold text-cyan-800 uppercase tracking-wider mb-2">
                 <CalendarCheck className="h-3.5 w-3.5 text-cyan-600" />
@@ -468,8 +468,8 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
               </h2>
             </div>
 
-            {/* Age Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+            {/* Age Tabs (centered, symmetric) */}
+            <div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-none">
               {['20s', '30s', '40s', '50s+'].map((group) => (
                 <button
                   key={group}
@@ -487,10 +487,10 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-4">
-            <h3 className="text-lg font-bold text-cyan-900">
+            <h3 className="text-center text-lg font-bold text-cyan-900">
               {t(ageScreenings[activeAgeGroup].title)}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="gh-sym-grid gh-sym-grid-3">
               {ageScreenings[activeAgeGroup].checks.map((check, idx) => (
                 <div key={idx} className="flex items-start gap-3 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 text-xs">
                   <CheckCircle2 className="h-4 w-4 text-cyan-600 shrink-0 mt-0.5" />

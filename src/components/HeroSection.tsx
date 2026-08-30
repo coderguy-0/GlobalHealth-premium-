@@ -4,7 +4,6 @@ import {
   Mic,
   ArrowRight,
   Sparkles,
-  ShieldCheck,
   Clock,
   TrendingUp,
   CornerDownLeft,
@@ -175,231 +174,219 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-gradient-to-b from-medical-50/80 via-medical-50/30 to-transparent" aria-hidden="true" />
 
       <div className="gh-container relative">
-        <div className="grid items-center gap-12 py-14 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
-          {/* ---------------- Left: copy + search ---------------- */}
-          <div className="max-w-2xl">
-            <span className="gh-eyebrow">
-              <Sparkles className="h-3.5 w-3.5" />
-              YOUR HEALTH. CONNECTED.
-            </span>
+        <div className="gh-sym-section flex flex-col items-center text-center">
+          {/* ---------------- Centered eyebrow ---------------- */}
+          <span className="gh-eyebrow">
+            <Sparkles className="h-3.5 w-3.5" />
+            YOUR HEALTH. CONNECTED.
+          </span>
 
-            <h1 className="mt-5 text-[1.85rem] font-bold leading-[1.15] tracking-tight text-slate-900 sm:text-4xl lg:text-[2.75rem]">
-              Healthcare information, discovery and guidance — all in one place.
-            </h1>
+          {/* ---------------- Centered headline ---------------- */}
+          <h1 className="mt-6 max-w-3xl text-[1.85rem] font-bold leading-[1.15] tracking-tight text-slate-900 sm:text-4xl lg:text-[2.75rem]">
+            Healthcare information, discovery and guidance — all in one place.
+          </h1>
 
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600">
-              GlobalHealth brings trusted health information, medicines, healthcare professionals,
-              medical facilities, laboratory resources, and intelligent assistance together in one
-              simple platform.
-            </p>
+          {/* ---------------- Centered supporting copy ---------------- */}
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
+            GlobalHealth brings trusted health information, medicines, healthcare professionals,
+            medical facilities, laboratory resources, and intelligent assistance together in one
+            simple platform.
+          </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button size="lg" onClick={() => onTabChange('explore')}>
-                Explore Healthcare
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" size="lg" onClick={() => onTabChange('ai-assistant')}>
-                <Bot className="h-4 w-4 text-medical-600" />
-                Ask AI Assistant
-              </Button>
+          {/* ---------------- Symmetric CTA pair ---------------- */}
+          <div className="gh-sym-actions mt-8">
+            <Button size="lg" onClick={() => onTabChange('explore')}>
+              Explore Healthcare
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button variant="secondary" size="lg" onClick={() => onTabChange('ai-assistant')}>
+              <Bot className="h-4 w-4 text-medical-600" />
+              Ask AI Assistant
+            </Button>
+          </div>
+
+          {/* ---------------- Global search (centered, symmetric) ---------------- */}
+          <div className="relative mx-auto mt-10 w-full max-w-2xl" id="gh-home-search">
+            {showSkeleton ? (
+              <SearchSkeleton />
+            ) : (
+              <div
+                className={`relative flex items-center gap-2 rounded-2xl border bg-white p-2 shadow-soft transition-all duration-200 ${
+                  focused
+                    ? 'scale-[1.01] border-medical-300 shadow-lift'
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <Search className={`h-5 w-5 shrink-0 text-slate-400 ${focused ? 'text-medical-600' : ''}`} aria-hidden="true" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => window.setTimeout(() => setFocused(false), 180)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && grouped.length > 0) {
+                      openResult(grouped[0].items[0]);
+                    }
+                    if (e.key === 'Escape') setFocused(false);
+                  }}
+                  placeholder="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more…"
+                  aria-label="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more"
+                  className="w-full bg-transparent px-2 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                />
+                {supportSpeech && (
+                  <button
+                    type="button"
+                    onClick={runVoice}
+                    aria-label="Search by voice"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-medical-50 hover:text-medical-600"
+                  >
+                    <Mic className="h-4.5 w-4.5" />
+                  </button>
+                )}
+                {query ? (
+                  <button
+                    type="button"
+                    onClick={clear}
+                    aria-label="Clear search"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : (
+                  <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-400 sm:inline-flex">
+                    <CornerDownLeft className="h-3 w-3" /> to search
+                  </kbd>
+                )}
+              </div>
+            )}
+
+            {/* Popular categories — centered below the search field */}
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                Popular:
+              </span>
+              {SUGGESTIONS.slice(0, 4).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => openSuggestion(s)}
+                  className="gh-chip"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
 
-            {/* ---------------- Global search ---------------- */}
-            <div className="relative mt-10" id="gh-home-search">
-              {showSkeleton ? (
-                <SearchSkeleton />
-              ) : (
-                <div
-                  className={`relative flex items-center gap-2 rounded-2xl border bg-white p-2 shadow-soft transition-all duration-200 ${
-                    focused
-                      ? 'scale-[1.01] border-medical-300 shadow-lift'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <Search className={`h-5 w-5 shrink-0 text-slate-400 ${focused ? 'text-medical-600' : ''}`} aria-hidden="true" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => window.setTimeout(() => setFocused(false), 180)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && grouped.length > 0) {
-                        openResult(grouped[0].items[0]);
-                      }
-                      if (e.key === 'Escape') setFocused(false);
-                    }}
-                    placeholder="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more…"
-                    aria-label="Search diseases, medicines, symptoms, lab tests, doctors, hospitals and more"
-                    className="w-full bg-transparent px-2 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
-                  />
-                  {supportSpeech && (
-                    <button
-                      type="button"
-                      onClick={runVoice}
-                      aria-label="Search by voice"
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-medical-50 hover:text-medical-600"
-                    >
-                      <Mic className="h-4.5 w-4.5" />
-                    </button>
-                  )}
-                  {query ? (
-                    <button
-                      type="button"
-                      onClick={clear}
-                      aria-label="Clear search"
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+            {/* ---------------- Search panel ---------------- */}
+            {panelOpen && (
+              <div className="absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lift">
+                {query.trim() ? (
+                  grouped.length === 0 ? (
+                    <div className="px-5 py-8 text-center">
+                      <p className="text-sm font-semibold text-slate-700">No results for “{query.trim()}”</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Try searching another healthcare topic — a disease, medicine, test or doctor.
+                      </p>
+                    </div>
                   ) : (
-                    <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-400 sm:inline-flex">
-                      <CornerDownLeft className="h-3 w-3" /> to search
-                    </kbd>
-                  )}
-                </div>
-              )}
-
-              {/* Popular categories — visible below the search field */}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                  Popular:
-                </span>
-                {SUGGESTIONS.slice(0, 4).map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => openSuggestion(s)}
-                    className="gh-chip"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-
-              {/* ---------------- Search panel ---------------- */}
-              {panelOpen && (
-                <div className="absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lift">
-                  {query.trim() ? (
-                    grouped.length === 0 ? (
-                      <div className="px-5 py-8 text-center">
-                        <p className="text-sm font-semibold text-slate-700">No results for “{query.trim()}”</p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          Try searching another healthcare topic — a disease, medicine, test or doctor.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="max-h-[26rem] overflow-y-auto p-2">
-                        {grouped.map((g) => (
-                          <div key={g.type} className="mb-1">
-                            <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                              {g.type}s · {g.items.length}
-                            </p>
-                            {g.items.map((hit) => (
-                              <button
-                                key={`${hit.type}-${hit.id}`}
-                                type="button"
-                                onClick={() => openResult(hit)}
-                                className="group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-medical-50"
-                              >
-                                <div className="min-w-0">
-                                  <p className="truncate text-[13px] font-semibold text-slate-800 group-hover:text-medical-800">
-                                    {hit.title}
-                                  </p>
-                                  {hit.subtitle && (
-                                    <p className="truncate text-[11px] text-slate-500">{hit.subtitle}</p>
-                                  )}
-                                </div>
-                                <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-medical-600" />
-                              </button>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  ) : (
-                    <div className="p-3">
-                      {recent.length > 0 && (
-                        <div className="mb-2">
+                    <div className="max-h-[26rem] overflow-y-auto p-2">
+                      {grouped.map((g) => (
+                        <div key={g.type} className="mb-1">
                           <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Recent searches
+                            {g.type}s · {g.items.length}
                           </p>
-                          {recent.map((r) => (
+                          {g.items.map((hit) => (
                             <button
-                              key={r}
+                              key={`${hit.type}-${hit.id}`}
                               type="button"
-                              onClick={() => setQuery(r)}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"
+                              onClick={() => openResult(hit)}
+                              className="group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-medical-50"
                             >
-                              <Clock className="h-3.5 w-3.5 text-slate-400" />
-                              {r}
+                              <div className="min-w-0">
+                                <p className="truncate text-[13px] font-semibold text-slate-800 group-hover:text-medical-800">
+                                  {hit.title}
+                                </p>
+                                {hit.subtitle && (
+                                  <p className="truncate text-[11px] text-slate-500">{hit.subtitle}</p>
+                                )}
+                              </div>
+                              <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-medical-600" />
                             </button>
                           ))}
                         </div>
-                      )}
-                      <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Trending topics
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 px-3 pb-2 pt-1">
-                        {SUGGESTIONS.map((s) => (
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <div className="p-3">
+                    {recent.length > 0 && (
+                      <div className="mb-2">
+                        <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Recent searches
+                        </p>
+                        {recent.map((r) => (
                           <button
-                            key={s}
+                            key={r}
                             type="button"
-                            onClick={() => openSuggestion(s)}
-                            className="gh-chip"
+                            onClick={() => setQuery(r)}
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"
                           >
-                            <TrendingUp className="h-3 w-3 text-medical-500" />
-                            {s}
+                            <Clock className="h-3.5 w-3.5 text-slate-400" />
+                            {r}
                           </button>
                         ))}
                       </div>
+                    )}
+                    <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Trending topics
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-1.5 px-3 pb-2 pt-1">
+                      {SUGGESTIONS.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => openSuggestion(s)}
+                          className="gh-chip"
+                        >
+                          <TrendingUp className="h-3 w-3 text-medical-500" />
+                          {s}
+                        </button>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* ---------------- Right: visual panel ---------------- */}
-          <div className="hidden lg:block" aria-hidden="true">
-            <div className="relative mx-auto max-w-md">
-              <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-lift">
-                <div className="flex items-center justify-between">
-                  <span className="gh-eyebrow">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    Trusted foundation
+          {/* ---------------- Symmetric trust stats (4 equal cards) ---------------- */}
+          <div className="mt-16 w-full">
+            <div className="gh-sym-grid gh-sym-grid-4">
+              {[
+                ['500+ health conditions', 'Clear, sourced disease guides'],
+                ['400+ medicines', 'Safety, forms and precautions'],
+                ['1,000 lab tests', 'Preparation and interpretation context'],
+                ['Verified facility map', 'Hospitals, clinics and urgent care'],
+              ].map(([stat, label]) => (
+                <div key={stat} className="gh-sym-card">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-medical-50 text-medical-600">
+                    <Sparkles className="h-5 w-5" />
                   </span>
+                  <p className="mt-3 text-sm font-bold text-slate-900">{stat}</p>
+                  <p className="mt-1 text-xs text-slate-500">{label}</p>
                 </div>
-                <ul className="mt-6 space-y-4">
-                  {[
-                    ['500+ health conditions', 'Clear, sourced disease guides'],
-                    ['400+ medicines', 'Safety, forms and precautions'],
-                    ['1,000 lab tests', 'Preparation and interpretation context'],
-                    ['Verified facility map', 'Hospitals, clinics and urgent care'],
-                  ].map(([stat, label]) => (
-                    <li key={stat} className="flex items-start gap-3.5">
-                      <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-medical-50 text-medical-600">
-                        <Sparkles className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900">{stat}</p>
-                        <p className="text-xs text-slate-500">{label}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 rounded-2xl bg-medical-50/70 p-4">
-                  <p className="text-xs leading-relaxed text-medical-800">
-                    <span className="font-bold">Educational platform.</span> GlobalHealth helps you
-                    understand health information — it does not replace professional medical advice,
-                    diagnosis or emergency care.
-                  </p>
-                </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Floating accent card — replaced by the Dr. Nova callout that
-                  comes out of the floating AI avatar itself. */}
+            {/* Educational disclaimer — centered footnote */}
+            <div className="mx-auto mt-10 max-w-2xl rounded-2xl bg-medical-50/70 p-4 text-center">
+              <p className="text-xs leading-relaxed text-medical-800">
+                <span className="font-bold">Educational platform.</span> GlobalHealth helps you
+                understand health information — it does not replace professional medical advice,
+                diagnosis or emergency care.
+              </p>
             </div>
           </div>
         </div>
