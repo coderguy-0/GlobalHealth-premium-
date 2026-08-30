@@ -146,7 +146,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
         <>
           {/* Header */}
           <div className="mb-6 text-left">
-            <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-3">
+            <div className="h-12 w-12 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-3">
               {type === 'phone' ? <Phone className="h-6 w-6" /> : <Mail className="h-6 w-6" />}
             </div>
             <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
@@ -160,13 +160,13 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('signup')}
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline transition cursor-pointer"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer"
             >
               <RefreshCw className="h-3 w-3" />
               Change {type === 'phone' ? 'mobile number' : 'email address'}
             </button>
             <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+              <ShieldCheck className="h-3.5 w-3.5 text-medical-600" />
               {attemptsLocked
                 ? 'Code locked — please request a new code.'
                 : `${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} remaining before the code locks.`}
@@ -186,8 +186,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
 
           {/* Info Alert */}
           {infoMessage && (
-            <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800 animate-in fade-in duration-150 text-left">
-              <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+            <div className="mb-4 flex items-center gap-2 rounded-xl border border-medical-200 bg-medical-50 p-2.5 text-xs text-medical-800 animate-in fade-in duration-150 text-left">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-medical-600" />
               <span>{infoMessage}</span>
             </div>
           )}
@@ -209,7 +209,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                     value={digit}
                     onChange={(e) => handleDigitChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
-                    className="h-13 w-11 sm:h-14 sm:w-13 text-center text-xl font-mono font-bold rounded-xl border border-slate-300 bg-white text-slate-900 shadow-xs focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-hidden transition-all"
+                    className="h-13 w-11 sm:h-14 sm:w-13 text-center text-xl font-mono font-bold rounded-xl border border-slate-300 bg-white text-slate-900 shadow-xs focus:border-medical-600 focus:ring-2 focus:ring-medical-600/20 focus:outline-hidden transition-all"
                     disabled={isLoading}
                     autoFocus={idx === 0}
                   />
@@ -220,7 +220,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
             <button
               type="submit"
               disabled={isLoading || !isComplete || attemptsLocked}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 active:bg-medical-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -243,7 +243,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                   type="button"
                   onClick={handleResend}
                   disabled={isLoading || attemptsLocked}
-                  className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline transition cursor-pointer flex items-center gap-1"
+                  className="font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer flex items-center gap-1"
                 >
                   <RefreshCw className="h-3 w-3" />
                   <span>Resend Code</span>
@@ -256,7 +256,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
             </div>
 
             <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-400">
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-px" />
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-medical-600 mt-px" />
               Never share your password or verification code with anyone. GlobalHealth will never ask for your code
               outside the sign-in flow.
             </p>
@@ -265,7 +265,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
       ) : (
         /* Verification Success Screen */
         <div className="text-left animate-in fade-in zoom-in-95 duration-200">
-          <div className="h-14 w-14 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
+          <div className="h-14 w-14 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-4">
             <CheckCircle2 className="h-8 w-8" />
           </div>
 
@@ -279,7 +279,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
 
           <div className="my-6 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-600 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-slate-800">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              <ShieldCheck className="h-4 w-4 text-medical-600" />
               <span>Personalized & Protected</span>
             </div>
             <p className="leading-relaxed">
@@ -294,7 +294,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                 onSuccess(verifiedUser, verifiedToken);
               }
             }}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 transition cursor-pointer"
           >
             <span>Continue to GlobalHealth</span>
             <ArrowRight className="h-4 w-4" />

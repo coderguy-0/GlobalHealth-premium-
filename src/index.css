@@ -260,6 +260,161 @@
 }
 
 /* ------------------------------------------------------------------ *
+ * Authentication doctor avatar
+ * ------------------------------------------------------------------ */
+.gh-av-glow {
+  position: absolute;
+  inset: -16%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgb(63 130 158 / 0.26), transparent 68%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.gh-av-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gh-av-body {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+.gh-av-head {
+  transform-box: fill-box;
+  transform-origin: 50% 62%;
+  transition: transform 0.55s var(--ease-soft);
+}
+.gh-av-pupils {
+  transition: transform 0.5s var(--ease-soft);
+}
+.gh-av-eyes,
+.gh-av-happy-eyes,
+.gh-av-mouth-neutral,
+.gh-av-mouth-happy,
+.gh-av-mouth-concern,
+.gh-av-mouth-gentle {
+  transition: opacity 0.35s var(--ease-soft);
+}
+.gh-av-happy-eyes,
+.gh-av-mouth-happy,
+.gh-av-mouth-concern {
+  opacity: 0;
+}
+.gh-av-privacy-arm {
+  transition: transform 0.6s var(--ease-soft);
+  transform-box: fill-box;
+  transform-origin: top center;
+}
+.gh-av-shield {
+  opacity: 0;
+  transform: scale(0.5);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.45s var(--ease-soft), transform 0.45s var(--ease-soft);
+}
+
+/* Expression state — facial + posture reactions */
+.gh-av-look .gh-av-pupils { transform: translate(3px, 1.5px); }
+.gh-av-look .gh-av-head { transform: rotate(3deg) translateY(1px); }
+
+.gh-av-privacy .gh-av-pupils { transform: translate(-1px, 3px); }
+.gh-av-privacy .gh-av-head { transform: rotate(-1.5deg) translateY(2px); }
+.gh-av-privacy .gh-av-privacy-arm { transform: translate(-12px, -7px) rotate(-16deg); }
+.gh-av-privacy .gh-av-shield { opacity: 1; transform: scale(1); }
+
+.gh-av-error .gh-av-head { transform: rotate(-2.5deg) translateY(1px); }
+.gh-av-error .gh-av-brows { transform: translateY(1.5px); }
+.gh-av-error .gh-av-mouth-neutral,
+.gh-av-error .gh-av-mouth-happy,
+.gh-av-error .gh-av-mouth-gentle { opacity: 0; }
+.gh-av-error .gh-av-mouth-concern { opacity: 1; }
+
+.gh-av-success .gh-av-head { transform: rotate(2deg) translateY(-1px); }
+.gh-av-success .gh-av-eyes,
+.gh-av-success .gh-av-mouth-neutral { opacity: 0; }
+.gh-av-success .gh-av-mouth-happy,
+.gh-av-success .gh-av-happy-eyes { opacity: 1; }
+
+.gh-av-signup .gh-av-head { transform: rotate(1deg) translateY(-1.5px); }
+.gh-av-signup .gh-av-eyes,
+.gh-av-signup .gh-av-mouth-neutral { opacity: 0; }
+.gh-av-signup .gh-av-mouth-happy,
+.gh-av-signup .gh-av-happy-eyes { opacity: 1; }
+
+.gh-av-recover .gh-av-head { transform: rotate(-1deg); }
+.gh-av-recover .gh-av-mouth-neutral { opacity: 0; }
+.gh-av-recover .gh-av-mouth-gentle { opacity: 1; }
+
+/* Idle breathing + blinking (reduced-motion users get a static pose) */
+@media (prefers-reduced-motion: no-preference) {
+  .gh-av-body {
+    animation: gh-av-breathe 3.8s ease-in-out infinite;
+  }
+  .gh-av-glow {
+    animation: gh-av-breathe 3.8s ease-in-out infinite;
+  }
+  .gh-av-lids {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: gh-av-blink 5.4s infinite;
+  }
+  .gh-av-recover .gh-av-head {
+    animation: gh-av-nod 5s ease-in-out infinite;
+  }
+  .gh-av-success {
+    animation: gh-av-bounce 0.8s var(--ease-soft);
+  }
+}
+
+@keyframes gh-av-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes gh-av-blink {
+  0%, 90.5%, 100% { transform: scaleY(0); }
+  93%, 96.5% { transform: scaleY(1); }
+}
+@keyframes gh-av-nod {
+  0%, 86%, 100% { transform: rotate(-1deg); }
+  91%, 95% { transform: rotate(1.6deg); }
+}
+@keyframes gh-av-bounce {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-6px) scale(1.02); }
+  60% { transform: translateY(0) scale(1); }
+}
+
+/* Success check badge */
+.gh-av-check {
+  animation: gh-av-pop 0.55s var(--ease-soft) both;
+}
+@keyframes gh-av-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Speech bubble */
+.gh-av-bubble {
+  animation: gh-av-bubble-in 0.45s var(--ease-soft) both;
+}
+@keyframes gh-av-bubble-in {
+  from { opacity: 0; transform: translate(-50%, 6px) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+/* Auth sub-view transition (Log In ↔ Sign Up ↔ Recover) */
+.gh-auth-view {
+  animation: gh-auth-view-in 0.35s var(--ease-soft) both;
+}
+@keyframes gh-auth-view-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ------------------------------------------------------------------ *
  * Print experience (disease pages & general content)
  * ------------------------------------------------------------------ */
 @media print {

@@ -133,7 +133,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
         </button>
 
         {/* Header */}
-        <div className="relative bg-gradient-to-br from-emerald-700 via-teal-700 to-emerald-800 px-6 pt-8 pb-6 text-white">
+        <div className="relative bg-gradient-to-br from-medical-700 via-teal-700 to-medical-800 px-6 pt-8 pb-6 text-white">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
               <Lock className="h-6 w-6" />
@@ -142,13 +142,13 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
               <h2 id="auth-gate-title" className="text-lg font-bold leading-tight">
                 {activeMode === 'login' ? 'Sign in to continue' : 'Create your account'}
               </h2>
-              <p className="text-sm text-emerald-50/90">
+              <p className="text-sm text-medical-50/90">
                 <ShieldCheck className="mr-1 inline h-3.5 w-3.5" />
                 Secured by GlobalHealth
               </p>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-emerald-50/95">
+          <p className="mt-4 text-sm leading-relaxed text-medical-50/95">
             {gateIntent?.feature
               ? `Sign in or create an account to ${gateIntent.feature}. Your health information stays private and secure.`
               : 'Sign in or create an account to access your personal healthcare features and participate in the GlobalHealth community.'}
@@ -159,9 +159,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
         <div className="grid grid-cols-2 gap-2 border-b border-slate-100 px-6 pt-4">
           <button
             onClick={() => switchMode('login')}
-            className={`flex items-center justify-center gap-2 rounded-t-xl border-b-2 px-3 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+            className={`flex items-center justify-center gap-2 rounded-t-xl border-b-2 px-3 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-medical-500 ${
               activeMode === 'login'
-                ? 'border-emerald-600 text-emerald-700'
+                ? 'border-medical-600 text-medical-700'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -169,9 +169,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
           </button>
           <button
             onClick={() => switchMode('signup')}
-            className={`flex items-center justify-center gap-2 rounded-t-xl border-b-2 px-3 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+            className={`flex items-center justify-center gap-2 rounded-t-xl border-b-2 px-3 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-medical-500 ${
               activeMode === 'signup'
-                ? 'border-emerald-600 text-emerald-700'
+                ? 'border-medical-600 text-medical-700'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -200,7 +200,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     autoComplete="username"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm outline-none transition focus:border-medical-500 focus:bg-white focus:ring-2 focus:ring-medical-500/30"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -214,7 +214,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:border-medical-500 focus:bg-white focus:ring-2 focus:ring-medical-500/30"
                     placeholder="••••••••"
                   />
                   <button
@@ -230,7 +230,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
               <button
                 type="submit"
                 disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-medical-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-medical-700 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2 disabled:opacity-60"
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
                 Log In
@@ -239,25 +239,25 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                 type="button"
                 onClick={handleDemo}
                 disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-medical-200 bg-medical-50 py-2.5 text-sm font-semibold text-medical-700 transition hover:bg-medical-100 focus:outline-none focus:ring-2 focus:ring-medical-500 disabled:opacity-60"
               >
                 <Sparkles className="h-4 w-4" /> Try a demo account
               </button>
               <p className="text-center text-sm text-slate-500">
                 New to GlobalHealth?{' '}
-                <button type="button" onClick={onOpenFullSignup} className="font-semibold text-emerald-700 hover:underline">
+                <button type="button" onClick={onOpenFullSignup} className="font-semibold text-medical-700 hover:underline">
                   Create an account
                 </button>
               </p>
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-emerald-900">
+              <div className="rounded-2xl border border-medical-200 bg-medical-50/70 p-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-medical-900">
                   <UserPlus className="h-4 w-4" />
                   <span>Create your GlobalHealth account</span>
                 </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-emerald-900/80">
+                <p className="mt-1.5 text-xs leading-relaxed text-medical-900/80">
                   Account creation is a three-step process on a dedicated page: your basic details, a secure password
                   (with a strength indicator), then a review step where you explicitly accept the GlobalHealth Terms
                   &amp; Conditions and acknowledge the Privacy Policy. Consent is specific and never pre-ticked.
@@ -265,7 +265,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                 <button
                   type="button"
                   onClick={onOpenFullSignup}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-medical-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-medical-700 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2"
                 >
                   <UserPlus className="h-4 w-4" />
                   Continue to Create Account
@@ -274,7 +274,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
               </div>
               <p className="text-center text-sm text-slate-500">
                 Already have an account?{' '}
-                <button type="button" onClick={() => switchMode('login')} className="font-semibold text-emerald-700 hover:underline">
+                <button type="button" onClick={() => switchMode('login')} className="font-semibold text-medical-700 hover:underline">
                   Log in <ArrowRight className="inline h-3.5 w-3.5" />
                 </button>
               </p>

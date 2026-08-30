@@ -3,12 +3,15 @@ import { Eye, EyeOff, Lock, Mail, User, Phone, Globe, ShieldCheck, Check, AlertC
 import { useLocalization } from '../../context/LocalizationContext';
 import { signupUser, calculatePasswordStrength } from '../../services/authService';
 import { TERMS_VERSION, PRIVACY_VERSION } from '../../lib/policyVersions';
+import { AvatarExpression } from './DoctorAvatar';
 
 interface SignUpFormProps {
   onSuccess: (data: { userId: string; email: string; type: 'email' | 'phone'; devCode?: string }) => void;
   onNavigate: (view: 'login' | 'forgot-password') => void;
   onRequestHelp?: () => void;
   onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
+  /** Lets the animated assistant react to the registration flow. */
+  onAvatarInteract?: (expression: AvatarExpression, message?: string) => void;
 }
 
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Singapore', 'Germany', 'France', 'Other'];
@@ -39,7 +42,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   onSuccess,
   onNavigate,
   onRequestHelp,
-  onOpenLegal
+  onOpenLegal,
+  onAvatarInteract
 }) => {
   const { t } = useLocalization();
 
@@ -149,14 +153,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       if (result.duplicateAccount) {
         setDuplicateAdvice(true);
       }
+      onAvatarInteract?.('error', 'Let me help — check the highlighted details and try again.');
     }
   };
 
   const strengthMeta: Record<string, { label: string; color: string; segments: number }> = {
     Weak: { label: 'Weak', color: 'bg-rose-500', segments: 1 },
     Fair: { label: 'Fair', color: 'bg-amber-500', segments: 2 },
-    Strong: { label: 'Strong', color: 'bg-emerald-500', segments: 3 },
-    'Very Strong': { label: 'Very Strong', color: 'bg-emerald-600', segments: 4 },
+    Strong: { label: 'Strong', color: 'bg-medical-500', segments: 3 },
+    'Very Strong': { label: 'Very Strong', color: 'bg-medical-600', segments: 4 },
   };
   const strength = strengthMeta[passwordStrength.label] || strengthMeta.Weak;
 
@@ -169,10 +174,10 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       {/* Form Header */}
       <div className="mb-5 text-left">
         <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
-          Create your GlobalHealth account
+          Create Your GlobalHealth Account
         </h1>
         <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-          Set up your account to access personalized GlobalHealth features.
+          Create one secure account for your personalized GlobalHealth experience.
         </p>
 
         {/* Step indicator */}
@@ -358,6 +363,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 value={password}
+                onFocus={() => onAvatarInteract?.('password', 'Your password stays private.')}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a secure password"
                 className="w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-medical-500 focus:outline-none focus:ring-2 focus:ring-medical-500/20 transition"
@@ -441,7 +447,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
 
       {/* ============ STEP 3 — REVIEW + CONSENT ============ */}
       {step === 3 && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          onFocus={() => onAvatarInteract?.('signup', 'Your consent stays specific — never a blanket agreement.')}
+        >
           <div>
             <h2 className="text-sm font-bold text-slate-900">Review your information</h2>
             <dl className="mt-2 space-y-1.5 rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 text-xs">
