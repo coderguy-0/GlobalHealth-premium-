@@ -14,6 +14,10 @@ import {
   Heart,
   BookOpen,
   Activity,
+  Pill,
+  FlaskConical,
+  Calculator,
+  Salad,
 } from 'lucide-react';
 import { NavigationTab } from '../types';
 
@@ -37,13 +41,18 @@ interface OverlayItem {
 }
 
 const EXPLORE_ITEMS: OverlayItem[] = [
-  { id: 'ov-news', tab: 'news', label: 'Health News', description: 'Sourced healthcare updates and research briefs.', icon: <Newspaper className="h-5 w-5" /> },
+  { id: 'ov-diseases', tab: 'diseases', label: 'Diseases', description: 'Understand conditions, symptoms and prevention.', icon: <BookOpen className="h-5 w-5" /> },
+  { id: 'ov-medicines', tab: 'medicines', label: 'Medicines', description: 'Medicine information, safety and educational guides.', icon: <Pill className="h-5 w-5" /> },
+  { id: 'ov-tests', tab: 'medical-tests', label: 'Lab Tests', description: 'Explore tests, panels and what results mean.', icon: <FlaskConical className="h-5 w-5" /> },
+  { id: 'ov-doctors', tab: 'doctors', label: 'Doctors', description: 'Find verified doctors and specialists.', icon: <Stethoscope className="h-5 w-5" /> },
   { id: 'ov-hospitals', tab: 'hospitals', label: 'Hospitals', description: 'Discover hospitals and medical facilities.', icon: <Building2 className="h-5 w-5" /> },
   { id: 'ov-facilities', tab: 'medical-map', label: 'MAP', description: 'Explore healthcare locations geographically.', icon: <Droplets className="h-5 w-5" /> },
-  { id: 'ov-community', tab: 'community', label: 'Community', description: 'Discussions, topics and educational content.', icon: <Users className="h-5 w-5" /> },
   { id: 'ov-pharmacies', tab: 'pharmacy-portal', label: 'Pharmacies', description: 'Verified pharmacy partners.', icon: <ShoppingBag className="h-5 w-5" /> },
-  { id: 'ov-nutrition', tab: 'nutrition', label: 'Nutrition & Recipes', description: 'Meals, nutrients and balanced plans.', icon: <BookOpen className="h-5 w-5" /> },
+  { id: 'ov-community', tab: 'community', label: 'Community', description: 'Discussions, topics and educational content.', icon: <Users className="h-5 w-5" /> },
+  { id: 'ov-news', tab: 'news', label: 'Health News', description: 'Sourced healthcare updates and research briefs.', icon: <Newspaper className="h-5 w-5" /> },
+  { id: 'ov-nutrition', tab: 'nutrition', label: 'Nutrition & Recipes', description: 'Meals, nutrients and balanced plans.', icon: <Salad className="h-5 w-5" /> },
   { id: 'ov-wellness', tab: 'wellness', label: 'Wellness & Fitness', description: 'Movement, mobility and everyday wellbeing.', icon: <Activity className="h-5 w-5" /> },
+  { id: 'ov-calculators', tab: 'calculators', label: 'Health Tools', description: 'Calculators and trackers for your health goals.', icon: <Calculator className="h-5 w-5" /> },
 ];
 
 const WORKSPACE_ITEMS: OverlayItem[] = [
@@ -138,7 +147,7 @@ export const MoreOverlay: React.FC<MoreOverlayProps> = ({
               Explore GlobalHealth
             </h2>
             <p className="truncate text-[11px] text-slate-500">
-              Everything beyond the main navigation — pick a destination to continue.
+              Every area of GlobalHealth in one place — pick a destination to continue.
             </p>
           </div>
         </div>
