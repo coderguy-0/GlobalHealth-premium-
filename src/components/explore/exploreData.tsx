@@ -44,7 +44,7 @@ export const EXPLORE_ITEMS: ExploreItem[] = [
 /** Workspaces — "Specialized portals" (shared by the More overlay and the Explore page). */
 export const WORKSPACE_ITEMS: ExploreItem[] = [
   { id: 'ov-health-records', tab: 'dashboard', mode: 'dashboard', label: 'My Health Records', description: 'Personal dashboard, EHR and doctor access.', icon: <FileHeart className="h-5 w-5" />, badge: 'Personal' },
-  { id: 'ov-doctor-portal', tab: 'medauth', label: 'Doctor Portal', description: 'Verified physician workspace.', icon: <Stethoscope className="h-5 w-5" />, badge: 'MedAuth' },
+  { id: 'ov-doctor-portal', tab: 'doctor-portal', label: 'Doctor Portal', description: 'Verified physician workspace.', icon: <Stethoscope className="h-5 w-5" />, badge: 'Professional' },
   { id: 'ov-hospital-portal', tab: 'hospital-portal', label: 'Hospital Portal', description: 'Hospital operations & staff management.', icon: <Building2 className="h-5 w-5" />, badge: 'Enterprise' },
   { id: 'ov-pharmacy-portal', tab: 'pharmacy-portal', label: 'Pharmacy Porter', description: 'Pharmacy stock, expiry and orders.', icon: <ShoppingBag className="h-5 w-5" />, badge: 'v4.2' },
   { id: 'ov-news-cms', tab: 'news-management', label: 'News Management', description: 'Editorial CMS & authority publishing.', icon: <Newspaper className="h-5 w-5" />, badge: 'CMS' },

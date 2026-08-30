@@ -59,6 +59,9 @@ const HospitalPortalView = lazy(() =>
 const MedAuthView = lazy(() =>
   import('./components/medauth/MedAuthView').then((m) => ({ default: m.MedAuthView }))
 );
+const DoctorPortalApp = lazy(() =>
+  import('./components/doctor-portal/DoctorPortalApp').then((m) => ({ default: m.DoctorPortalApp }))
+);
 const PharmacyPortalApp = lazy(() =>
   import('./components/pharmacy-portal/PharmacyPortalApp').then((m) => ({ default: m.PharmacyPortalApp }))
 );
@@ -632,7 +635,11 @@ export default function App() {
       );
     }
 
-    if (overlayTab === 'doctor-portal' || overlayTab === 'medauth') {
+    if (overlayTab === 'doctor-portal') {
+      return <DoctorPortalApp onBackToGlobalHealth={closeOverlay} />;
+    }
+
+    if (overlayTab === 'medauth') {
       return <MedAuthView onBackToGlobalHealth={closeOverlay} />;
     }
 

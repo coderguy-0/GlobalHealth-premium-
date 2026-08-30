@@ -486,7 +486,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button type="button" onClick={() => go('dashboard', 'dashboard')} className="flex items-center gap-2 rounded-xl bg-teal-50 p-2.5 text-xs font-semibold text-teal-900">
                   <FileHeart className="h-4 w-4 text-teal-600" /> Health Records
                 </button>
-                <button type="button" onClick={() => go('medauth')} className="flex items-center gap-2 rounded-xl bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-900">
+                <button type="button" onClick={() => go('doctor-portal')} className="flex items-center gap-2 rounded-xl bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-900">
                   <Stethoscope className="h-4 w-4 text-emerald-600" /> Doctor Portal
                 </button>
                 <button type="button" onClick={() => go('hospital-portal')} className="flex items-center gap-2 rounded-xl bg-indigo-50 p-2.5 text-xs font-semibold text-indigo-900">
