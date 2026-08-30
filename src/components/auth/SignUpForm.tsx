@@ -51,6 +51,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const [dialCode, setDialCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [country, setCountry] = useState('India');
+  const [dateOfBirth, setDateOfBirth] = useState('');
 
   // ---- Step 2: password ----
   const [password, setPassword] = useState('');
@@ -128,6 +129,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       termsAccepted,
       marketingConsent,
       country,
+      dateOfBirth: dateOfBirth || undefined,
       preferredLanguage: 'English',
       termsVersion: TERMS_VERSION,
       privacyVersion: PRIVACY_VERSION,
@@ -306,6 +308,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </div>
           </div>
 
+          <div>
+            <label className={labelClass} htmlFor="signup-dob">Date of birth <span className="font-normal normal-case text-slate-400">(optional — used only where age is legally relevant for a specific service)</span></label>
+            <input
+              id="signup-dob"
+              type="date"
+              value={dateOfBirth}
+              max={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-medical-500 focus:outline-none focus:ring-2 focus:ring-medical-500/20 transition"
+            />
+          </div>
+
           <p className="text-[11px] leading-relaxed text-slate-400">
             We collect only the information needed to create and secure your account. Each field is explained in the{' '}
             <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="font-semibold text-medical-700 hover:underline cursor-pointer">Privacy Policy</button>.
@@ -437,6 +451,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 ['Email', email.trim()],
                 ['Mobile', `${dialCode} ${phoneNumber.trim()}`],
                 ['Country / region', country],
+                ['Date of birth', dateOfBirth || 'Not provided'],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-start justify-between gap-3">
                   <dt className="shrink-0 font-semibold text-slate-500">{k}</dt>

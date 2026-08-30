@@ -262,6 +262,7 @@ async function startServer() {
     isPhoneVerified: boolean;
     country: string;
     preferredLanguage: string;
+    dateOfBirth?: string;
     avatarUrl?: string;
     twoFactor: {
       enabled: boolean;
@@ -637,6 +638,7 @@ async function startServer() {
       marketingConsent,
       country,
       preferredLanguage,
+      dateOfBirth,
       termsVersion,
       privacyVersion
     } = req.body;
@@ -710,6 +712,7 @@ async function startServer() {
       isPhoneVerified: false,
       country: country || 'United States',
       preferredLanguage: preferredLanguage || 'English',
+      dateOfBirth: dateOfBirth || undefined,
       twoFactor: {
         enabled: false
       },

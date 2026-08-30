@@ -91,6 +91,7 @@ export async function signupUser(formData: {
   termsAccepted: boolean;
   marketingConsent?: boolean;
   country?: string;
+  dateOfBirth?: string;
   preferredLanguage?: string;
   /** Versioned consent — the exact Terms/Privacy versions accepted. */
   termsVersion?: string;
