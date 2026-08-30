@@ -1,5 +1,6 @@
 export type NavigationTab = 
   | 'home'
+  | 'explore'
   | 'diseases'
   | 'medicines'
   | 'medical-tests'

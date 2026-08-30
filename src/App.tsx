@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { MedicalDisclaimer } from './components/MedicalDisclaimer';
 import { HomePage } from './components/home/HomePage';
 import { GlobalHealthAIAssistant } from './components/ai/GlobalHealthAIAssistant';
+import { ExplorePage } from './components/explore/ExplorePage';
 import { DiseasesSection } from './components/diseases/DiseasesSection';
 import { MedicinesView } from './components/MedicinesView';
 import { MedicalTestsView } from './components/MedicalTestsView';
@@ -259,7 +260,7 @@ export default function App() {
 
   // ---- Hash-based deep linking + back-button protection for protected URLs ----
   const VALID_TABS: NavigationTab[] = [
-    'home', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
+    'home', 'explore', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
     'calculators', 'ai-assistant', 'hospitals', 'doctors', 'medical-map', 'community',
     'news', 'news-admin', 'dashboard', 'hospital-portal', 'doctor-portal', 'medauth',
     'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth'
@@ -703,6 +704,14 @@ export default function App() {
         {currentTab === 'medical-tests' && <MedicalTestsView />}
 
         {currentTab === 'calculators' && <CalculatorsView />}
+
+        {currentTab === 'explore' && (
+          <ExplorePage
+            currentTab={currentTab}
+            onNavigate={handleNavTabChange}
+            onHome={() => setCurrentTab('home')}
+          />
+        )}
 
         {/* AI Assistant workspace: the lazy chunk loads on first open, then
             the workspace stays mounted (hidden) so guest session

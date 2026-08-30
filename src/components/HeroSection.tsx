@@ -194,7 +194,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button size="lg" onClick={() => onTabChange('diseases')}>
+              <Button size="lg" onClick={() => onTabChange('explore')}>
                 Explore Healthcare
                 <ArrowRight className="h-4 w-4" />
               </Button>
