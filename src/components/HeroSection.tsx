@@ -398,16 +398,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
                 </div>
               </div>
 
-              {/* Floating accent card */}
-              <div className="gh-float absolute -bottom-6 -left-8 hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lift sm:flex">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-medical-600 text-white">
-                  <Bot className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-xs font-bold text-slate-900">AI Assistant</p>
-                  <p className="text-[11px] text-slate-500">Ask anything about healthcare</p>
-                </div>
-              </div>
+              {/* Floating accent card — replaced by the Dr. Nova callout that
+                  comes out of the floating AI avatar itself. */}
             </div>
           </div>
         </div>

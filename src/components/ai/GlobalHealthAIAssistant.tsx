@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AIAvatar } from './AIAvatar';
 import { AIGreetingBubble } from './AIGreetingBubble';
+import { AINovaCallout } from './AINovaCallout';
 
 interface GlobalHealthAIAssistantProps {
   onOpen: () => void;
@@ -20,8 +21,10 @@ const CONTEXTUAL_MESSAGES = [
  * Persistent floating AI Assistant launcher — the doctor-boy avatar at the
  * bottom-right corner of the viewport, visible across the whole website.
  *
- * - First visit: auto-shows "Hi, I am your personal AI".
- * - Returning visits: occasionally shows a short contextual message.
+ * - On load: the Dr. Nova introduction callout peeks out of the avatar
+ *   ("Dr. Nova — Your Personal AI Health Assistant — Hi, I'm Dr. Nova…"),
+ *   auto-hides after a few seconds and re-appears on hover.
+ * - Occasionally shows a short contextual message.
  * - Clicking the avatar opens the dedicated AI Assistant workspace.
  * - Only `assistantGreetingDismissed` is stored locally (a UI preference —
  *   never interpreted as health data).
@@ -31,39 +34,35 @@ const CONTEXTUAL_MESSAGES = [
  * (z-50), workspaces (z-70) and emergency/system overlays.
  */
 export const GlobalHealthAIAssistant: React.FC<GlobalHealthAIAssistantProps> = ({ onOpen }) => {
-  const [dismissed, setDismissed] = useState(false);
+  const [introHidden, setIntroHidden] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   const [bubble, setBubble] = useState<{ text: string; persistent: boolean } | null>(null);
-  const [isFirstVisit, setIsFirstVisit] = useState(false);
 
   useEffect(() => {
-    let firstVisit = false;
+    // Record the visit — a UI preference only, never health data.
     try {
-      firstVisit = localStorage.getItem(GREETING_STORAGE_KEY) !== '1';
-      if (firstVisit) localStorage.setItem(GREETING_STORAGE_KEY, '1');
+      localStorage.setItem(GREETING_STORAGE_KEY, '1');
     } catch {
-      /* storage unavailable — treat as a returning visitor */
+      /* storage unavailable */
     }
-    setIsFirstVisit(firstVisit);
 
     const timers: number[] = [];
-    if (firstVisit) {
-      // First visit: show the greeting, then let it rest.
-      timers.push(window.setTimeout(() => setBubble({ text: 'Hi, I am your personal AI', persistent: true }), 1200));
+    // Branded Dr. Nova introduction — the callout coming out of the avatar.
+    timers.push(window.setTimeout(() => setShowIntro(true), 1500));
+    timers.push(window.setTimeout(() => setShowIntro(false), 12000));
+
+    // Occasionally surface a short contextual message.
+    if (Math.random() < 0.4) {
+      const text = CONTEXTUAL_MESSAGES[Math.floor(Math.random() * CONTEXTUAL_MESSAGES.length)];
+      timers.push(window.setTimeout(() => setBubble({ text, persistent: false }), 5000));
       timers.push(window.setTimeout(() => setBubble(null), 9000));
-    } else {
-      // Returning visitor: occasionally surface a short contextual message.
-      const show = Math.random() < 0.4;
-      if (show) {
-        const text = CONTEXTUAL_MESSAGES[Math.floor(Math.random() * CONTEXTUAL_MESSAGES.length)];
-        timers.push(window.setTimeout(() => setBubble({ text, persistent: false }), 4000));
-        timers.push(window.setTimeout(() => setBubble(null), 8000));
-      }
     }
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, []);
 
-  const markDismissed = () => {
-    setDismissed(true);
+  const dismissIntro = () => {
+    setShowIntro(false);
+    setIntroHidden(true);
     try {
       localStorage.setItem(GREETING_STORAGE_KEY, '1');
     } catch {
@@ -72,20 +71,28 @@ export const GlobalHealthAIAssistant: React.FC<GlobalHealthAIAssistantProps> = (
   };
 
   const handleOpen = () => {
+    setShowIntro(false);
     setBubble(null);
-    markDismissed();
+    try {
+      localStorage.setItem(GREETING_STORAGE_KEY, '1');
+    } catch {
+      /* ignore */
+    }
     onOpen();
   };
 
   return (
-    <div
-      className="gh-float-anchor fixed z-40"
-    >
-      {bubble && <AIGreetingBubble text={bubble.text} onDismiss={markDismissed} />}
+    <div className="gh-float-anchor fixed z-40">
+      {showIntro && !introHidden && <AINovaCallout onDismiss={dismissIntro} />}
+      {!showIntro && bubble && <AIGreetingBubble text={bubble.text} onDismiss={() => setBubble(null)} />}
 
       <button
         type="button"
         onClick={handleOpen}
+        onMouseEnter={() => {
+          if (!introHidden) setShowIntro(true);
+        }}
+        onMouseLeave={() => setShowIntro(false)}
         aria-label="Open GlobalHealth AI Assistant"
         aria-haspopup="dialog"
         className="gh-float group relative block h-14 w-14 rounded-full border-2 border-white/90 shadow-lift ring-1 ring-slate-900/10 transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500 focus-visible:ring-offset-2 active:scale-95 sm:h-16 sm:w-16"
