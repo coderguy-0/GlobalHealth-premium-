@@ -383,6 +383,24 @@ export default function App() {
   );
 
 
+  // If a signed-in visitor lands on the auth page, take them to their
+  // dashboard instead of showing a login form. Defined BEFORE the gate-login
+  // routing effect so it never clobbers an intended protected destination:
+  // when a login just completed (intendedTabRef pending), we skip and let the
+  // routing effect below send the user to the page they originally wanted.
+  useEffect(() => {
+    if (
+      currentUser &&
+      currentTab === 'auth' &&
+      authInitialView !== 'security' &&
+      !intendedTabRef.current
+    ) {
+      setCurrentTab('dashboard');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, currentTab, authInitialView]);
+
+
   // After a successful gate login, return the user to their intended destination.
   useEffect(() => {
     if (currentUser) {
@@ -435,15 +453,6 @@ export default function App() {
       return next;
     });
   };
-
-  // If a signed-in visitor lands on the auth page, take them to their
-  // dashboard instead of showing a login form.
-  useEffect(() => {
-    if (currentUser && currentTab === 'auth' && authInitialView !== 'security') {
-      setCurrentTab('dashboard');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, currentTab, authInitialView]);
 
   // While the session is being verified, show a neutral loading state for
   // protected destinations — never flash private content.
