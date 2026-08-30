@@ -12,7 +12,7 @@ export const LogoutSuccessView: React.FC<LogoutSuccessViewProps> = ({
 }) => {
   return (
     <div className="w-full text-left animate-in fade-in zoom-in-95 duration-200">
-      <div className="h-14 w-14 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
+      <div className="h-14 w-14 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-4">
         <LogOut className="h-7 w-7" />
       </div>
 
@@ -25,7 +25,7 @@ export const LogoutSuccessView: React.FC<LogoutSuccessViewProps> = ({
 
       <div className="my-6 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-600 space-y-2">
         <div className="flex items-center gap-2 font-semibold text-slate-800">
-          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+          <ShieldCheck className="h-4 w-4 text-medical-600" />
           <span>Session Termination Confirmed</span>
         </div>
         <p className="leading-relaxed">
@@ -37,7 +37,7 @@ export const LogoutSuccessView: React.FC<LogoutSuccessViewProps> = ({
         <button
           type="button"
           onClick={onLoginAgain}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 transition cursor-pointer"
         >
           <span>Log In Again</span>
           <ArrowRight className="h-4 w-4" />

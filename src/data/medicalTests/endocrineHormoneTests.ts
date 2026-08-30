@@ -7885,15 +7885,924 @@ export const ENDOCRINE_HORMONE_TESTS: MedicalTest[] = [
       {
         "title": "Standard Reference Interval",
         "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
-        "interpretation": "Represents physiologicxúÏú]s∑ÜÔ˝+0ºhÌJ±ªIúãé,;ëflèb©ÈEõp‰¢ﬁ]– V2”ÈÔ{Ä˝"Õ•ËñJBÒ‰"2≈%ÄÛ˝‚éd.&“©\óJ(ÁÂ$◊.S©êâ5ŒâL…‹g17Û*ó^õR$&3÷ª„—˛˚O¯˘À8¸ezñùó^ŸπU>|`ÙB¸£~tÙ:W◊“c˘¨R‚%û8 NÖ\]¶:¡{ÿŸÎk%Ê“g&7≥≈Xxnbrùàl1W6<†=ﬁ∞*≠¨fÏL‚`πíVñâ„X¶¬b©v
-Êâi.≠:çõÉºW+mïÉ5Nö©“ÖM≥Ö”â∆bV]ku#dô
-/ÌL—°ß&œÕÕQ5Ømol∆/áM~•KGXg≥”≥RO"USÏ™ §gì[î>SF◊÷…πLÇ’0NMß*∫…UslÎE¶*Se>eÂ|±r∆)ºf¨;â,gÔï´rÔz'˝w˝≥}Ôçﬁ™¨Óƒüƒ%6ÀU°J|p‹=OCèü*Î•.·Giô®
-Áóπ£#Sb•±@Ïd°±`≥ê^8≥tÓÄüR≠óZ„MgªîN#Œ#§ÔÁ;SÖ…¡Å”ΩRπ\¿µskr>ÉÉi$Äôì„TAŸÂ+´¬—R5≥2Öã)9Ç≥e)ÛÖWCπ/”kYz9SÓ§L_™Q]ÚË>®!ø‡ *—!t7⁄„ù õ"îﬁ‘ÎEY¶“¶ùQ£kÆuäÏ5ì’y0—¯®˝†¨Cö"AË}î¬—$§^AaDâwK¸Äd X#P69 "qçÿ“¶î˜pK]ãM·ºı+†3ü,•]Áâæ˘o+Á≈}ÊZÊU∞©ÇtEbÔO^òÈJ=&l„)Ñ°ÆÆ^Oï%3ÍõÖ¢∫ñïï√’VMîøQ™å^ˇQ.dYQ! Ÿô£π¿◊õ£«¡}Ö[-ûèïÚ±B”å?:37∞¿c3óô*O≈π»$å ókiFª®ÙØ˝Dï•ªQ!≥ØhQdÁ‘¢MQ[@.ŒUô"‡•Xò ÜnâWpMÎ#∑(ÊH 7Fº‰¨4xx6’!0„`k¯pj®Ñ˛wôR„_¥,/7÷]ﬂ“W∂ï
-Î{É¸4sQ,bé’≠b¢`,óhmüiáÍr~¿‹w»*◊°8'VOöú≠◊£Ú0ï's®m—¢¡íÊÒ`A”ªè≈I~#Nî∆Sw%ˇœ≥\Mº£]L≥ "q|ì’¢~P˚!˙`§S:*YqÑÑ9zˆ›ì⁄òQ)EÔΩvﬁjìã∑Hmãtó VEÛÕ∂r,<Y"p{òo‘∑ê¶TMÖèÊïù#|·—∫VúXø<π$Å%u≥É/éGä˙*]tmÚdZïI[‰pïıå8g⁄π{‹⁄á”…¸=Uù®+::
-n≤Ë±©µÔ——ß‘XMø∆l˚˘ÿq0⁄≠œπ¥ÕΩCvÕ—"±f™ï6NÌì.'ª–,zºÌs*c’tra.K’[›ÖÅqAãˇ¨JS9Ò27&_’ﬁº§Ì0‡öèxº∏2›∞=}ÜhU∂Upﬁú¯§m◊˙W*ø∆%=˚„¨+–P´Pyq• ¬∏Ö‘ZmÊuuì4HÎ˘—ŸhPJ§\ÜR†eëﬁŸ‘'öÃµŒã	Ïà b(mè≈πoõ∫´ı“J“5£ìÏ T>Ø]ÉruùÓB®‘ıÃâ=ç´nSΩ1dfµÊâ]≠NÛ®|ÇË@™∏9¸“jæ—M&˝π;˜∑8¶Ïœg_˜· R“74[l|1Ñ±ø«˘D“s©«Kâæ“bØ?Ø1Øc.NÍ\t·8ÆŒ≈û	ãÛÇ2≥5$[Ç6$s∞ütÌ1`›º§øzc£”©Ùr,TI¡Ä’Q§êæ±]`È∂¥`ß s\	Ïo+öß2ÊÍ2HL≤GNbÔ@DU;¥%aùû‰*å˚ºmÛÜjÕÕ ´˝ﬂç˝
-Ô…q[ú‚B<ÍÖÿX∆“$>Lwö	BñëÉRa|≈zÖ’ú2Êf•¶qw¸œÚÈ±∏h’‚ã•ucØ¢T»¨© ÏBÿı¥ö’°O2Uƒ‚'Iu˚'Æ/¶ƒ⁄_cP5™‰U„ÂÇD‚Qß;Qÿ¥U'>V»Ä0⁄b©ıíÈZÀê8ö6£Åßº≈ùAEUöÿzûæ9?˘ÍıõÛÀìGc‹å [íE˚$Nyq˙^P´§Dïıaü√”∂˝ÕÒ¥^íúÆ'F+ˆßá®…áé)‰◊å‹6€∫Óﬂ\;]?ø/e‘◊çó›å
-ç(_P„’¥ßp®:äoÇZÈWŸÚò≈ ÁÂ5ï¯åäfh™†FFÖŒídkNoá[3˙çrJb◊ñnŸ∑u√2ÂÃD‘5&ËOË‚P´·râKèØpO¡“…‚3ôOôvd¬’$(˝Ê∫ﬁ´˙ ◊—Õè∫Â⁄ÀÍ≤îÌ‹SnŸ”WuÎn"™¢¢2pá+íHÆQÆ'Â! 6
- A˝äÆ‰KÇäÅ©U‰≤(¬Ï˜õÀrAﬂ7qÔy¯¥Ó>1HM°Èb"s" Æñ
-´ŒÔﬂqñ˝rìôÀ†⁄T>â÷'1/\s°5C2‘ƒbÈû“$O?≈•el_ú◊nË•pwlÙOQnóÓƒz/Cö≥Ö∫à…%mN^I> ˛·ˆΩúBÌ#18ÔÄ_Ô€‘V≥˛!W‹´ w∆∑òD•'9Jqâ≠[MuâÇnè2*˚âÍ*≥QUﬁj∏qƒ§ä∑Ç∫bÎKP:°IπvJ»ı —¸‚B?Xœë£@õ%∏∞ª†K13?)ã~çÒü-“fÙ«≠ 5WçÄ(˘´–	If‘bzÖ⁄–;ù&>•êB(-ÂÁnEr» j¡ÒÇõlÇ9◊Ëî‹ÑÆbí‹˝πi„ÔD A&T9ÍÌtÈ1édä#é«—y›—[µOÈîÜJ‹‘tqo0⁄—†,ıL•+ﬁ≥⁄}  q⁄KÉ•ô˝Qx°NJSÈÚZ˙ÔçÄ®gë20O4Ã∞ÅxYÉòX≠ |çï˛?±ï†I"¬ä»µNRçN{ıh…ÎıÆì.jÉ˚;ìô‘(™ƒ∑Ç<∫?0ts’Ô#Ë∆€]ßÕÁEyˆsH=Ã©ÛŒ·µœ√≠©uYw<ØØq˝ÀΩ˝nãa#Ω
-^±c›®WÔΩøÁhjáº7œ‰õ…7ìÔC ﬂC4Ç¯˛#ß´¸ jjLoC=
-ä·Œ˜ÁK3˙ﬁwÙΩ&¶;¿ﬁkVe‰=‡î{Äª◊X∆®õQ7£nF›wá∫Öcn∆‹1˜öq≈àõ7#nF‹˚â∏◊4¥√¿€Ü3⁄f¥Õh˚–ˆ:Ú¿X{ˇ±ˆ◊´X˚ßJBˆﬂŸ^ª:√Ì}á€Î√∫æΩ~aF‹√~πî{Ωq∫t3Ëf–}w†{ìÙa÷Õ¨{#Î^?¥w3Óf‹Õ∏{?q˜˙ûvƒ{ÿvÜﬁΩzÙ ÃΩ˜ü{?[Âﬁ?hã≈Ø¨.)/Ì›uÂˇgﬂÉ;0ˇﬁw˛=⁄0·≈ôÉoˆÕ=`·√2gŒ<úy¯›Ò€$3qf‚ô¯b.Œ\úπ8sÒ˝‰‚√}Ì0ÿ¯f˚ôè3g>~||ú`Fæˇå¸˘*#øT‰Ì;Ö‰√[0%ﬂwJæ!∂;¿‰VgN~ãsÓ(ﬂ`!ìr&ÂL ôîﬂ)øU1*gTæïo_Ã ôï3+gVæü¨|Cc;X~ãòñ3-gZ~¥|°`\æˇ∏¸/´∏∫e˙3m†/HjÓñm¿®|ﬂQ˘`dw  ◊fLæ—5˜ í⁄«àú9#rF‰wá»oC»êo‰É£ãÒ8„q∆„å«˜è∂µ√Ä„Õg4Œhú—¯!†Òa.¡`|ˇ¡¯7´`¸ù∫ANï‚ÍÚlg_!ëÂ,©∫‘h_È†‡1∏°—∆®†L[`Ò˜êQÚ‹ûôBAÂCcπ! ˝¯¯Ÿsq$û?,äÛø}ıF<|]5ã¥Í!€£z}rû’px)˛{Ωx˘Õ£æ=ÍŸ∑8ReÈöE÷‡*°}ÏBT’ım±ánÜêvÑ^4(π+$ŒÂÂï’§;·g8˚…Sπ{¶Ω6Íª ⁄Îfö=ÏóﬂeGv˝pFôH-Ã—ﬂàßL¸RåΩﬁ∞{ ∞Îó˘5ÛkÊ◊}!zó¸zìfaxÕz#º^?∞ò\ﬂBÆ±Ã8õqˆ.qˆˇpE¸¡1ı˙våzÿv‘®P† Lß˜üN;Dßü|stÅf>-àƒÖØÏC÷ﬂ¡ﬂ<ŸvC˛Z˜æ≠{ÎHÔêäﬂ∫ÉÚ/r’=¯¯÷ˆﬁS§Œ_g¨ŒX˝Ö’∑[L⁄ô¥oE⁄omﬂ˘k„ÃŸ˜ñ≥¯◊∆∑nsáÖË∑rS{¶ˆLÌâ⁄ﬂŒ9‰Ô?»ˇn‰_ ±9›ÈÙùÚ˚Å}€ﬂl?‡“˙°-“o„°{ƒÊáÃd$œHûë<#˘ªGÚõeìx&Ò[ë¯°A∆ û<x˚‡á∫€aq˜M^`‹Œ∏ùq˚!·ˆAt¡î}ﬂ)˚Û«èá(˚)Æ…à3A©ìî˛ûO.Œh∂¡≈NÀ:vŒ‹∑⁄ï	¸}!€Ö{á<~ªôŒπøÓ´ﬂŒh&˜LÓô‹3πø{rˇ%Rå9>s¸≠8˛vCé©>S}¶˙Lı˜õÍo◊ÎãÒoÔ&˛L¸ô¯ÒﬂÄ0ˇﬂ˛ˇ‡óÔ¸  ˇˇ $„[‡
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Free Beta-hCG may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Free Beta-hCG may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Free Beta-hCG performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-491",
+    "name": "Estriol Maternal Serum",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Estriol Maternal Serum concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Estriol Maternal Serum to support evidence-based diagnostic decisions.",
+    "overview": "Estriol Maternal Serum is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Estriol Maternal Serum is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Estriol Maternal Serum provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Estriol Maternal Serum",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Estriol Maternal Serum findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Estriol Maternal Serum may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Estriol Maternal Serum may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Estriol Maternal Serum performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-492",
+    "name": "Triple Marker Test",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Triple Marker Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Triple Marker Test to support evidence-based diagnostic decisions.",
+    "overview": "Triple Marker Test is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Triple Marker Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Triple Marker Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Triple Marker Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Triple Marker Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Triple Marker Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Triple Marker Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Triple Marker Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-493",
+    "name": "Quadruple Marker Test",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Quadruple Marker Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Quadruple Marker Test to support evidence-based diagnostic decisions.",
+    "overview": "Quadruple Marker Test is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Quadruple Marker Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Quadruple Marker Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Quadruple Marker Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Quadruple Marker Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Quadruple Marker Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Quadruple Marker Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Quadruple Marker Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-494",
+    "name": "First Trimester Screening",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates First Trimester Screening concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring First Trimester Screening to support evidence-based diagnostic decisions.",
+    "overview": "First Trimester Screening is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "First Trimester Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of First Trimester Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by First Trimester Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "First Trimester Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated First Trimester Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased First Trimester Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the First Trimester Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-495",
+    "name": "Second Trimester Screening",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Second Trimester Screening concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Second Trimester Screening to support evidence-based diagnostic decisions.",
+    "overview": "Second Trimester Screening is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Second Trimester Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Second Trimester Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Second Trimester Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Second Trimester Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Second Trimester Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Second Trimester Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Second Trimester Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-496",
+    "name": "Prenatal Screening Panel",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Prenatal Screening Panel concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Prenatal Screening Panel to support evidence-based diagnostic decisions.",
+    "overview": "Prenatal Screening Panel is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Prenatal Screening Panel is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Prenatal Screening Panel provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Prenatal Screening Panel",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Prenatal Screening Panel findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Prenatal Screening Panel may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Prenatal Screening Panel may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Prenatal Screening Panel performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-497",
+    "name": "Newborn TSH Screening",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Measures anterior pituitary thyrotropin to evaluate thyroid axis homeostasis.",
+    "normalRange": "0.45 - 4.50 mIU/L (Euthyroid baseline range)",
+    "preparation": "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+    "sampleType": "Serum (Gold Top SST tube)",
+    "timeToResults": "12 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn TSH Screening to support evidence-based diagnostic decisions.",
+    "overview": "Newborn TSH Screening is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn TSH Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum (gold top sst tube).",
+    "whyImportant": "Accurate assessment of Newborn TSH Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum (Gold Top SST tube) is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn TSH Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn TSH Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Avoid biotin (Vitamin B7) supplements for 48 hours prior as it interferes with immunoassays.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "0.45 - 4.50 mIU/L (Euthyroid baseline range)",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn TSH Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn TSH Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn TSH Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-498",
+    "name": "Newborn 17-Hydroxyprogesterone Screening",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Newborn 17-Hydroxyprogesterone Screening concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn 17-Hydroxyprogesterone Screening to support evidence-based diagnostic decisions.",
+    "overview": "Newborn 17-Hydroxyprogesterone Screening is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn 17-Hydroxyprogesterone Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn 17-Hydroxyprogesterone Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn 17-Hydroxyprogesterone Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn 17-Hydroxyprogesterone Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn 17-Hydroxyprogesterone Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn 17-Hydroxyprogesterone Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn 17-Hydroxyprogesterone Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-499",
+    "name": "Newborn Phenylalanine Screening",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Newborn Phenylalanine Screening concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Phenylalanine Screening to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Phenylalanine Screening is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Phenylalanine Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Phenylalanine Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Phenylalanine Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Phenylalanine Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Phenylalanine Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Phenylalanine Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Phenylalanine Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-500",
+    "name": "Newborn Congenital Adrenal Hyperplasia Screen",
+    "category": "Endocrinology & Hormones",
+    "purpose": "Evaluates Newborn Congenital Adrenal Hyperplasia Screen concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Newborn Congenital Adrenal Hyperplasia Screen to support evidence-based diagnostic decisions.",
+    "overview": "Newborn Congenital Adrenal Hyperplasia Screen is a diagnostic laboratory examination categorized under Endocrinology & Hormones. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Newborn Congenital Adrenal Hyperplasia Screen is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Newborn Congenital Adrenal Hyperplasia Screen provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with endocrinology & hormones",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Newborn Congenital Adrenal Hyperplasia Screen",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Newborn Congenital Adrenal Hyperplasia Screen findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Newborn Congenital Adrenal Hyperplasia Screen may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Newborn Congenital Adrenal Hyperplasia Screen may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Newborn Congenital Adrenal Hyperplasia Screen performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

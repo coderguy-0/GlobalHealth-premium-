@@ -7762,14 +7762,1047 @@ export const FLUID_TOXICOLOGY_SPECIALIZED_TESTS: MedicalTest[] = [
     "overview": "Ethanol Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
     "whatIsIt": "Ethanol Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
     "whyImportant": "Accurate assessment of Ethanol Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
-    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophxúÏö[s7Öﬂ˝+Pz»&Uí‚8ﬁKúá-EfbU9)≠Âr6y g@Îô¡¿Pf∂ˆøÔi`Ó ª[åñ;qâ∫—}˙‡+orÂÌÊTË<Ø
-#ùìÒ˘ÂÎ´ã/gØØn.æ8ãÃ‹äd”~“Xq}˘F»ºÃÙB'“kSúˇR<?Ôîm_y!˛VI˙ÄJE)˝ df©ùwbM⁄´\ï·Oπî∫p^$ô.’o,îUE¢ƒ\:ÖWï;?9}"ﬂ…Ìjs≠Ï¬ÿ\•'/ƒﬂ√´x˝&±Joà™HïÕ6∫Xäïíô_âƒ©¶-·aŒôDKè=›jºÂÕGù–Œ6f•S'>ÆT¯L¶√3Nõ'\kÂº^‚ªéVÖnìó»
-ñ-R<≈Zï—€aÂ6ıQÊ∫)çùK◊-˚£)¥«ÆM±4¥eøRVñ™Ú:π,‰RÂÙ$zÄ∑J˙óZPíìM∑Ãµ5kùbgVùôKxΩÓÚGa+Á⁄ïJ„¸Y∑‹¬d8·≥™<	À˝ZÁ∫K€KÂU‚á+ÌR˘ÓdUÃÇ±KY 1Œ´\§∑®ä$¶^≠eVÖÃœ7bÊW≤0ôx≠÷*Î¬∏H*‰ÈHVâIÑ.ôÃsâ·ÑPrn2ùÑƒ{ä÷ÆúHµ3«ﬁKÏ• ≤*ì6ûÕJÂ·0t>óôDm9îŸáJ€qŒu·ï]#+ÿÛ0∑+s≥2Uñ˛†¸ïÔß‚:ñÉ£Ï;˙*÷5@ßùƒ£hÀ°©ô~e•ááfqÒk©ñÀ¬8ï∂iËUp∑mk∞„¢∑tk	Ôı
-£Ÿ[hãXcËùyd%yècwîÕaÂ¥…î¥!_”˚•à´Áÿk¸ xì˝‹¶∂Zˆ79JØ*~2˛äÚèUQ'ô)T?œÉ¢i{I‰‘Cf∑r„ƒ\u}X∑¯¢ ≤.G+HP®•rµqm∫”∫Ö!i°·§›4«Äù∑˙Cuèt∏–˝aÖP˚¥ÃB&Xÿ	W%+Ùæ≠¸)W6—Nùä’&µ!;Õ£ä§¬F±N?q	öájæ
-˙Á°8Ç⁄Üpê-zÁ⁄™R∆5/È$3Ñ÷O◊%⁄›0’r%Èµ"ô«ÛêûlÉ””8yoD°>BÕPiï!ojw'R‘‰yøHá≈∆T∂V⁄DZí† Ehº9
-ÉÏoGz*÷⁄ì0÷©«Á‘UYü@?Á73I¶(™∏ÔòKl¥*2ËZlHbîpö,ﬁÍ ;¥o†P'K Çç©tîL´›{wQ§ót¸Õ”≈cã“Bπ2cH„Daä3]¨•£f©3õƒ|◊ÁhQAOÁ4— ÒπÀÙrÂ≈‹jµ.®V¬gˇπ≠¥£W$\iÏõt≥¬ñùˆÍãA÷ÎßŒM∫©Ó?ô¬$π®íò :âò¸É…õ©æö@ä?¥S∫ô{ŒèÀ[DÔB%bHùıÛÛœ˙_™KÌ3ÍŸ.eo⁄iZ’‹∆B©ó≈2|˛g¥*¬ˆq™Ù}nn˚_“çFÑì¢oøQµÙ∫QW∂%!Á%.db™&÷,∫¿î°Z≥2∂ç^à≤∞¬˘]çü›©SÜ	G9 Té“≠Á Êp‘µö˝ëÜ¢&ı•hè7P¶U¢öÅ⁄Ípò|2åI=ÖP8Û^Öº	‚ã	Grft5‘K<ç≈¨Zku=E»7”zÄ—…„≈›!øT∞]“M∆ÏÙ≤ õó*4&Ù2È≈‰6Nò∑éNñ2	Q#8ò”DbÄ8ùL,‰Xõ—kÈΩà_,ño¢≥úÆ–¯a*ö{∫˚ô∏Èîß_kq7ÙÒKeQ¯ËÃïD3$°8ibÀTg§é≠®!GyëGç<Öi’ï÷È]{ªâíÚ
-gîë,|&^©‹d8¡ª{âë∑!ßmMB)ã‚¢Q 4‘1IÚ0€IQhk©ZZ™pT!ŸöŸ∆´]µ/”µƒX\* ÔTÅSd¯‰rP/:'á¡GG¶∞¨`zB{‡M=ècäU¬m9Y‰u˛è∫Ê_µÔaÔÇ¡WÙ>Z·lJ/¥x∑ƒ˜(¶Åh⁄&€\]t¿÷‘Ωÿtˆ;i˚2ùÎX˘˘KÌ∫LÙ√ˇëL‹GÁrIÕVAl=MW≥ıckIjÈä›’Î‚F7ÉF∫–TkÚ%qé ™πÚ∑tÎ	YˇßåCE5ÑS∂—ég‹≥(°q4∞›∏y>ÏËî]x¢¿æ¬–,<ÊÇWb%E8Ï˝≤πû˝µ_®L∑*Tˆ[GﬂÇ<"…j±T.^8ö‡%tÎ/∑]Ûiﬂ∑c,ZàÂ‘P˝¡ı|&E^‹Ÿw˝H_ƒV(rAıiJëomÆ"óÔ£ø’.¯¥·˛Ñ§ÿ∏ŒØLÌAF	·êl—¢!íÊ„!ÇFªœ≈E4∫ÖÒ§Æîˇrï©9\Né¡ l€mçõ˙IùáòÉM7ª‡)œP0gﬂ|Û¥πo2„£-¡æH‡7˙∑∂lKX8‹ﬁu˙˚Ê:}≥uù>)+ã;hXπæ ªÌõYdƒQKﬂÖK~WÕI<–Í#ñ"]˚|bì≠s™-Ãõˇ“oúîù…C‡˜Ù‘'qπ∑0a([Â‚KqùIóKÒ6>2vY»)ÜUÛMè?ﬁönù<g‚ŸsÒ
-ï‘àÎI
-™lbπhÂóé¶ÎµûfƒŸïC ´–ImÇŸ	ﬂ4VÊÓÖè√†#9}A6dGu	¥ïÏØ–€Uü®‘’"à·S5x.Æ|+”Æ©Ä°mlÜ!∑RYY'Ë:'¨M°Î)U	RTOo∞òeÌb¢NE3(º_"9™«π§ør3ÏÃN—∑æñ’0ˇSjú6,X‘±xÇQÆ„∏!'9h∞⁄XF˚I2“^™z„„Í™,cU÷çêÖ]π∫*˚∏Ó*ß“¿ƒ%ó@úÇÓÄ5aŸ¯ ≤TΩI–ŸÇTzâvAßÅ»„§O™
-Ç±ËÛ¢§∆Aßt™hD lLë‰<äéTµ:Ø-ÎÙ<‹úz7Da(ö6÷ú≤ˇŸÿ˜°ˇæ:o{T\∂◊≥‚?ij:›˙JG∑ïÖB∆[bÉ©æ^°¬J™ DΩ*4≤Û_ägÁ‚∫ıÅ/ÎF=z*@/™e]-*f3:Úè>\LÂ˝#®Ò/õdødˇŒ:œ◊ŸΩ∆ú8∫hqh≈ñÎ’’ZÀP<®¶reI3íæ$Ω€‚0òf0}'òûö_åßO3ûf<}pxzJ¨éRÔäúQ5£jF’«Ä™'AÎá¨øÎK	√ñÀﬂTI„ı@Åıƒ&XÔXOdx¿zjY÷∞ﬁïù«¨ß"d`Õ¿öÅ5Î{÷ª-k÷wÎ©˘≈¿öÅ5k÷¨ßƒÍ8ÄıÆ»X3∞f`}¿z40∞~¯¿˙ŸX_£v7∑äCÖ’£2®ﬁ+®ewêzº$ÍPOeÊÒ¿Èqt¶L3òf0}o`z⁄ 0îf(}'îœ-“§H3ê>8 =™„Ä—SQ3àfÕ ˙@ÙT`˝!Ù◊S⁄Ã•ùRt¿ z¥IÜ—{á—£ÔHèóe(›á“SŸy\`z!√iÜ”ßNﬂ+úû∂8®PPèÁCjÜ‘©R$§ã’ÒÄÍ©»V3¨fX},∞z40∞~¯¿˙˘Xø‘K‹£ˆ7”ÉÌ1§ﬁ+§‰vxz∏ ÉÈLoÁÂÒ Èal£F3åf}o0z æ0Üf}'ÜŒ,–†@3Ä>8 =î©„@œ€13tfËÃ–˘†Û%0n~¯∏˘èc‹¸ö∆sï*nlèqÛ^qÛ ∑˚¿Õ√77∏y;/è7cc‹Ã∏ôq3„Ê{√ÕSˆÖq3„Ê;qÛpf1nf‹Ã∏ôqÛ¡·Ê°Lnﬁéôq3„f∆Õ«ÄõG(ÅqÛ√«Õ„Ê®@sÍ≥C%Œ„2tﬁ+tßw‹ykMFœzûLÕ„°œ[·1Äf Õ öÙΩËÜÜ43Ë;Ù÷‰bÕö14cËÉ√–[Ju$z2lÜ—£Fåﬁ&Ã£>è˛ÛòGø√2˘ÊÄyÙxáÃ£˜ £«È›èﬁZìyt√£'SÛxxÙVxÃ£ôG3èf}o<zá°aÕ<˙NΩ5πòG3èfÕ<˙‡xÙñRèûõy4ÛhÊ—«¿£∑…ÛËáœ£ˇ2Ê—π~/òF˜«,zØ,zò‹}êË—äÃ°=ëò«C°G¡1ÉfÕöÙΩ1ËI√ö	Ùùz4µò?3f˛Ã¸˘‡¯ÛHßéÉ>OÕÏôŸ3≥Ác`œcû¿‰˘·ìÁo∂~	ÖM\Ï	:œZÿÆºçõ[@Üì®ﬁ»v◊7Ãp¸Æ„ q¨¥sváÓz,⁄Ïÿ_pEmŸ5≠ım$¥ë^Ku¥B◊Ó¶£#v˝ìiV∏‘ó§ŒƒBp–Ì≠E∆ÈÏA)’[}´ﬂ©Ç.¬ﬂ˙eçæ>M©˜ˇkÈˆ(˜Ò3Èv1Ê“ÌÔ£9˘ˇ Èu,∂y]lëPˇœøànz§˙Œ÷d˛Ã¸ô˘ÛΩˇzde=3zæ˚«œÌêbÍ¸	Íº_õÀòô1Û>1ÛÔxﬂ:p4›ÈÿqPÈaº§H3ê> ›É
-Ã¢:ã˛ÍÈ”ßª`ÙÏwÉ—3Ü—èFœˆ	£g£∑`ÙÏ±¡Ë√hÜ—£Fﬂ#åûu!0åf˝i=cÕ0öa4√Ë£gG£g£F3å>:=c=˜paÙì_ø}Úo   ˇˇ ƒFºÙ
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Ethanol Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Ethanol Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Ethanol Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Ethanol Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Ethanol Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-990",
+    "name": "Valproic Acid Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Valproic Acid Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Valproic Acid Level to support evidence-based diagnostic decisions.",
+    "overview": "Valproic Acid Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Valproic Acid Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Valproic Acid Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Valproic Acid Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Valproic Acid Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Valproic Acid Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Valproic Acid Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Valproic Acid Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-991",
+    "name": "Carbamazepine Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Carbamazepine Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Carbamazepine Level to support evidence-based diagnostic decisions.",
+    "overview": "Carbamazepine Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Carbamazepine Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Carbamazepine Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Carbamazepine Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Carbamazepine Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Carbamazepine Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Carbamazepine Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Carbamazepine Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-992",
+    "name": "Phenytoin Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Phenytoin Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Phenytoin Level to support evidence-based diagnostic decisions.",
+    "overview": "Phenytoin Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Phenytoin Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Phenytoin Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Phenytoin Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Phenytoin Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Phenytoin Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Phenytoin Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Phenytoin Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-993",
+    "name": "Phenobarbital Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Phenobarbital Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Phenobarbital Level to support evidence-based diagnostic decisions.",
+    "overview": "Phenobarbital Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Phenobarbital Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Phenobarbital Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Phenobarbital Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Phenobarbital Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Phenobarbital Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Phenobarbital Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Phenobarbital Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-994",
+    "name": "Digoxin Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Digoxin Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Digoxin Level to support evidence-based diagnostic decisions.",
+    "overview": "Digoxin Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Digoxin Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Digoxin Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Digoxin Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Digoxin Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Digoxin Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Digoxin Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Digoxin Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-995",
+    "name": "Lithium Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Lithium Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Lithium Level to support evidence-based diagnostic decisions.",
+    "overview": "Lithium Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Lithium Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Lithium Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Lithium Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Lithium Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Lithium Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Lithium Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Lithium Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-996",
+    "name": "Gentamicin Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Gentamicin Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Gentamicin Level to support evidence-based diagnostic decisions.",
+    "overview": "Gentamicin Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Gentamicin Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Gentamicin Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Gentamicin Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Gentamicin Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Gentamicin Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Gentamicin Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Gentamicin Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-997",
+    "name": "Vancomycin Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Vancomycin Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Vancomycin Level to support evidence-based diagnostic decisions.",
+    "overview": "Vancomycin Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Vancomycin Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Vancomycin Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Vancomycin Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Vancomycin Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Vancomycin Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Vancomycin Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Vancomycin Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-998",
+    "name": "Amikacin Level",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Monitors therapeutic drug concentration or screens for substance exposure (Amikacin Level).",
+    "normalRange": "Within target therapeutic window",
+    "preparation": "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+    "sampleType": "Serum / Plasma Trough Level Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Amikacin Level to support evidence-based diagnostic decisions.",
+    "overview": "Amikacin Level is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Amikacin Level is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum / plasma trough level specimen.",
+    "whyImportant": "Accurate assessment of Amikacin Level provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum / Plasma Trough Level Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Amikacin Level",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Amikacin Level findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect trough sample immediately prior to next scheduled therapeutic medication dose.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within target therapeutic window",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Amikacin Level may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Amikacin Level may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Amikacin Level performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-999",
+    "name": "Vitamin A",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Evaluates Vitamin A concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Vitamin A to support evidence-based diagnostic decisions.",
+    "overview": "Vitamin A is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Vitamin A is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Vitamin A provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Vitamin A",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Vitamin A findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Vitamin A may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Vitamin A may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Vitamin A performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-1000",
+    "name": "Vitamin E",
+    "category": "Toxicology, Fluids & Specialized",
+    "purpose": "Evaluates Vitamin E concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Vitamin E to support evidence-based diagnostic decisions.",
+    "overview": "Vitamin E is a diagnostic laboratory examination categorized under Toxicology, Fluids & Specialized. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Vitamin E is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Vitamin E provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with toxicology, fluids & specialized",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Vitamin E",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Vitamin E findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Vitamin E may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Vitamin E may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Vitamin E performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

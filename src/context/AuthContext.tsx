@@ -51,10 +51,13 @@ function toUserAccount(serverUser: any): UserAccount {
     email: serverUser.email || '',
     avatarUrl: serverUser.avatarUrl,
     phoneNumber: serverUser.phoneNumber,
+    dateOfBirth: serverUser.dateOfBirth,
     gender: 'Prefer not to say',
     dietaryPreferences: serverUser.dietaryPreferences ?? [],
     healthGoals: serverUser.healthGoals ?? [],
-    createdAt: serverUser.createdAt || new Date().toISOString()
+    createdAt: serverUser.createdAt || new Date().toISOString(),
+    consent: serverUser.consent,
+    consentHistory: serverUser.consentHistory
   };
 }
 

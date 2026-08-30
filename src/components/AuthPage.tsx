@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ShieldCheck, 
-  ArrowLeft, 
-  CheckCircle2, 
-  HelpCircle, 
-  Lock, 
-  Heart, 
-  Calendar, 
-  Bookmark, 
-  Sparkles, 
-  Layers, 
-  Shield, 
-  Activity,
-  Globe2
+import {
+  ShieldCheck,
+  ArrowLeft,
+  HelpCircle,
+  Calendar,
+  Bookmark,
+  Shield,
+  Activity
 } from 'lucide-react';
-import { useLocalization } from '../context/LocalizationContext';
 import { AuthSubView, PublicUserAccount } from '../types/auth';
 import { LoginForm } from './auth/LoginForm';
 import { SignUpForm } from './auth/SignUpForm';
@@ -24,6 +17,7 @@ import { VerifyEmailPhoneForm } from './auth/VerifyEmailPhoneForm';
 import { AccountSecurityView } from './auth/AccountSecurityView';
 import { LogoutSuccessView } from './auth/LogoutSuccessView';
 import { AuthHelpModal } from './auth/AuthHelpModal';
+import { DoctorAvatar, AvatarExpression } from './auth/DoctorAvatar';
 
 interface AuthPageProps {
   initialView?: AuthSubView;
@@ -33,6 +27,34 @@ interface AuthPageProps {
   onUpdateUser: (user: PublicUserAccount) => void;
   onReturnToHome: () => void;
   onNavigateToDashboard: () => void;
+  /** Open a full legal page (Terms / Privacy Policy). */
+  onOpenLegalPage?: (tab: 'terms' | 'privacy-policy') => void;
+}
+
+interface AvatarState {
+  expression: AvatarExpression;
+  message: string | null;
+}
+
+/** The avatar's default mood for each authentication sub-view. */
+function avatarStateFor(view: AuthSubView): AvatarState {
+  switch (view) {
+    case 'signup':
+      return { expression: 'signup', message: 'Let’s get your GlobalHealth account ready.' };
+    case 'forgot-password':
+      return { expression: 'recover', message: 'No worries. We’ll help you recover your account securely.' };
+    case 'reset-password':
+      return { expression: 'recover', message: 'One last step — create your new password.' };
+    case 'verify-email':
+    case 'verify-phone':
+      return { expression: 'verifying', message: 'Almost there — let’s verify your account.' };
+    case 'logout-success':
+      return { expression: 'idle', message: 'You’re safely signed out. See you soon!' };
+    case 'security':
+      return { expression: 'idle', message: null };
+    default:
+      return { expression: 'login', message: null };
+  }
 }
 
 export const AuthPage: React.FC<AuthPageProps> = ({
@@ -42,11 +64,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   onLogout,
   onUpdateUser,
   onReturnToHome,
-  onNavigateToDashboard
+  onNavigateToDashboard,
+  onOpenLegalPage
 }) => {
-  const { t, currentLanguage } = useLocalization();
   const [activeSubView, setActiveSubView] = useState<AuthSubView>(initialView);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [avatarState, setAvatarState] = useState<AvatarState>(() => avatarStateFor(activeSubView));
 
   // Verification state handover
   const [verificationData, setVerificationData] = useState<{
@@ -65,6 +88,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     }
   }, [initialView]);
 
+  // The avatar adopts a mood per authentication page (never blocks the form).
+  useEffect(() => {
+    setAvatarState(avatarStateFor(activeSubView));
+  }, [activeSubView]);
+
   // If user is already authenticated and opens security
   if (currentUser && activeSubView === 'security') {
     return (
@@ -73,6 +101,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           currentUser={currentUser}
           onUpdateUser={onUpdateUser}
           onBackToDashboard={onNavigateToDashboard}
+          onOpenLegalPage={onOpenLegalPage}
           onLogout={() => {
             onLogout();
             setActiveSubView('logout-success');
@@ -83,46 +112,50 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-emerald-50/30 flex flex-col justify-between">
-      {/* 1. Header Navigation Bar (Focused for Authentication) */}
-      <header className="w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-30 px-4 lg:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Brand identity */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onReturnToHome}
-              className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-hidden"
-            >
-              <div className="h-10 w-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/20 group-hover:scale-105 transition">
-                <Activity className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="font-extrabold text-lg text-slate-900 tracking-tight block leading-tight">
-                  GlobalHealth
-                </span>
-                <span className="text-[10px] font-semibold text-emerald-700 tracking-wide block uppercase">
-                  Verified Healthcare Portal
-                </span>
-              </div>
-            </button>
-          </div>
+  const switchView = (view: AuthSubView) => setActiveSubView(view);
 
-          {/* Quick Actions */}
+  return (
+    <div className="relative flex min-h-screen flex-col justify-between overflow-hidden bg-gradient-to-b from-medical-50/70 via-white to-medical-50/50">
+      {/* Subtle blue atmosphere — soft radial glows, extremely light */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-medical-200/40 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 translate-x-1/3 translate-y-1/3 rounded-full bg-medical-100/60 blur-3xl" />
+      </div>
+
+      {/* 1. Header Navigation Bar (Focused for Authentication) */}
+      <header className="relative z-30 w-full border-b border-medical-100/80 bg-white/85 backdrop-blur-md px-4 lg:px-8 py-3.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <button
+            onClick={onReturnToHome}
+            className="group flex cursor-pointer items-center gap-2.5 text-left focus-visible:outline-none"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-medical-500 to-medical-800 text-white shadow-md shadow-medical-600/25 transition group-hover:scale-105">
+              <Activity className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="block text-lg font-extrabold leading-tight tracking-tight text-slate-900">
+                GlobalHealth
+              </span>
+              <span className="block text-[10px] font-semibold uppercase tracking-wide text-medical-700">
+                Secure Patient Portal
+              </span>
+            </div>
+          </button>
+
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setShowHelpModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:text-slate-900 hover:border-slate-300 transition cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-medical-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-medical-300 hover:text-medical-800"
             >
-              <HelpCircle className="h-3.5 w-3.5 text-emerald-600" />
+              <HelpCircle className="h-3.5 w-3.5 text-medical-600" />
               <span className="hidden sm:inline">Security & Help</span>
             </button>
 
             <button
               type="button"
               onClick={onReturnToHome}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-medical-50 px-3.5 py-1.5 text-xs font-bold text-medical-800 transition hover:bg-medical-100"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to GlobalHealth</span>
@@ -131,128 +164,140 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         </div>
       </header>
 
-      {/* 2. Main Authentication Content Surface */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex items-center justify-center">
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Left Column: Branding / Value Proposition (Desktop) */}
-          <div className="hidden lg:flex lg:col-span-5 flex-col justify-between text-left space-y-8 pr-4">
+      {/* 2. Main Authentication Surface */}
+      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="grid w-full max-w-5xl grid-cols-1 items-center gap-8 lg:grid-cols-12">
+          {/* Left Column: Branding + Animated Doctor Avatar (desktop) */}
+          <div className="hidden flex-col justify-between space-y-8 pr-4 text-left lg:col-span-5 lg:flex">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100/70 border border-emerald-200 text-emerald-800 text-xs font-bold mb-4 shadow-2xs">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
-                <span>Public Patient & User Portal</span>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-medical-200 bg-white px-3 py-1 text-xs font-bold text-medical-800 shadow-2xs">
+                <ShieldCheck className="h-3.5 w-3.5 text-medical-600" />
+                <span>Your health data stays yours</span>
               </div>
-              <h2 className="text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                Your healthcare, organized around you.
+              <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-slate-900 xl:text-4xl">
+                Welcome back to GlobalHealth.
               </h2>
-              <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-                Connect your medical preferences, track upcoming appointments, and save verified hospitals and doctors with complete privacy.
+              <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                Access your health dashboard, records, appointments, saved information, and personalized healthcare
+                tools.
               </p>
             </div>
 
-            {/* Core Value Badges */}
-            <div className="space-y-3.5">
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="h-8 w-8 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+            {/* Animated healthcare avatar — friendly, calm, persistent */}
+            <div className="flex justify-center py-2">
+              <div className="gh-av-frame relative">
+                <DoctorAvatar expression={avatarState.expression} message={avatarState.message} size="lg" />
+              </div>
+            </div>
+
+            {/* Trust pillars */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 rounded-2xl border border-medical-100/80 bg-white p-3.5 shadow-soft">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-medical-100 bg-medical-50 text-medical-700">
                   <Bookmark className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900">Saved Healthcare Directory</h3>
-                  <p className="text-[11px] text-slate-500 leading-snug">
-                    Bookmark trusted hospitals, specialized clinics, doctors and urgent care centers.
+                  <h3 className="text-xs font-bold text-slate-900">Your saved healthcare directory</h3>
+                  <p className="text-[11px] leading-snug text-slate-500">
+                    Hospitals, clinics, doctors and urgent-care centres — kept safe in your private list.
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="h-8 w-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+              <div className="flex items-start gap-3 rounded-2xl border border-medical-100/80 bg-white p-3.5 shadow-soft">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-medical-100 bg-medical-50 text-medical-700">
                   <Calendar className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900">Centralized Consultations</h3>
-                  <p className="text-[11px] text-slate-500 leading-snug">
-                    Track consultation schedules, clinical reminders, and verified pharmacy orders.
+                  <h3 className="text-xs font-bold text-slate-900">Care, coordinated</h3>
+                  <p className="text-[11px] leading-snug text-slate-500">
+                    Appointments, reminders and pharmacy orders in one calm, organized view.
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="h-8 w-8 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+              <div className="flex items-start gap-3 rounded-2xl border border-medical-100/80 bg-white p-3.5 shadow-soft">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-medical-100 bg-medical-50 text-medical-700">
                   <Shield className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900">Privacy By Design</h3>
-                  <p className="text-[11px] text-slate-500 leading-snug">
-                    Zero required diagnosis disclosures for account registration. Strict role-based isolation.
+                  <h3 className="text-xs font-bold text-slate-900">Privacy by design</h3>
+                  <p className="text-[11px] leading-snug text-slate-500">
+                    Versioned consent, encrypted sessions and strict role-based isolation — never blanket permissions.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Navigation Flow Indicators */}
-            <div className="pt-2 border-t border-slate-200/80 flex items-center gap-4 text-xs font-semibold text-slate-500">
+            {/* View quick-switch */}
+            <div className="flex items-center gap-4 border-t border-medical-100/80 pt-2 text-xs font-semibold text-slate-500">
               <button
                 type="button"
-                onClick={() => setActiveSubView('login')}
-                className={`transition cursor-pointer ${activeSubView === 'login' ? 'text-emerald-700 font-bold underline' : 'hover:text-slate-800'}`}
+                onClick={() => switchView('login')}
+                className={`cursor-pointer transition ${activeSubView === 'login' ? 'font-bold text-medical-700 underline' : 'hover:text-slate-800'}`}
               >
                 Log In
               </button>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <button
                 type="button"
-                onClick={() => setActiveSubView('signup')}
-                className={`transition cursor-pointer ${activeSubView === 'signup' ? 'text-emerald-700 font-bold underline' : 'hover:text-slate-800'}`}
+                onClick={() => switchView('signup')}
+                className={`cursor-pointer transition ${activeSubView === 'signup' ? 'font-bold text-medical-700 underline' : 'hover:text-slate-800'}`}
               >
                 Create Account
               </button>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <button
                 type="button"
-                onClick={() => setActiveSubView('forgot-password')}
-                className={`transition cursor-pointer ${activeSubView === 'forgot-password' ? 'text-emerald-700 font-bold underline' : 'hover:text-slate-800'}`}
+                onClick={() => switchView('forgot-password')}
+                className={`cursor-pointer transition ${activeSubView === 'forgot-password' ? 'font-bold text-medical-700 underline' : 'hover:text-slate-800'}`}
               >
-                Forgot Password
+                Recover Account
               </button>
             </div>
           </div>
 
-          {/* Right Column: Active Authentication Card */}
-          <div className="lg:col-span-7 flex justify-center">
-            <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 p-6 sm:p-8 relative">
-              
-              {/* Secondary Tab Switcher Bar */}
+          {/* Right Column: Authentication Card */}
+          <div className="flex justify-center lg:col-span-7">
+            <div className="relative w-full max-w-lg rounded-3xl border border-medical-100/90 bg-white p-6 shadow-lift sm:p-8">
+              {/* Soft blue accent line on the card */}
+              <div aria-hidden="true" className="absolute inset-x-8 top-0 h-1 rounded-b-full bg-gradient-to-r from-medical-400 via-medical-500 to-medical-700" />
+
+              {/* Mobile avatar — above the card content */}
+              <div className="mb-4 flex justify-center lg:hidden">
+                <DoctorAvatar expression={avatarState.expression} message={avatarState.message} size="md" />
+              </div>
+
+              {/* Secondary Tab Switcher */}
               {(activeSubView === 'login' || activeSubView === 'signup' || activeSubView === 'forgot-password') && (
-                <div className="flex rounded-2xl bg-slate-100 p-1 mb-6 text-xs font-bold text-slate-600">
+                <div className="mb-6 flex rounded-2xl bg-medical-50/80 p-1 text-xs font-bold text-slate-600" role="tablist" aria-label="Authentication mode">
                   <button
                     type="button"
-                    onClick={() => setActiveSubView('login')}
-                    className={`flex-1 py-2 rounded-xl transition cursor-pointer ${
-                      activeSubView === 'login'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'hover:text-slate-900'
+                    role="tab"
+                    aria-selected={activeSubView === 'login'}
+                    onClick={() => switchView('login')}
+                    className={`flex-1 cursor-pointer rounded-xl py-2 transition ${
+                      activeSubView === 'login' ? 'bg-white text-medical-800 shadow-soft' : 'hover:text-slate-900'
                     }`}
                   >
                     Log In
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveSubView('signup')}
-                    className={`flex-1 py-2 rounded-xl transition cursor-pointer ${
-                      activeSubView === 'signup'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'hover:text-slate-900'
+                    role="tab"
+                    aria-selected={activeSubView === 'signup'}
+                    onClick={() => switchView('signup')}
+                    className={`flex-1 cursor-pointer rounded-xl py-2 transition ${
+                      activeSubView === 'signup' ? 'bg-white text-medical-800 shadow-soft' : 'hover:text-slate-900'
                     }`}
                   >
                     Create Account
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveSubView('forgot-password')}
-                    className={`flex-1 py-2 rounded-xl transition cursor-pointer ${
-                      activeSubView === 'forgot-password'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'hover:text-slate-900'
+                    role="tab"
+                    aria-selected={activeSubView === 'forgot-password'}
+                    onClick={() => switchView('forgot-password')}
+                    className={`flex-1 cursor-pointer rounded-xl py-2 transition ${
+                      activeSubView === 'forgot-password' ? 'bg-white text-medical-800 shadow-soft' : 'hover:text-slate-900'
                     }`}
                   >
                     Recover
@@ -260,98 +305,109 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 </div>
               )}
 
-              {/* View Router */}
-              {activeSubView === 'login' && (
-                <LoginForm
-                  onSuccess={(user, token) => {
-                    onLoginSuccess(user, token);
-                    onNavigateToDashboard();
-                  }}
-                  onNavigate={(view) => setActiveSubView(view)}
-                  onRequestHelp={() => setShowHelpModal(true)}
-                  onRequiresVerification={(data) => {
-                    setVerificationData({
-                      userId: data.userId,
-                      contactTarget: data.email || data.phone || 'your registered contact',
-                      type: data.type
-                    });
-                    setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
-                  }}
-                />
-              )}
+              {/* View Router — gentle fade/slide between Log In ↔ Sign Up ↔ Recover */}
+              <div key={activeSubView} className="gh-auth-view">
+                {activeSubView === 'login' && (
+                  <LoginForm
+                    onSuccess={(user, token) => {
+                      onLoginSuccess(user, token);
+                      onNavigateToDashboard();
+                    }}
+                    onNavigate={(view) => setActiveSubView(view)}
+                    onRequestHelp={() => setShowHelpModal(true)}
+                    onOpenLegal={onOpenLegalPage}
+                    onAvatarInteract={(expression, message) => setAvatarState({ expression, message })}
+                    onRequiresVerification={(data) => {
+                      setVerificationData({
+                        userId: data.userId,
+                        contactTarget: data.email || data.phone || 'your registered contact',
+                        type: data.type
+                      });
+                      setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
+                    }}
+                  />
+                )}
 
-              {activeSubView === 'signup' && (
-                <SignUpForm
-                  onSuccess={(data) => {
-                    setVerificationData({
-                      userId: data.userId,
-                      contactTarget: data.email,
-                      type: data.type,
-                      devCode: data.devCode
-                    });
-                    setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
-                  }}
-                  onNavigate={(view) => setActiveSubView(view)}
-                  onRequestHelp={() => setShowHelpModal(true)}
-                />
-              )}
+                {activeSubView === 'signup' && (
+                  <SignUpForm
+                    onSuccess={(data) => {
+                      setVerificationData({
+                        userId: data.userId,
+                        contactTarget: data.email,
+                        type: data.type,
+                        devCode: data.devCode
+                      });
+                      setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
+                    }}
+                    onNavigate={(view) => setActiveSubView(view)}
+                    onRequestHelp={() => setShowHelpModal(true)}
+                    onOpenLegal={onOpenLegalPage}
+                    onAvatarInteract={(expression, message) => setAvatarState({ expression, message })}
+                  />
+                )}
 
-              {activeSubView === 'forgot-password' && (
-                <ForgotPasswordForm
-                  onNavigate={(view) => setActiveSubView(view)}
-                  onRecoveryTokenGenerated={(token) => {
-                    setRecoveryToken(token);
-                  }}
-                  onRequestHelp={() => setShowHelpModal(true)}
-                />
-              )}
+                {activeSubView === 'forgot-password' && (
+                  <ForgotPasswordForm
+                    onNavigate={(view) => setActiveSubView(view)}
+                    onRecoveryTokenGenerated={(token) => {
+                      setRecoveryToken(token);
+                    }}
+                    onRequestHelp={() => setShowHelpModal(true)}
+                    onOpenLegal={onOpenLegalPage}
+                    onAvatarInteract={(expression, message) => setAvatarState({ expression, message })}
+                  />
+                )}
 
-              {activeSubView === 'reset-password' && (
-                <ResetPasswordForm
-                  initialToken={recoveryToken}
-                  onSuccess={() => setActiveSubView('login')}
-                  onNavigate={(view) => setActiveSubView(view)}
-                  onRequestHelp={() => setShowHelpModal(true)}
-                />
-              )}
+                {activeSubView === 'reset-password' && (
+                  <ResetPasswordForm
+                    initialToken={recoveryToken}
+                    onSuccess={() => setActiveSubView('login')}
+                    onOpenLegal={onOpenLegalPage}
+                    onNavigate={(view) => setActiveSubView(view)}
+                    onRequestHelp={() => setShowHelpModal(true)}
+                    onAvatarInteract={(expression, message) => setAvatarState({ expression, message })}
+                  />
+                )}
 
-              {(activeSubView === 'verify-email' || activeSubView === 'verify-phone') && (
-                <VerifyEmailPhoneForm
-                  userId={verificationData?.userId || 'usr-sarah-jenkins'}
-                  contactTarget={verificationData?.contactTarget || 'your registered email/number'}
-                  type={activeSubView === 'verify-phone' ? 'phone' : 'email'}
-                  devCode={verificationData?.devCode}
-                  onSuccess={(user, token) => {
-                    onLoginSuccess(user, token);
-                    onNavigateToDashboard();
-                  }}
-                  onNavigate={(view) => setActiveSubView(view)}
-                  onRequestHelp={() => setShowHelpModal(true)}
-                />
-              )}
+                {(activeSubView === 'verify-email' || activeSubView === 'verify-phone') && (
+                  <VerifyEmailPhoneForm
+                    userId={verificationData?.userId || 'usr-sarah-jenkins'}
+                    contactTarget={verificationData?.contactTarget || 'your registered email/number'}
+                    type={activeSubView === 'verify-phone' ? 'phone' : 'email'}
+                    devCode={verificationData?.devCode}
+                    onSuccess={(user, token) => {
+                      onLoginSuccess(user, token);
+                      onNavigateToDashboard();
+                    }}
+                    onNavigate={(view) => setActiveSubView(view)}
+                    onRequestHelp={() => setShowHelpModal(true)}
+                    onOpenLegal={onOpenLegalPage}
+                  />
+                )}
 
-              {activeSubView === 'logout-success' && (
-                <LogoutSuccessView
-                  onLoginAgain={() => setActiveSubView('login')}
-                  onReturnHome={onReturnToHome}
-                />
-              )}
+                {activeSubView === 'logout-success' && (
+                  <LogoutSuccessView
+                    onLoginAgain={() => setActiveSubView('login')}
+                    onReturnHome={onReturnToHome}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </main>
 
       {/* 3. Footer */}
-      <footer className="w-full border-t border-slate-200/80 bg-white py-4 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <footer className="relative z-10 w-full border-t border-medical-100/80 bg-white/80 px-4 py-4 text-center text-xs text-slate-500 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} GlobalHealth Portal. All rights reserved. Strict Public User Security Policy.</p>
-          <div className="flex items-center gap-4 text-slate-600 font-semibold">
-            <a href="#privacy" className="hover:text-emerald-700 transition">Privacy Policy</a>
-            <a href="#terms" className="hover:text-emerald-700 transition">Terms of Service</a>
+          <div className="flex items-center gap-4 font-semibold text-slate-600">
+            <button type="button" onClick={() => onOpenLegalPage?.('privacy-policy')} className="cursor-pointer transition hover:text-medical-700">Privacy Policy</button>
+            <button type="button" onClick={() => onOpenLegalPage?.('terms')} className="cursor-pointer transition hover:text-medical-700">Terms &amp; Conditions</button>
             <button
               type="button"
               onClick={() => setShowHelpModal(true)}
-              className="hover:text-emerald-700 transition cursor-pointer"
+              className="cursor-pointer transition hover:text-medical-700"
             >
               Security Policy
             </button>

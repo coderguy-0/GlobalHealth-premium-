@@ -262,6 +262,7 @@ async function startServer() {
     isPhoneVerified: boolean;
     country: string;
     preferredLanguage: string;
+    dateOfBirth?: string;
     avatarUrl?: string;
     twoFactor: {
       enabled: boolean;
@@ -282,6 +283,21 @@ async function startServer() {
     dietaryPreferences?: string[];
     healthGoals?: string[];
     marketingConsent?: boolean;
+    /** Versioned consent record — which policy versions were accepted, when. */
+    consent?: {
+      termsVersion: string;
+      privacyVersion: string;
+      acceptedAt: string;
+      jurisdiction?: string;
+      method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+    };
+    /** Historic consent records (policy versions previously accepted). */
+    consentHistory?: {
+      termsVersion: string;
+      privacyVersion: string;
+      acceptedAt: string;
+      method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+    }[];
     createdAt: string;
     lastLoginAt: string;
   }
@@ -524,7 +540,7 @@ async function startServer() {
 
       return res.status(401).json({
         success: false,
-        error: 'The email/mobile number or password you entered is incorrect. Please try again.'
+        error: 'Unable to sign in with those credentials. Please try again.'
       });
     }
 
@@ -621,7 +637,10 @@ async function startServer() {
       termsAccepted,
       marketingConsent,
       country,
-      preferredLanguage
+      preferredLanguage,
+      dateOfBirth,
+      termsVersion,
+      privacyVersion
     } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
@@ -634,7 +653,14 @@ async function startServer() {
     if (!termsAccepted) {
       return res.status(400).json({
         success: false,
-        error: 'You must agree to the Terms of Service and Privacy Policy to create an account.'
+        error: 'You must agree to the Terms & Conditions and acknowledge the Privacy Policy to create an account.'
+      });
+    }
+
+    if (!termsVersion || !privacyVersion) {
+      return res.status(400).json({
+        success: false,
+        error: 'Consent version information is required to create an account.'
       });
     }
 
@@ -686,6 +712,7 @@ async function startServer() {
       isPhoneVerified: false,
       country: country || 'United States',
       preferredLanguage: preferredLanguage || 'English',
+      dateOfBirth: dateOfBirth || undefined,
       twoFactor: {
         enabled: false
       },
@@ -695,6 +722,21 @@ async function startServer() {
         expiresAt: Date.now() + 15 * 60 * 1000 // 15 mins
       },
       marketingConsent: Boolean(marketingConsent),
+      consent: {
+        termsVersion: String(termsVersion),
+        privacyVersion: String(privacyVersion),
+        acceptedAt: new Date().toISOString(),
+        jurisdiction: country || 'Unknown',
+        method: 'signup_checkbox'
+      },
+      consentHistory: [
+        {
+          termsVersion: String(termsVersion),
+          privacyVersion: String(privacyVersion),
+          acceptedAt: new Date().toISOString(),
+          method: 'signup_checkbox'
+        }
+      ],
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString()
     };
@@ -708,7 +750,7 @@ async function startServer() {
       timestamp: new Date().toISOString(),
       ipAddress: req.ip || '127.0.0.1',
       status: 'success',
-      details: 'Account created; verification code dispatched'
+      details: `Account created with consent: Terms ${termsVersion}, Privacy ${privacyVersion}; verification code dispatched`
     });
 
     return res.status(201).json({
@@ -1343,6 +1385,72 @@ async function startServer() {
   });
 
   // ---- Protected: Personal Health Dashboard (owner-only aggregate) ----
+  // ---- Protected: consent record (which policy versions were accepted) ----
+  app.get('/api/me/consent', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    return res.json({
+      success: true,
+      consent: user.consent || null,
+      consentHistory: user.consentHistory || [],
+      marketingConsent: Boolean(user.marketingConsent)
+    });
+  });
+
+  // ---- Protected: update optional marketing consent (easy opt-out) ----
+  app.post('/api/me/consent/marketing', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const enabled = Boolean(req.body?.enabled);
+    user.marketingConsent = enabled;
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: enabled ? 'MARKETING_CONSENT_OPTED_IN' : 'MARKETING_CONSENT_WITHDRAWN',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: enabled
+        ? 'Optional marketing consent granted (channel: email/selected channels)'
+        : 'Optional marketing consent withdrawn by user'
+    });
+    return res.json({ success: true, marketingConsent: user.marketingConsent });
+  });
+
+  // ---- Protected: re-acceptance after a policy update (material change) ----
+  app.post('/api/me/consent/accept', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const { termsVersion, privacyVersion } = req.body || {};
+    if (!termsVersion || !privacyVersion) {
+      return res.status(400).json({ success: false, error: 'Both Terms and Privacy versions are required to record consent.' });
+    }
+    // Move the previously accepted versions into history (historic records are preserved).
+    if (user.consent) {
+      user.consentHistory = user.consentHistory || [];
+      user.consentHistory.push({
+        termsVersion: user.consent.termsVersion,
+        privacyVersion: user.consent.privacyVersion,
+        acceptedAt: user.consent.acceptedAt,
+        method: user.consent.method
+      });
+    }
+    user.consent = {
+      termsVersion: String(termsVersion),
+      privacyVersion: String(privacyVersion),
+      acceptedAt: new Date().toISOString(),
+      jurisdiction: user.country || 'Unknown',
+      method: 'settings_reacceptance'
+    };
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'CONSENT_REACCEPTED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Policy re-acceptance recorded: Terms ${termsVersion}, Privacy ${privacyVersion}`
+    });
+    return res.json({ success: true, consent: user.consent, consentHistory: user.consentHistory });
+  });
+
   app.get('/api/me/dashboard', requireAuth, (req: any, res) => {
     const user: ServerPublicUser = req.authUser;
     const data = seedPrivateData(user.id, user.fullName);
@@ -6946,6 +7054,172 @@ Request ID: ${requestId}`,
   });
 
   // ----------------------------------------------------------------------
+  // 6.5 AI Assistant — conversation persistence (account-owned, session-secured)
+  //
+  // PRODUCTION CONTRACT (see docs/ai-assistant-backend-contract.md):
+  //   - Tables: ai_conversations (id, userId, title, createdAt, updatedAt)
+  //             ai_messages    (id, conversationId, role, content, createdAt)
+  //   - The user is ALWAYS identified from the validated session token on the
+  //     request (req.authUser). The client never supplies a userId.
+  //   - EVERY persistent request validates authenticatedUser.id ===
+  //     conversation.userId before reading or mutating. Unknown or foreign
+  //     conversations are answered with a uniform 404 (no existence leak).
+  //   - Anonymous (guest) chats are session-only on the client and are never
+  //     sent here unless the user explicitly saved the conversation to their
+  //     account after signing in.
+  // ----------------------------------------------------------------------
+
+  interface ServerAiMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    createdAt: number;
+  }
+  interface ServerAiConversation {
+    id: string;
+    userId: string;
+    title: string;
+    messages: ServerAiMessage[];
+    createdAt: number;
+    updatedAt: number;
+  }
+  const AI_CONVERSATIONS: Map<string, ServerAiConversation> = new Map();
+  const AI_TITLE = 'New conversation';
+
+  const aiConvId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const aiSummary = (c: ServerAiConversation) => ({
+    id: c.id,
+    title: c.title,
+    messageCount: c.messages.length,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+  });
+
+  const aiPublicConversation = (c: ServerAiConversation) => ({
+    id: c.id,
+    title: c.title,
+    messages: c.messages,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+  });
+
+  // Uniform 404 for missing OR foreign conversations.
+  const aiFindOwned = (userId: string, id: string): ServerAiConversation | null => {
+    const conv = AI_CONVERSATIONS.get(id);
+    if (!conv || conv.userId !== userId) return null;
+    return conv;
+  };
+
+  const aiValidMessage = (role: unknown, content: unknown): { role: 'user' | 'assistant'; content: string } | null => {
+    if (role !== 'user' && role !== 'assistant') return null;
+    if (typeof content !== 'string') return null;
+    const trimmed = content.trim();
+    if (!trimmed || trimmed.length > 10000) return null;
+    return { role, content: trimmed };
+  };
+
+  // GET /api/ai/conversations — the signed-in user's own summaries.
+  app.get('/api/ai/conversations', requireAuth, (req: any, res) => {
+    const list = [...AI_CONVERSATIONS.values()]
+      .filter((c) => c.userId === req.authUser.id)
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .map(aiSummary);
+    return res.json({ success: true, conversations: list });
+  });
+
+  // POST /api/ai/conversations — create (optionally with saved messages when
+  // the user explicitly chose to save a guest conversation to their account).
+  app.post('/api/ai/conversations', requireAuth, (req: any, res) => {
+    const { title, messages } = req.body || {};
+    const now = Date.now();
+    const conv: ServerAiConversation = {
+      id: aiConvId('ai-c'),
+      userId: req.authUser.id,
+      title: typeof title === 'string' && title.trim() ? title.trim().slice(0, 80) : AI_TITLE,
+      messages: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    if (Array.isArray(messages)) {
+      for (const m of messages) {
+        const valid = aiValidMessage(m?.role, m?.content);
+        if (!valid) continue;
+        conv.messages.push({ id: aiConvId('ai-msg'), ...valid, createdAt: now });
+      }
+      if (conv.messages.length > 0) conv.updatedAt = now;
+      const firstUser = conv.messages.find((m) => m.role === 'user');
+      if (conv.title === AI_TITLE && firstUser) {
+        conv.title = firstUser.content.replace(/\s+/g, ' ').trim().slice(0, 48) || AI_TITLE;
+      }
+    }
+    AI_CONVERSATIONS.set(conv.id, conv);
+    return res.status(201).json({ success: true, conversation: aiPublicConversation(conv) });
+  });
+
+  // DELETE /api/ai/conversations — delete ALL of the user's conversations.
+  app.delete('/api/ai/conversations', requireAuth, (req: any, res) => {
+    for (const [id, c] of AI_CONVERSATIONS.entries()) {
+      if (c.userId === req.authUser.id) AI_CONVERSATIONS.delete(id);
+    }
+    return res.json({ success: true, deleted: true });
+  });
+
+  // GET /api/ai/conversations/:id — full conversation (owner only).
+  app.get('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    return res.json({ success: true, conversation: aiPublicConversation(conv) });
+  });
+
+  // PUT /api/ai/conversations/:id — rename (owner only).
+  app.put('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    const title = typeof req.body?.title === 'string' ? req.body.title.trim() : '';
+    if (!title || title.length > 80) {
+      return res.status(400).json({ success: false, error: 'A title of up to 80 characters is required.' });
+    }
+    conv.title = title;
+    conv.updatedAt = Date.now();
+    return res.json({ success: true, conversation: aiSummary(conv) });
+  });
+
+  // DELETE /api/ai/conversations/:id — delete one (owner only).
+  app.delete('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    AI_CONVERSATIONS.delete(conv.id);
+    return res.json({ success: true, deleted: true });
+  });
+
+  // POST /api/ai/conversations/:id/messages — append a message (owner only).
+  app.post('/api/ai/conversations/:id/messages', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    const valid = aiValidMessage(req.body?.role, req.body?.content);
+    if (!valid) {
+      return res.status(400).json({ success: false, error: 'A message with role "user" or "assistant" and content up to 10,000 characters is required.' });
+    }
+    const msg: ServerAiMessage = { id: aiConvId('ai-msg'), ...valid, createdAt: Date.now() };
+    conv.messages.push(msg);
+    conv.updatedAt = msg.createdAt;
+    // Auto-title from the first user message when still untitled.
+    if (conv.title === AI_TITLE && msg.role === 'user') {
+      conv.title = msg.content.replace(/\s+/g, ' ').trim().slice(0, 48) || AI_TITLE;
+    }
+    return res.status(201).json({ success: true, message: msg });
+  });
+
+  // ----------------------------------------------------------------------
   // 7. AI Assistant Endpoint (GlobalHealth Integration)
   // ----------------------------------------------------------------------
   app.post('/api/ai-assistant', async (req, res) => {
@@ -6984,11 +7258,18 @@ Request ID: ${requestId}`,
           ? ` You are chatting with ${ctxName}, the signed-in GlobalHealth account owner${ctxMrn ? ` of health record ${ctxMrn}` : ''}. Address them by their first name where natural and tailor general guidance to them as an individual. You have access to NO clinical database: if they ask about their personal labs, vitals, medications or appointments that were not included in this message, say you cannot see that detail here rather than inventing it. You must never reference, assume or fabricate any other person's health data.`
           : ` The visitor is not signed in. Keep answers strictly general and educational. If they ask about "my" personal records, results or prescriptions, explain that personal EHR answers require signing in to their own account, and that you cannot see anyone's private health data.`;
 
-      const systemInstruction = `You are GlobalHealth's AI Health & Wellness Assistant. 
-You provide compassionate, evidence-based, easy-to-understand educational information about health conditions, symptoms, wellness, nutrition, medical tests, medications, and general fitness.
+      const systemInstruction = `You are GlobalHealth's AI Health & Wellness Assistant. You are an AI INFORMATION ASSISTANT — a website helper and educational health-information guide, NOT a doctor and NOT a licensed medical professional.
+You provide compassionate, evidence-based, easy-to-understand EDUCATIONAL information about health conditions, symptoms, wellness, nutrition, medical tests, medications, and general fitness.
 ${identityInstruction}
-Always include a concise medical note reminding users that this is for educational purposes only and not medical advice.
-Format responses cleanly with markdown headings, bullet points, and clear sections.${langInstruction}`;
+SAFETY RULES (never violate):
+- Never claim to be a doctor, nurse, clinician or licensed professional. Never say "I am your doctor" or imply medical credentials.
+- NEVER diagnose. Never say "you definitely have X" or "this is X". Use educational framing: "This can be associated with...", "Generally...", "A healthcare professional can determine...".
+- Never tell a user they do not need a doctor, and never instruct starting, stopping, or changing any medication or dose. Medications are described educationally only.
+- If the user describes symptoms that could be urgent (chest pain, difficulty breathing, severe bleeding, stroke signs, seizures, loss of consciousness, suicidal thoughts, severe allergic reaction, poisoning/overdose), clearly advise seeking urgent/emergency care immediately. Never reassure falsely.
+- Never invent statistics, percentages, or fake confidence values. If unsure, say so plainly.
+- GlobalHealth website assistance: you may point users to real GlobalHealth sections (Explore Diseases, View Medicine Information, Explore Lab Tests, Find a Doctor, Open Medical Map, Explore Verified Pharmacy Partners, Open Community, Wellness & Fitness, Health Tools/Calculators, Nutrition & Recipes). Never invent pages that do not exist.
+- Always end with a short note that this is educational information and not a substitute for professional medical advice.
+Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',

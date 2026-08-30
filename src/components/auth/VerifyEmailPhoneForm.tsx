@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Phone, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, RefreshCw, KeyRound } from 'lucide-react';
 import { verifyCode, resendVerificationCode } from '../../services/authService';
 import { PublicUserAccount } from '../../types/auth';
+import { maskPhone, maskEmail } from '../../lib/maskContact';
 
 interface VerifyEmailPhoneFormProps {
   userId: string;
@@ -11,6 +12,7 @@ interface VerifyEmailPhoneFormProps {
   onSuccess: (user: PublicUserAccount, token?: string) => void;
   onNavigate: (view: 'login' | 'signup') => void;
   onRequestHelp?: () => void;
+  onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
 }
 
 export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
@@ -20,7 +22,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   devCode,
   onSuccess,
   onNavigate,
-  onRequestHelp
+  onRequestHelp,
+  onOpenLegal
 }) => {
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(45);
@@ -31,6 +34,9 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   const [infoMessage, setInfoMessage] = useState(devCode ? `Development Code: ${devCode} (or use universal code: 123456)` : '');
   const [verifiedUser, setVerifiedUser] = useState<PublicUserAccount | null>(null);
   const [verifiedToken, setVerifiedToken] = useState<string | undefined>(undefined);
+  // Limited attempts (spec): 5 tries before the code is locked and a resend is required.
+  const [attemptsLeft, setAttemptsLeft] = useState(5);
+  const [attemptsLocked, setAttemptsLocked] = useState(false);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -96,7 +102,17 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
       setVerifiedUser(result.user);
       setVerifiedToken(result.token);
     } else {
-      setErrorMessage(result.error || 'The verification code entered is invalid or has expired. Please try again.');
+      const remaining = attemptsLeft - 1;
+      setAttemptsLeft(remaining);
+      if (remaining <= 0) {
+        setAttemptsLocked(true);
+        setErrorMessage('Too many incorrect attempts. The verification code has been locked. Please request a new code.');
+      } else {
+        setErrorMessage(
+          result.error ||
+            `The verification code entered is invalid or has expired. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`
+        );
+      }
     }
   };
 
@@ -111,6 +127,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
     if (result.success) {
       setCountdown(45);
       setCanResend(false);
+      setAttemptsLeft(5);
+      setAttemptsLocked(false);
       setInfoMessage(result.message || 'A new 6-digit code has been dispatched.');
       if (result.devCode) {
         setInfoMessage(`New Code: ${result.devCode}`);
@@ -128,14 +146,30 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
         <>
           {/* Header */}
           <div className="mb-6 text-left">
-            <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-3">
+            <div className="h-12 w-12 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-3">
               {type === 'phone' ? <Phone className="h-6 w-6" /> : <Mail className="h-6 w-6" />}
             </div>
             <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
               {type === 'phone' ? 'Verify Your Mobile Number' : 'Verify Your Email'}
             </h1>
             <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-              Enter the 6-digit verification code sent to <strong className="text-slate-800">{contactTarget}</strong>.
+              Enter the 6-digit verification code sent to{' '}
+              <strong className="text-slate-800">{type === 'phone' ? maskPhone(contactTarget) : maskEmail(contactTarget)}</strong>. We
+              never display the complete {type === 'phone' ? 'number' : 'address'}.
+            </p>
+            <button
+              type="button"
+              onClick={() => onNavigate('signup')}
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer"
+            >
+              <RefreshCw className="h-3 w-3" />
+              Change {type === 'phone' ? 'mobile number' : 'email address'}
+            </button>
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+              <ShieldCheck className="h-3.5 w-3.5 text-medical-600" />
+              {attemptsLocked
+                ? 'Code locked — please request a new code.'
+                : `${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} remaining before the code locks.`}
             </p>
           </div>
 
@@ -152,8 +186,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
 
           {/* Info Alert */}
           {infoMessage && (
-            <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800 animate-in fade-in duration-150 text-left">
-              <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+            <div className="mb-4 flex items-center gap-2 rounded-xl border border-medical-200 bg-medical-50 p-2.5 text-xs text-medical-800 animate-in fade-in duration-150 text-left">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-medical-600" />
               <span>{infoMessage}</span>
             </div>
           )}
@@ -175,7 +209,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                     value={digit}
                     onChange={(e) => handleDigitChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
-                    className="h-13 w-11 sm:h-14 sm:w-13 text-center text-xl font-mono font-bold rounded-xl border border-slate-300 bg-white text-slate-900 shadow-xs focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-hidden transition-all"
+                    className="h-13 w-11 sm:h-14 sm:w-13 text-center text-xl font-mono font-bold rounded-xl border border-slate-300 bg-white text-slate-900 shadow-xs focus:border-medical-600 focus:ring-2 focus:ring-medical-600/20 focus:outline-hidden transition-all"
                     disabled={isLoading}
                     autoFocus={idx === 0}
                   />
@@ -185,8 +219,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
 
             <button
               type="submit"
-              disabled={isLoading || !isComplete}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
+              disabled={isLoading || !isComplete || attemptsLocked}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 active:bg-medical-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -208,8 +242,8 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                 <button
                   type="button"
                   onClick={handleResend}
-                  disabled={isLoading}
-                  className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline transition cursor-pointer flex items-center gap-1"
+                  disabled={isLoading || attemptsLocked}
+                  className="font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer flex items-center gap-1"
                 >
                   <RefreshCw className="h-3 w-3" />
                   <span>Resend Code</span>
@@ -220,25 +254,32 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                 </span>
               )}
             </div>
+
+            <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-400">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-medical-600 mt-px" />
+              Never share your password or verification code with anyone. GlobalHealth will never ask for your code
+              outside the sign-in flow.
+            </p>
           </form>
         </>
       ) : (
         /* Verification Success Screen */
         <div className="text-left animate-in fade-in zoom-in-95 duration-200">
-          <div className="h-14 w-14 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
+          <div className="h-14 w-14 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-4">
             <CheckCircle2 className="h-8 w-8" />
           </div>
 
           <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
-            Account Verified Successfully
+            Your GlobalHealth account is ready.
           </h2>
           <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-            Your GlobalHealth account is now ready. Your health preferences, appointments, and saved facilities are securely connected.
+            You can now securely access the features available to your account — health preferences, appointments,
+            saved facilities and more.
           </p>
 
           <div className="my-6 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-600 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-slate-800">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              <ShieldCheck className="h-4 w-4 text-medical-600" />
               <span>Personalized & Protected</span>
             </div>
             <p className="leading-relaxed">
@@ -253,7 +294,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                 onSuccess(verifiedUser, verifiedToken);
               }
             }}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 transition cursor-pointer"
           >
             <span>Continue to GlobalHealth</span>
             <ArrowRight className="h-4 w-4" />
@@ -272,9 +313,9 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
         </button>
 
         <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-slate-400">
-          <a href="#privacy" className="hover:text-slate-600 transition">Privacy Policy</a>
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</button>
           <span>·</span>
-          <a href="#terms" className="hover:text-slate-600 transition">Terms of Service</a>
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="hover:text-slate-600 transition cursor-pointer">Terms of Service</button>
           <span>·</span>
           <button
             type="button"

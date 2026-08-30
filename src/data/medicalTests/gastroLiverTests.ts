@@ -7855,18 +7855,954 @@ export const GASTRO_LIVER_TESTS: MedicalTest[] = [
       "Screen for underlying health conditions associated with gastroenterology & hepatology",
       "Investigate patient symptoms and correlate with clinical examination findings",
       "Monitor ongoing therapeutic management and treatment efficacy",
-      "ProxúÏù]s€6ÜÔÛ+0æË¶3ñ”§È6M/vT'q<ì¶^;€^Ïˆ"!	íP–é∫≥ˇ}ﬂK¥Eπ]9â¨ìã8ëH Á‡|ºxÜa.u™ƒ¬™ëY(+ΩæTb"ù t°ÑtN9ó´¬Y§baúy´§MMñô´Qπ8x Î◊√„ 1E™Ω6Ö{°ºJºJûãÜÔÌ;ig ãÖÙsìôôV.mÏL¬-ùWπHónZIC®Kôï£à…RºV∏É;ÒRúø÷√éì“+å"íπ5ÖNÑ.¶ôÃsÈç]ä\y91ôNÈ|ßhÙ“âT;cSe];‘± ≤2ì6¨+ô´\'2:ü»L	÷k’o•∂∫ò	?áÀ™ÙaBØÏ%¸ÇUØ:‰jn.Ê¶Ã“ÂO}◊g0w8Úø£[1Êïˆsñb÷∞	v"¨¿-ÛÖ7yg•ß∏ÍRß•Ã\º-’rVß“∆ÌftñmV\tÜŒq-ÖÔ⁄¡õµï¸33tcÆ“p=ºíº«∆;ÚÊjÏ4ódJ⁄‡Øõ◊K'VO∞÷xKë]ﬂ¶∂úuŸsØ*ﬁJ˛«®àîqf
-’ıs/lƒî¸[Ãú»Ká–ŒÆ‰“â	b¨UY∂‡œiôe≠óÊ⁄≈hZÃó.|¢>»‹∆@1˘"Sî“.Îç¿⁄›Qkˇ;8ƒëS„!˛iò©L0∞ÆLÊ»9‹≠¸!W6—Nä˘2µ¡?ıTERb°ßÎ∫	DQ_*x]xÀ(uV∞‚/˙ÊÃ¬#qÃc⁄À¶uˆ÷∑Pâ∆‚h1’∂¿-eë°"êµDPÌ&È|è*ÀêﬁÖ ∫¶üScs±4•s%3?O§•∫c
-π6ALb'‡ÓÎ¶äKÌeÆã ◊àå	%Dπ®\ﬁùÈ¬À•ê)å}ÃñïÛ⁄•ª¶X#<•SXÊº’°÷–jºI¢ì÷ÍÇJ{ﬁ≥⁄Ωw„"=¶˝ÆÿuÊ/RiQÆ2c®∞â¬#]\JG˘·$≈	òe*©7Œ"d`ûŒaM ∫LœÊ^L¨VSΩãëp~üÿR;˙Dbáï∆∫©XñX≤”^}π‚ıj÷âIóï¡›ô…L™eD;›Å ÍLuÍ/úö¡y∏∏
-ƒM?æ∞DÿÒs=t ©≥Æ˛S˝§@‘>£4m]vÆ¶p9Öo»fÑocπ^≥p}{Yp¸Ä±º&Ue!≥ÂÔ ~è˝≈µ¬ë!ƒlhÒ≥pøÆ¶È&“u)	ªg¨*¥Î•n”*FrwÃ·ôXÉHãqæD€\†üÑKÃ‹ÿ∆cB¸w≈ssÏ˘iÓ&∞^fhÖ¥O˝jñ#‡´ÜÅñùÑ2\˜◊nÔC*Pô¶¥«Ó2QuÔm
-vhë2ÙStG9àîN\ù«rÍ ÷ä¢,÷Eç¡¨∫‘Í*$´”4r°/¯pΩ—/Tbi	7[ÌÙ¨–Sî[ÖÑFaM:VπeÅB›£≤O.dÏÜyj Â#ä,q¥;1b„YˆVY’Ëqº±òù+Wf~Md«ã)p~ÏË/ƒE[±∫ÒWCó+ãÑAFœ%í(	›è∫%ñL¡1J—‹õb*>Bå ßsí‚ZÜ∂÷Ü◊·–⁄.b)zç] ®ú|Á&√ÆY›Ù∆%\ã:ôêÀbQ“Íˇh9yêTâhi©öYb·(<Ç≥CZzµ.˛ez)—?gä
-Ï™¿ÆÆx¯‡5|P≤;áI[˙ê,°èBä‡K=â˝ï,Vóé9ãm~ù¸ªäÉâ∆≠ˆ=î Bﬂ#Fì|°!Õ€!^!ò2l¨Húlπ" £\∂¶ ∆:è∞ﬁb¶scü,°]ÎâÆ˘?íZÅLi%1B·JE⁄´^òi/#õÇXïØò_ù<Æa®≠.$U(¶±ˇ¿™âÚWJME≈%EI1Ñ]∂Qªw*ÎuéΩÎ'œok2Â7îÔ∫»æ6W∞¿c2‰≤8s	#»¬~ˆ#–hï˛≠™êWW*ƒˆ;õÊîîD„B)∂ºà*D7bÙ∫ƒ>Ï*È¶FÒnN%—_\GîíÌ≈`Êum}a`]°0>ZdÂB‰À57Q∞∂À˜Q√rnkÃ}ã∏≤qú5¬öÑ$Ã°¬EÉKÍÀÉu˝>„®â„©æ“,Êôö@Âh˘!–ÆÎ¥~Z?®¸}p†È ‰Á!3zÚ›„ÉZ2»<4ˆvóO:«ªjl3Ñ]r≠iç¢\˝-T-‹˛Rﬂ∞(-Œ™a»óUÆ8—<»håSUâ–Ûbg§-â'ﬂæNØ•!‡5 *±¡4-˜Ë`E	ùŸr∞h}àá≠Í˜É(ZﬂA>–‡?´ÇéŒ?}˚H\([Ê‚Ç¶Cg´oÒ¯À;”v…É'O≈k\]Ö“wãz≈„¶NÎﬂ)ÎjótÏèM.G%-C¬ı7î2	´_æ€„ @Ï≠q©CjÂÜ ¯ÉÏﬁ›Yù˝tQ…∫†aÂQDÜÈë8ıMwïBÍ≈Z›*…™π ïGêúÆ’öA¯∫Í1±b°LUE©”vÃ¨“8±ÜU—›=b„˚º“®<´•?uÅW‹Ëñ¢€à}UnÉ2HI `{!Œb}ã[ylD§2WÚÔp%Q^öcZß1£€]∆ÿõT±ÁBÏπ*ˆ:k_ûÊh¢!∏T´†é[†Ö9˙f-jY@
-´”ZïêJ/q2/»˝076˛4`ÆPD¶]“îT ÈêŒT%uLôı˘ìúƒ"ÅU®¶ËkK:¡:=	∞ŒAS≤§±sÈÏ1ˆ}»∞«GMä„Êî˜\Ê+Ìeu$§ìKäê À‚)0[∆ˆTœKäò;/4µ≥£OéƒY£üØåã≈¿‹ö“-Ï∑ûñ≥jœ∫DgTÊ|8¢òcçFTÎéµóüíÅ£V˚µ≤ØÆüé™El]1π:Qt©eà‰ÁbNMyÇ::œÀ¬ƒÛ¯ÕÈ¯—À7ß„/q˙Å0IñÕïXÂŸÒπ†öH*´≈>=ÇßmÛ…sÒ˜Ê∞‹–Núñ¬ñfcir¡èñ⁄D[[ÊÎ√•ÎˆY≠|V†C€åB˝…ñ¥âÒ ⁄=¬√<É“ ÆŸı25Ôw”»(¡gîBã»≠T!©
-ú≈a[∫E≤ÜnÌ∞?Vu /vÎd&‰oÉû[Íå„ÜNñ◊‘¸BÏÜÿ±+˜˛à}¬õ!6ClÜÿ˜büÏ%ƒ>aàÕõ!ˆûBÏÜÿ◊Õ›Mà˝§±_!im›vÒu3,ÉÎ]◊ÌVnY∑É1¨ˆ◊r0ukj‘®Pﬂ1†Ó+F”å¶—t€°J3îf(ÕPz7°t[«ˆGØ⁄À öA4ÉË} —¢¿z˜Ù◊}=>;?	˛¶ß3íé€Ö“1¶ﬁuL=¥π[ ◊C√3 ˆ∑q—=Ä€C&2Óf‹Õ∏õq˜„ÓÕjâ8A >‘≈â3g$ŒH|7ë¯Pe€Hæ…åÕõ36ﬂl>»*§Ô>Hz§g(Ç£W
-v@Æë¸y8~uˆÂ6 ˙OE“4v_Ê$µÍÏØ*i<({Û2÷Å_‡Z›÷ú†	âiÕ
-‰sGê¯9|çnùÆß‹µ⁄Æ5˘0≤æ=™âßœ∂Œ´oˆ“VXıö°ôS˚MÓ˘§å˙ˇd”kÃ∫ﬂ\öy4ÛhÊ—üíGäf—Ã¢áYÙöÆ≈z3á^'w*3Tﬁ&T˛≥'¥0 ÁNå◊‘ü=°≈÷3)fRÃ§x/HÒ:r¿îx˜)Ò7}J|<èø}˜±©p5-S‡
-\ye‘∑ä)ØÔªcá©nmS\¶∏Lqô‚ﬁ≈]Lmô⁄R€∫+1•eJ+ò“2•ΩcJ[◊õ˝†≤]kô¬2Öe
-ª∂9È3u›}Í˙◊®Î∑OFÕ#ª€y°E5(øºb◊_^Qo‰v0pä1∞Ôª„ºÄ¢6Á~„`~Ÿca∆¬üÓ®∆¬åÖ7a·–ùÛK$ò$Ô,IﬁÛóH‘Ulo`sc-√fÜÕõ˜6Gé¿∞y˜aÛ∑◊`≥Ñ≤-å 'vé'c$…Å¯Âx+ÔÉàGM◊=‚°7ƒ[O^q0+È‹Ù0" 8ˇY3!I‹tåõ·Û[5ãg†G:˙å:2^ü~√«≈Ë\≈b±+W‘©éè Ë»"¢éÏå‘Ü¥kQæ®t›qùõi≤â;  É{∞–<<ÛgK/},›@ö¢˝gëÙ∞Ö˜îTØÕs¶‘L©ôR\J}π√ö·ı0ºÓcÃ¥70Ì≠)j∆Ÿå≥∑â≥ˇ‘y1ÒπÉÍ·äµ'¸z≥k3÷f¨ΩX{ã`⁄Ω˚¥˚YüvøPntB«∏∂b>,âü!°g(∂˚¿ı‡T¸ˆÆ?Ü=ºΩ[`Ê√02˜∑s“=xê{ÿ»{
-Õ˘ÒnÁŒ?p~Âƒ‹úπ˘ 7ÓdåÕ˘QpfÁ;ÀŒ˜¸Q·⁄∂Ä}≥òØ3_gææ|}µ`ºæ˚xΩy1tÛ09mØA)∞≈„-ø¿delËª–{˚πçßÃWGdDÓ◊xÂ0ÒûU¡Ç3g~◊Oèﬂ§oòz3ı~Z|µW1ÊfÃÕòõ1˜nbÓ^1€Æ}É—≤d3»ﬁê›GLÆwù\˝’W}rò
-ˆôÑË!ÑDÁ∞OHΩlÖdø/Q!¬9¸Øá∞$C¢ÿC“`ÿı$Ó≤{Ø≤∞–qò"ô/IûQûœ,:…:H˝,˛œÉˇxÙfZ˛	A›’∫˘ŸËÒ1'∂ã"éFãHC«ƒ
->®¬Fg$Ë≈›Ÿ{Ô3	xÍ·y¯wr'YÙQ·Àâjﬁ#sç+?æõWöoÁ6`ÛÜ>˚[zÈΩ“$∆™±:£Xıu¨˛QΩ¡∆{ä¶íù¡4Éi”LﬂJæ0®fP=™7t2◊¿ıV≈5skÊ÷€‰÷◊éÜ·Îœú6o®H˚Aüo·¶—L£ôFÔçﬁDòNÔù~Î˜˛  ˇˇ úv∫
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Hepatitis E RNA",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Hepatitis E RNA findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Hepatitis E RNA may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Hepatitis E RNA may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Hepatitis E RNA performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-291",
+    "name": "Hepatitis G RNA",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates Hepatitis G RNA concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Hepatitis G RNA to support evidence-based diagnostic decisions.",
+    "overview": "Hepatitis G RNA is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Hepatitis G RNA is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Hepatitis G RNA provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Hepatitis G RNA",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Hepatitis G RNA findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Hepatitis G RNA may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Hepatitis G RNA may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Hepatitis G RNA performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-292",
+    "name": "FibroTest",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates FibroTest concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring FibroTest to support evidence-based diagnostic decisions.",
+    "overview": "FibroTest is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "FibroTest is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of FibroTest provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by FibroTest",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "FibroTest findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated FibroTest may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased FibroTest may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the FibroTest performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-293",
+    "name": "APRI Score Laboratory Panel",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates APRI Score Laboratory Panel concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring APRI Score Laboratory Panel to support evidence-based diagnostic decisions.",
+    "overview": "APRI Score Laboratory Panel is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "APRI Score Laboratory Panel is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of APRI Score Laboratory Panel provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by APRI Score Laboratory Panel",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "APRI Score Laboratory Panel findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated APRI Score Laboratory Panel may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased APRI Score Laboratory Panel may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the APRI Score Laboratory Panel performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-294",
+    "name": "Alpha-Fetoprotein (AFP)",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Oncological tumor biomarker assay assessing Alpha-Fetoprotein (AFP).",
+    "normalRange": "Within standard non-malignant reference threshold",
+    "preparation": "No fasting required.",
+    "sampleType": "Venous Serum Specimen",
+    "timeToResults": "24 - 48 Hours",
+    "description": "A standardized clinical laboratory assay measuring Alpha-Fetoprotein (AFP) to support evidence-based diagnostic decisions.",
+    "overview": "Alpha-Fetoprotein (AFP) is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Alpha-Fetoprotein (AFP) is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous serum specimen.",
+    "whyImportant": "Accurate assessment of Alpha-Fetoprotein (AFP) provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Alpha-Fetoprotein (AFP)",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Alpha-Fetoprotein (AFP) findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No fasting required.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within standard non-malignant reference threshold",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Alpha-Fetoprotein (AFP) may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Alpha-Fetoprotein (AFP) may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Alpha-Fetoprotein (AFP) performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-295",
+    "name": "CA 19-9",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Oncological tumor biomarker assay assessing CA 19-9.",
+    "normalRange": "Within standard non-malignant reference threshold",
+    "preparation": "No fasting required.",
+    "sampleType": "Venous Serum Specimen",
+    "timeToResults": "24 - 48 Hours",
+    "description": "A standardized clinical laboratory assay measuring CA 19-9 to support evidence-based diagnostic decisions.",
+    "overview": "CA 19-9 is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "CA 19-9 is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous serum specimen.",
+    "whyImportant": "Accurate assessment of CA 19-9 provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by CA 19-9",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "CA 19-9 findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No fasting required.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Within standard non-malignant reference threshold",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated CA 19-9 may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased CA 19-9 may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the CA 19-9 performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-296",
+    "name": "CA 72-4",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates CA 72-4 concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring CA 72-4 to support evidence-based diagnostic decisions.",
+    "overview": "CA 72-4 is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "CA 72-4 is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of CA 72-4 provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by CA 72-4",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "CA 72-4 findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated CA 72-4 may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased CA 72-4 may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the CA 72-4 performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-297",
+    "name": "Carcinoembryonic Antigen (CEA)",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Detects infectious etiology (Carcinoembryonic Antigen (CEA)) to guide targeted antimicrobial therapy.",
+    "normalRange": "Negative / No Pathogen Detected / Non-Reactive",
+    "preparation": "Collect before antimicrobial therapy whenever clinically possible.",
+    "sampleType": "Sterile Clinical Specimen",
+    "timeToResults": "2 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Carcinoembryonic Antigen (CEA) to support evidence-based diagnostic decisions.",
+    "overview": "Carcinoembryonic Antigen (CEA) is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Carcinoembryonic Antigen (CEA) is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in sterile clinical specimen.",
+    "whyImportant": "Accurate assessment of Carcinoembryonic Antigen (CEA) provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Sterile Clinical Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Carcinoembryonic Antigen (CEA)",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Carcinoembryonic Antigen (CEA) findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Collect before antimicrobial therapy whenever clinically possible.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Negative / No Pathogen Detected / Non-Reactive",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Carcinoembryonic Antigen (CEA) may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Carcinoembryonic Antigen (CEA) may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Carcinoembryonic Antigen (CEA) performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-298",
+    "name": "Des-Gamma-Carboxy Prothrombin",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates Des-Gamma-Carboxy Prothrombin concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Des-Gamma-Carboxy Prothrombin to support evidence-based diagnostic decisions.",
+    "overview": "Des-Gamma-Carboxy Prothrombin is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Des-Gamma-Carboxy Prothrombin is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Des-Gamma-Carboxy Prothrombin provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Des-Gamma-Carboxy Prothrombin",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Des-Gamma-Carboxy Prothrombin findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Des-Gamma-Carboxy Prothrombin may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Des-Gamma-Carboxy Prothrombin may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Des-Gamma-Carboxy Prothrombin performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-299",
+    "name": "Chromogranin A",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Evaluates Chromogranin A concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Chromogranin A to support evidence-based diagnostic decisions.",
+    "overview": "Chromogranin A is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Chromogranin A is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Chromogranin A provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Chromogranin A",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Chromogranin A findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Chromogranin A may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Chromogranin A may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Chromogranin A performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-300",
+    "name": "Gastric Parietal Cell Antibody",
+    "category": "Gastroenterology & Hepatology",
+    "purpose": "Enzymatic marker of liver, cardiac, and skeletal muscle parenchymal integrity.",
+    "normalRange": "8 - 48 U/L",
+    "preparation": "Overnight fasting 8-12 hours recommended for optimal baseline clarity.",
+    "sampleType": "Serum (Red / Gold Top tube)",
+    "timeToResults": "12 - 24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Gastric Parietal Cell Antibody to support evidence-based diagnostic decisions.",
+    "overview": "Gastric Parietal Cell Antibody is a diagnostic laboratory examination categorized under Gastroenterology & Hepatology. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Gastric Parietal Cell Antibody is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in serum (red / gold top tube).",
+    "whyImportant": "Accurate assessment of Gastric Parietal Cell Antibody provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Serum (Red / Gold Top tube) is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with gastroenterology & hepatology",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Gastric Parietal Cell Antibody",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Gastric Parietal Cell Antibody findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "Overnight fasting 8-12 hours recommended for optimal baseline clarity.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "8 - 48 U/L",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Gastric Parietal Cell Antibody may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Gastric Parietal Cell Antibody may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Gastric Parietal Cell Antibody performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

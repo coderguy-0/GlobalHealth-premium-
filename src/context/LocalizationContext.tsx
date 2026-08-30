@@ -57,7 +57,7 @@ export const LocalizationProvider: React.FC<{ children: ReactNode }> = ({ childr
     
     // Set appropriate document title based on language
     const baseTitles: Record<string, string> = {
-      en: 'GlobalHealth — Evidence-Based Health, Medicine & Clinical Insights',
+      en: 'GlobalHealth | Trusted Health, Medicine & Healthcare Information',
       hi: 'GlobalHealth — प्रमाण-आधारित स्वास्थ्य, चिकित्सा एवं पोषण पोर्टल',
       ar: 'GlobalHealth — بوابة الصحة العالمية والرعاية الطبية القائمة على الأدلة',
       es: 'GlobalHealth — Salud, Medicina y Nutrición Basada en Evidencia',

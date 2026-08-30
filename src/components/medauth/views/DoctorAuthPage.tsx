@@ -634,14 +634,14 @@ export const DoctorAuthPage: React.FC<DoctorAuthPageProps> = ({
         </div>
       </div>
 
-      {/* Main Two-Column Portal Layout */}
+      {/* Main Two-Column Portal Layout — symmetric, mirrored columns */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           
           {/* ========================================================================= */}
           {/* LEFT SIDE NAVIGATION (Strict Authority Control) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Doctor Portal Access
@@ -830,7 +830,7 @@ export const DoctorAuthPage: React.FC<DoctorAuthPageProps> = ({
           {/* ========================================================================= */}
           {/* RIGHT VIEW CONTAINER */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="space-y-6">
 
             {/* ===================================================================== */}
             {/* VIEW 1: DOCTOR LOGIN */}

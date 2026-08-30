@@ -175,7 +175,7 @@ export const PortalsWorkspaceModal: React.FC<PortalsWorkspaceModalProps> = ({
                     Authority-Only Access
                   </span>
                   <button
-                    onClick={() => handleLaunch('medauth')}
+                    onClick={() => handleLaunch('doctor-portal')}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md cursor-pointer group-hover:translate-x-0.5"
                   >
                     <span>Launch Doctor Portal</span>

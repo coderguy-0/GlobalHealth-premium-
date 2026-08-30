@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, KeyRound } from 'lucide-react';
 import { resetPassword, calculatePasswordStrength } from '../../services/authService';
+import { AvatarExpression } from './DoctorAvatar';
 
 interface ResetPasswordFormProps {
   initialToken?: string;
   onSuccess: () => void;
   onNavigate: (view: 'login' | 'forgot-password') => void;
   onRequestHelp?: () => void;
+  onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
+  onAvatarInteract?: (expression: AvatarExpression, message?: string) => void;
 }
 
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   initialToken = '',
   onSuccess,
   onNavigate,
-  onRequestHelp
+  onRequestHelp,
+  onOpenLegal,
+  onAvatarInteract
 }) => {
   const [resetToken, setResetToken] = useState(initialToken || 'rst-demo-valid');
   const [newPassword, setNewPassword] = useState('');
@@ -53,6 +58,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 
     if (result.success) {
       setIsSuccess(true);
+      onAvatarInteract?.('success', 'Your password has been updated successfully.');
     } else {
       setErrorMessage(result.error || 'Invalid or expired reset token. Please request a new recovery link.');
     }
@@ -89,7 +95,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                 Recovery Token / Authorization Code
               </label>
-              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 transition-all bg-white">
+              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-medical-600 focus-within:ring-2 focus-within:ring-medical-600/20 transition-all bg-white">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <KeyRound className="h-4 w-4" />
                 </div>
@@ -108,7 +114,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                 New Password
               </label>
-              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 transition-all bg-white">
+              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-medical-600 focus-within:ring-2 focus-within:ring-medical-600/20 transition-all bg-white">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Lock className="h-4 w-4" />
                 </div>
@@ -116,6 +122,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   value={newPassword}
+                  onFocus={() => onAvatarInteract?.('password', 'Your password stays private.')}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter your new password"
                   className="w-full rounded-xl py-2.5 pl-10 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-hidden"
@@ -136,7 +143,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                 Confirm New Password
               </label>
-              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 transition-all bg-white">
+              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-medical-600 focus-within:ring-2 focus-within:ring-medical-600/20 transition-all bg-white">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
@@ -181,7 +188,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer mt-2"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 active:bg-medical-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer mt-2"
             >
               {isLoading ? (
                 <>
@@ -200,20 +207,20 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       ) : (
         /* Password Reset Successfully */
         <div className="text-left animate-in fade-in zoom-in-95 duration-200">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
+          <div className="h-12 w-12 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-4">
             <CheckCircle2 className="h-6 w-6" />
           </div>
 
           <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Password Reset Successfully
+            Your password has been updated successfully.
           </h2>
           <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-            Your password has been updated. You can now log in using your new password.
+            You can now log in using your new password.
           </p>
 
           <div className="my-5 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-600 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-slate-800">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              <ShieldCheck className="h-4 w-4 text-medical-600" />
               <span>Active Sessions Revoked</span>
             </div>
             <p className="leading-relaxed">
@@ -224,9 +231,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           <button
             type="button"
             onClick={() => onNavigate('login')}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 transition cursor-pointer"
           >
-            <span>Go to Login</span>
+            <span>Continue to Log In</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
@@ -243,9 +250,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         </button>
 
         <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-slate-400">
-          <a href="#privacy" className="hover:text-slate-600 transition">Privacy Policy</a>
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</button>
           <span>·</span>
-          <a href="#terms" className="hover:text-slate-600 transition">Terms of Service</a>
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="hover:text-slate-600 transition cursor-pointer">Terms &amp; Conditions</button>
           <span>·</span>
           <button
             type="button"

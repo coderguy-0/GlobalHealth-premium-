@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, KeyRound } from 'lucide-react';
 import { forgotPassword } from '../../services/authService';
+import { AvatarExpression } from './DoctorAvatar';
 
 interface ForgotPasswordFormProps {
   onNavigate: (view: 'login' | 'signup' | 'reset-password') => void;
   onRecoveryTokenGenerated?: (token: string) => void;
   onRequestHelp?: () => void;
+  onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
+  onAvatarInteract?: (expression: AvatarExpression, message?: string) => void;
 }
 
 export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
   onNavigate,
   onRecoveryTokenGenerated,
-  onRequestHelp
+  onRequestHelp,
+  onOpenLegal,
+  onAvatarInteract
 }) => {
   const [identifier, setIdentifier] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +39,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
     // Always transition to privacy-preserving state
     setIsSubmitted(true);
+    onAvatarInteract?.('recover', 'Recovery instructions have been sent.');
     if (result.resetToken) {
       setDevResetToken(result.resetToken);
       if (onRecoveryTokenGenerated) {
@@ -57,10 +63,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
               <span>Back to Login</span>
             </button>
             <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
-              Forgot Your Password?
+              Recover Your Account
             </h1>
             <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-              Enter the email address or mobile number associated with your GlobalHealth account and we'll help you securely reset your password.
+              We&apos;ll help you securely regain access to your GlobalHealth account.
             </p>
           </div>
 
@@ -81,13 +87,14 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                 Email or Mobile Number
               </label>
-              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 transition-all bg-white">
+              <div className="relative rounded-xl border border-slate-300 shadow-xs focus-within:border-medical-600 focus-within:ring-2 focus-within:ring-medical-600/20 transition-all bg-white">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Mail className="h-4 w-4" />
                 </div>
                 <input
                   type="text"
                   value={identifier}
+                  onFocus={() => onAvatarInteract?.('recover', 'No worries. We’ll help you recover your account securely.')}
                   onChange={(e) => {
                     setIdentifier(e.target.value);
                     if (errorMessage) setErrorMessage('');
@@ -102,7 +109,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 active:bg-medical-800 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -121,12 +128,12 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
       ) : (
         /* Privacy-Preserving Confirmation View */
         <div className="text-left animate-in fade-in zoom-in-95 duration-200">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
+          <div className="h-12 w-12 rounded-2xl bg-medical-100 border border-medical-200 text-medical-700 flex items-center justify-center mb-4">
             <CheckCircle2 className="h-6 w-6" />
           </div>
 
           <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Check Your Registered Contact Method
+            Recovery instructions have been sent.
           </h2>
           <p className="mt-2 text-sm text-slate-600 leading-relaxed">
             If an eligible account matches the information provided, we'll send instructions to securely reset your password.
@@ -134,7 +141,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
           <div className="my-5 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-600 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-slate-800">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              <ShieldCheck className="h-4 w-4 text-medical-600" />
               <span>Security & Privacy Protocol</span>
             </div>
             <p className="leading-relaxed">
@@ -146,7 +153,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('reset-password')}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-medical-700 transition cursor-pointer"
             >
               <KeyRound className="h-4 w-4" />
               <span>Enter Reset Code / Create New Password</span>
@@ -170,7 +177,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           <button
             type="button"
             onClick={() => onNavigate('login')}
-            className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline transition cursor-pointer"
+            className="font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer"
           >
             Log In
           </button>
@@ -181,16 +188,16 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           <button
             type="button"
             onClick={() => onNavigate('signup')}
-            className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline transition cursor-pointer"
+            className="font-bold text-medical-700 hover:text-medical-800 hover:underline transition cursor-pointer"
           >
             Create Account
           </button>
         </p>
 
         <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-slate-400">
-          <a href="#privacy" className="hover:text-slate-600 transition">Privacy Policy</a>
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</button>
           <span>·</span>
-          <a href="#terms" className="hover:text-slate-600 transition">Terms of Service</a>
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="hover:text-slate-600 transition cursor-pointer">Terms &amp; Conditions</button>
           <span>·</span>
           <button
             type="button"

@@ -7952,10 +7952,857 @@ export const CANCER_GENETICS_TESTS: MedicalTest[] = [
     ],
     "whoShouldGetIt": [
       "Patients presenting with indicative clinical symptoms",
-      "IndividualsxúÏú]o‹∆ÜÔ˝+∫H@R“ƒmÁ¢P¨8Z$vUÀH¥πò%góSì34áî¬˝Ô}œøv•Â“¿™ µ'1§%gÊ|ΩÁÃcc≈ù.kπ6÷©XDIaçéDdM¨KmçÖ˙PÈBõµ(lUj£Dîj<#Së·Ÿ““g'ßœÑˇÔ‰ZñZô“â ƒ™X[z1S±>JTÙ˛¨ ù∞Ö»ufsU‡˘[’?í*YH)◊/π¿Ynu\…‘—[.*ÙgØl≤L∞dÆp“HƒEµ“/¯kX˜‰.QÊç-¶TV-U|ëZ£N^à∂øJ+K˚)úG,å∏—e%ÆÍe°c˝ªﬂY¨4g÷Ndï+ÖLÔdÌƒ>≤E°RâUÖwÒ™J”ﬁqâv8R}*Ú§v˛7Í7ôπS!b`≥<Uú(ã∫çÃqÁΩKﬁ¡Gé¸V∞©]˚eV2¬¬N∏*JÑtx[ïßX\ëvÍT$u\¯É∑[ô®¬A±Œ–õë4BõUZy√KÀn%~¬	6\Hü\*óaÕóﬁ¶}¯∆
-ó´H„ptò&RpKeRÂYªDRµní∞‘gL)ó6EsiT:4}aV∂»Dm´B$J¶e…B!1,rDÔU	∏˚æiß‚Vó2”¶Ò5íeâìπ*o\>‹È¶îµê1å8¶u„º˛ËﬁÆŒOÈñπ≤–ëOú¶¥ëE¬“ŸlÅÉ©xÀ{ÖvÔ›Öâ_Rº€]á˝M,ãX,Skc™cÕô6∑“Q…8Iy¶©ä⁄¿Hòß3XEàO]™◊I)ê¥j%Çw±û¡ˇóE•˝F"¬J„‹ïâ 
-Gv∫TümxΩŸui„∫1x∏3ôI¢QE¡Aâ‡¸°
-ù™°¶,kß¶pn“y≥ù_8"Ï¯≈ßﬁ%2BßCˇ¸ß˘ìQó)UnÔ≤∑jóá∫≈˛HﬂŒrΩ4kˇ|ˇXHp¸‚x]©J#”˙wU|á¯‚YQZë"≈ê(‡;ˇæn∂$6“≠∫¯ËÜI¬ºBnñÓR:ïíº"ç‰ÓH‡ôÚºπÕ´4Od[t‚øûKÛ≈ˆﬁ]b˝ê™[ü».Cê∆!?é„≈:óeBÁÜÄıÖö‘$ÊÙÄ.ÒÚΩäeÌj“…˙)%üå*,Cë`3í	…3Hµ∑A!º4‡¯êiüxA*5+‘≠Vwæ~!ëkín±B.⁄;Ùñ≠¬/w˚·REa≤#ú^ΩÇ(+î=‰7ÍjÉﬁCmß1YÊ2ÚÆÄ≈jµR¡w$5ÿ…—í°LB«™∑ﬁ(˘Ex—¨ﬂ*W•Âé¸SzΩ»¯'‚¶◊µaVÜ”–„/UÅ≤B›'•˘∂ImG¶:ã1tíÈ˚ëD÷9IŸ/}ÛÎìtÏl7A∞Æ∏îDÁq•2õ"¨;NwâZ√µP”à\§K#+hp@c ¸¸@zEGã’∫Ä\G„ùÌã∑Tª™D∆∑]v≠HÜøWQ›…|–,‚këC•–˘n%´“fæê°^Ü.Ω4ò`ÆCsÇ_óˇnÚ`©ÒjÒ^°YØ(AËs$ﬂŸ“Á£oYÉ~âWH¶ÅÄ5µî÷ç‚ ∂¥)‹“h[Z8oÛ¿VUËLár À/µÎ=14ˇ5Õ4fâ£∑©Çt%)/’o•∞´≠"Ìd≥πPrÉ“nÂ“+∞ÛEÂ%7t)XµTÂùR¶”]<b* !Dæ";˙õCip€≈ÛaG•|Ä»∑R|eÔ`AâÕ\b´4ëHAN‰m≠‚ø≥sŸùÚÈ˛NÖnª¢ëá¥	ö+#L_t7ÿˆésuñ#´0ü¶ÚÆsÜ©≈ø[™´?∏¡ÄKÓ0£≈84ˇ“¬`£∞>zÊ—\dı∆∏T∞ÓêÔ√`≠ùüwò˚©VÑuvÈT34õ¡“2Z‘[“>Ó-hU˛\\Ña⁄ÿí$óÇí'©Zb∞ 0+¯‹ª?‡mW˙≥∆¡':¶£íg»¢≥Øø˝Ú§ù5dÊ'ö∆ds)˘QÏm∆Ω}Å‚9H/˝’DM?ƒ+‘H|_[LGh◊E˚F^9‚I/¸–Tî{˜ÛC:¨l‘≈∑œ–d)nbE∑n4≈µ™ ◊R=ë»Ñ∆‘uÔÛìç9ÎÌˇa(:…˚ÎÇOöÉﬁN¬H¸ì-˛‹Y9ÒΩüû?7™®2qC€°#∂Øî¯·ùÌªÎ…óœ≈≤≤UÔìÿ'gﬁû¯¢”w˝;ïfÎíÅ˝°9fP‡ WÂ˛S¢Uc†€n˝ıÍzOoÆE≈—(4)o W◊úònü⁄4ÈÚ⁄[îÒÏ>ã≤ÎÆô»∂≤Ì√dh¢“ºq ‹ı„Æü™ånX–>^#oÉûf◊Õ ‘∞)Å·≈üÁpT7U‚≤/ÀÖ[î”=eÜ}øl§‹"1Õ»
-ÃÇA;C§Cﬂ}èÊ‹ç≤=›®[HWwwÃhÆ∑!eóM :ü≤ÆIŸÅ5ı"£lAœˆ9A	˝|Ó]AÛÌ±ﬂ–ºùKhƒ4°~Lâe)OÖ2"8 L1FÓ 0ÿ•+Fò¨“îR‚îÆ~µlôzÀµÒS,ô&óAmg’µ]–†R8ΩÙ˜ƒ¡}XX≤≠≥<¡8_˛›Ô}©˛Òº+g€^F_à—¬ßË67W∫`≈H≤,\V”:4√Êâ|À)ü`nb45œÛô/œ≈u7êæÿX7®eERÿ
-≥£œ Ω™÷MDâ Ç\–‘Æøï˛⁄d÷˛
-mØ|.[/ø4áûı√g?w∂BÏË>mB£8»´[-}ïõjü™$ˆ§≥¨26à’ß/^\|˛√œãõãœNq#√d’›ì8ÂıÀ∑ÇƒïrV6á}~O›o^àøuw˙∂«–•I]–¡ä†±BÆq„@Ô≤≠ÔÌÿS˝∫ù≥6ÿHﬂ’ºH•51‹ìá§ÊYËL«·lßeÎ^À≤≠Nx’¸ö™*H≥Õt÷ æ∞ngÃPJ[8ÿ/˚∫3kä]‡æx˝’∑´“ˇÑñéÍ{˜â-Ü⁄ÑÅ¯{Ù˛¨_Æª*oŒÃΩ”B‚m˙˚]#Îm\UBò(\ÌpqÌ⁄…√Ó¶UÇ¥åÿ \‘¢hë2Àd ¶µŸ‘¥èŸŒ~Ÿ»QàW[y:[ ‘Ê‘xxØ⁄F∆ˆ∆ﬂ~TÂbÉrv‘ªπ˜–ö>/t≤q7jÛËa¬ÕD~Ñ»Ôoi‰»3êg ?O ø_ﬂéÉ«OÛ„x∆Òå„è«O@L„ÁO„ø⁄¶ÒfqóF ~BV⁄í¿ÓaÒ˚˝ò∑œù∑?” ˆVe¢à˙◊<Ñ˛ÄeÃÃôô33gf.ôôÔ}í3$Ö‰4-¶‚L≈ôä3ü'@–éÉÔ0úπ7soÊﬁ«¿Ω‚∫Á∫üoÉÓWä¢|aTïßVcv	óı˛ér(‡Ω{#ﬂsﬂ#±=  YùAx ·{\ÙÄ¯àÖ∆å3g0.åÔïê3 ˇ^ó›MåA9ÉrÂ Á	 GÑÌ8Ä˘08gpŒ‡¸¿˘ß`Ä>Ä˛ßmÄ˛£T7‘tm“ƒÚ¿}t/∆Ës«Ë„·= IﬂÄazÄÈ˚ΩÙx˙∏ëå‘©3Rg§.©Oûò™3U•Í„≠å¡:ÉuÎ÷Á	÷«µÌ8ÿ˙~0^gºŒx˝˙l¡Ñ}˛Ñ˝œ€ÑùÆlgØp≠o˛rÂÚÕÖè¯Å·˙Æmò´œù´ÔåÏ!æ˛|◊⁄L”õo=s– È;ÌcÜŒù:3tÒ»}œxƒ¯úÒ˘¯WõÔj`LŒôú39gr>OræS÷éöèöœºúy9ÛÚc‡ÂªÈ£Ú˘£ÚØÔ}õK!◊4è¸„ë˛˙ΩıéœéﬂÈ!æ≤Âﬁ¢å√õojy–3OÄÉﬂ7å8p‡¿≈#]Cìo&ﬂ„_«rØe1Úf‰Õ»õë˜<ë˜}=;÷˝∞›πr3‰>»˝ z`∫=∫˝Õ6›æ™¸]®Då.õ¢iò‡c¸{=ª1˘û;˘ﬁ‡p}[0T|äüû #ﬂg&s&ÊLÃôòãG&Ê”)ÊÁÃœG˘˘æv∆4ùi:”t¶ÈÛ§È˚‘Ì8ÿ˙/0ig“Œ§˝H˚^Ä¡‹}˛‹˝€mÓ~âÅYt_dæøóãK‹0â^‘è	‡ßnÀ$~Ó$~r§Ä‰'Ô≈l>∞˘èrÿÄÙìÌeZœ¥ûi=”zÒ»¥˛#«/∆ˆåÌG±˝‰«¸û˘=Û{Ê˜Û‰˜ìeÓ8@˛GπÉâ>}&˙«@Ùß”F˚sG˚ﬂ|Ò≈6⁄ø…q›N˚‡_<>÷ü≤%#˝π#˝IQ> Œü¥£¸ÄÚ';Î	`¸I∂2¬gÑœüæxdÑˇc„{∆˜£¯~RcctœËû—=£˚y¢˚Iwÿ~≤+Ÿ3≤gd»~Ÿ`\?\ˇÏ◊Ôû˝  ˇˇ ±ŸŒì
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Fluorescence In Situ Hybridization findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Fluorescence In Situ Hybridization may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Fluorescence In Situ Hybridization may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Fluorescence In Situ Hybridization performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-792",
+    "name": "Comparative Genomic Hybridization",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Comparative Genomic Hybridization concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Comparative Genomic Hybridization to support evidence-based diagnostic decisions.",
+    "overview": "Comparative Genomic Hybridization is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Comparative Genomic Hybridization is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Comparative Genomic Hybridization provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Comparative Genomic Hybridization",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Comparative Genomic Hybridization findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Comparative Genomic Hybridization may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Comparative Genomic Hybridization may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Comparative Genomic Hybridization performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-793",
+    "name": "Prenatal Karyotype",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Prenatal Karyotype concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Prenatal Karyotype to support evidence-based diagnostic decisions.",
+    "overview": "Prenatal Karyotype is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Prenatal Karyotype is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Prenatal Karyotype provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Prenatal Karyotype",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Prenatal Karyotype findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Prenatal Karyotype may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Prenatal Karyotype may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Prenatal Karyotype performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-794",
+    "name": "Fetal Aneuploidy Screening",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Fetal Aneuploidy Screening concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Fetal Aneuploidy Screening to support evidence-based diagnostic decisions.",
+    "overview": "Fetal Aneuploidy Screening is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Fetal Aneuploidy Screening is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Fetal Aneuploidy Screening provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Fetal Aneuploidy Screening",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Fetal Aneuploidy Screening findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Fetal Aneuploidy Screening may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Fetal Aneuploidy Screening may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Fetal Aneuploidy Screening performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-795",
+    "name": "Non-Invasive Prenatal Testing",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Non-Invasive Prenatal Testing concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Non-Invasive Prenatal Testing to support evidence-based diagnostic decisions.",
+    "overview": "Non-Invasive Prenatal Testing is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Non-Invasive Prenatal Testing is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Non-Invasive Prenatal Testing provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Non-Invasive Prenatal Testing",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Non-Invasive Prenatal Testing findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Non-Invasive Prenatal Testing may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Non-Invasive Prenatal Testing may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Non-Invasive Prenatal Testing performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-796",
+    "name": "Cell-Free Fetal DNA Test",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Cell-Free Fetal DNA Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Cell-Free Fetal DNA Test to support evidence-based diagnostic decisions.",
+    "overview": "Cell-Free Fetal DNA Test is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Cell-Free Fetal DNA Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Cell-Free Fetal DNA Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Cell-Free Fetal DNA Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Cell-Free Fetal DNA Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Cell-Free Fetal DNA Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Cell-Free Fetal DNA Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Cell-Free Fetal DNA Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-797",
+    "name": "Fragile X Testing",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Fragile X Testing concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Fragile X Testing to support evidence-based diagnostic decisions.",
+    "overview": "Fragile X Testing is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Fragile X Testing is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Fragile X Testing provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Fragile X Testing",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Fragile X Testing findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Fragile X Testing may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Fragile X Testing may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Fragile X Testing performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-798",
+    "name": "Huntington Disease Genetic Test",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Huntington Disease Genetic Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Huntington Disease Genetic Test to support evidence-based diagnostic decisions.",
+    "overview": "Huntington Disease Genetic Test is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Huntington Disease Genetic Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Huntington Disease Genetic Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Huntington Disease Genetic Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Huntington Disease Genetic Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Huntington Disease Genetic Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Huntington Disease Genetic Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Huntington Disease Genetic Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-799",
+    "name": "Duchenne Muscular Dystrophy Genetic Test",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Duchenne Muscular Dystrophy Genetic Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Duchenne Muscular Dystrophy Genetic Test to support evidence-based diagnostic decisions.",
+    "overview": "Duchenne Muscular Dystrophy Genetic Test is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Duchenne Muscular Dystrophy Genetic Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Duchenne Muscular Dystrophy Genetic Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Duchenne Muscular Dystrophy Genetic Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Duchenne Muscular Dystrophy Genetic Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Duchenne Muscular Dystrophy Genetic Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Duchenne Muscular Dystrophy Genetic Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Duchenne Muscular Dystrophy Genetic Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  },
+  {
+    "id": "test-lab-800",
+    "name": "Spinal Muscular Atrophy Genetic Test",
+    "category": "Oncology, Genetics & Molecular",
+    "purpose": "Evaluates Spinal Muscular Atrophy Genetic Test concentration or activity to assess physiological function and screen for organ pathology.",
+    "normalRange": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+    "preparation": "No special diet required unless combined with fasting metabolic panels.",
+    "sampleType": "Venous Blood / Serum Specimen",
+    "timeToResults": "24 Hours",
+    "description": "A standardized clinical laboratory assay measuring Spinal Muscular Atrophy Genetic Test to support evidence-based diagnostic decisions.",
+    "overview": "Spinal Muscular Atrophy Genetic Test is a diagnostic laboratory examination categorized under Oncology, Genetics & Molecular. It evaluates target physiological analytes to help clinicians establish definitive diagnoses, monitor disease progression, and assess therapeutic response.",
+    "whatIsIt": "Spinal Muscular Atrophy Genetic Test is an analytical testing procedure designed to measure the presence, concentration, or activity of specific biomarkers in venous blood / serum specimen.",
+    "whyImportant": "Accurate assessment of Spinal Muscular Atrophy Genetic Test provides vital clinical objective data, enabling early detection of metabolic, cellular, structural, or infectious abnormalities before irreversible complications occur.",
+    "howItWorks": "1. Specimen Collection: Venous Blood / Serum Specimen is collected adhering strictly to standard aseptic techniques.\n2. Processing: Specimen is prepared through centrifugation, chemical lysis, or extraction.\n3. Analyzer Detection: High-precision automated analyzers quantify target biomarkers via spectrophotometry, immunoassay (CLIA/ELISA), flow cytometry, or PCR amplification.\n4. Verification: Qualified pathologists verify results against clinical reference baselines.",
+    "whyPerformed": [
+      "Screen for underlying health conditions associated with oncology, genetics & molecular",
+      "Investigate patient symptoms and correlate with clinical examination findings",
+      "Monitor ongoing therapeutic management and treatment efficacy",
+      "Provide pre-operative baseline assessment and post-treatment follow-up"
+    ],
+    "conditionsDetected": [
+      "Target pathologies and organ system dysfunctions evaluated by Spinal Muscular Atrophy Genetic Test",
+      "Acute or chronic inflammatory, metabolic, or infectious disorders",
+      "Cellular and chemical imbalances requiring therapeutic intervention"
+    ],
+    "whoShouldGetIt": [
+      "Patients presenting with indicative clinical symptoms",
+      "Individuals with diagnosed chronic conditions requiring routine clinical monitoring",
+      "Patients undergoing medical check-ups or pre-operative medical clearances",
+      "Individuals prescribed medications requiring therapeutic drug monitoring"
+    ],
+    "whenNotInterpretedAlone": [
+      "Spinal Muscular Atrophy Genetic Test findings must always be correlated with full clinical history, physical exams, and complementary diagnostics.",
+      "Transient physiological factors such as diet, exercise, hydration, and concurrent medications can influence test values."
+    ],
+    "testPreparationChecklist": [
+      "No special diet required unless combined with fasting metabolic panels.",
+      "Inform your healthcare provider about all current medications, vitamins, and herbal supplements.",
+      "Stay adequately hydrated unless specific fluid restriction protocols are ordered."
+    ],
+    "risksAndComplications": [
+      "Standard blood or non-invasive sample collections carry minimal risk (slight brief sting or minor bruising at vein puncture site).",
+      "Invasive body fluid collections are conducted under strict sterile conditions by qualified specialists."
+    ],
+    "normalValuesDetails": [
+      {
+        "title": "Standard Reference Interval",
+        "range": "Reference values vary by clinical analyzer; refer to laboratory reference intervals.",
+        "interpretation": "Represents physiological baseline established across healthy population cohorts."
+      }
+    ],
+    "highInterpretation": [
+      "Elevated Spinal Muscular Atrophy Genetic Test may indicate active pathology, metabolic hyperactivity, reduced organ clearance, or acute disease flare.",
+      "Requires comprehensive physician review and targeted follow-up."
+    ],
+    "lowInterpretation": [
+      "Decreased Spinal Muscular Atrophy Genetic Test may signify deficiency, reduced synthetic organ capacity, or effective suppression under therapy."
+    ],
+    "factorsAffectingResults": [
+      {
+        "factor": "Medications & Supplements",
+        "effect": "Certain pharmaceuticals or high-dose vitamins can alter assay readings."
+      },
+      {
+        "factor": "Sample Handling & Hemolysis",
+        "effect": "Delayed processing or improper temperature can degrade sensitive analytes."
+      }
+    ],
+    "advantagesAndBenefits": [
+      "High analytical precision with automated calibration standards",
+      "Provides objective biomarkers for evidence-based medicine",
+      "Facilitates early intervention and proactive disease prevention"
+    ],
+    "limitationsAndDisadvantages": [
+      "Must be evaluated in the context of comprehensive clinical presentation",
+      "Reference ranges may vary slightly between analyzer manufacturers and laboratory platforms"
+    ],
+    "faqs": [
+      {
+        "question": "How often should I have the Spinal Muscular Atrophy Genetic Test performed?",
+        "answer": "Testing frequency depends on your individual clinical symptoms, diagnosed conditions, and your doctor's monitoring plan."
+      },
+      {
+        "question": "Do I need to stop my medications before taking this test?",
+        "answer": "Never stop prescribed medications without consulting your prescribing physician. Always notify the phlebotomist of current medications."
+      }
+    ]
+  }
+];

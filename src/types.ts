@@ -1,5 +1,6 @@
 export type NavigationTab = 
   | 'home'
+  | 'explore'
   | 'diseases'
   | 'medicines'
   | 'medical-tests'
@@ -26,7 +27,9 @@ export type NavigationTab =
   | 'my-history'
   | 'news-authority'
   | 'news-management'
-  | 'auth';
+  | 'auth'
+  | 'terms'
+  | 'privacy-policy';
 
 export * from './types/auth';
 
@@ -57,6 +60,20 @@ export interface UserAccount {
   savedDiseaseIds?: string[];
   savedMedicineIds?: string[];
   createdAt: string;
+  marketingConsent?: boolean;
+  consent?: {
+    termsVersion: string;
+    privacyVersion: string;
+    acceptedAt: string;
+    jurisdiction?: string;
+    method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+  };
+  consentHistory?: {
+    termsVersion: string;
+    privacyVersion: string;
+    acceptedAt: string;
+    method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+  }[];
 }
 
 export interface PatientProfile {
