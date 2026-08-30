@@ -282,6 +282,21 @@ async function startServer() {
     dietaryPreferences?: string[];
     healthGoals?: string[];
     marketingConsent?: boolean;
+    /** Versioned consent record — which policy versions were accepted, when. */
+    consent?: {
+      termsVersion: string;
+      privacyVersion: string;
+      acceptedAt: string;
+      jurisdiction?: string;
+      method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+    };
+    /** Historic consent records (policy versions previously accepted). */
+    consentHistory?: {
+      termsVersion: string;
+      privacyVersion: string;
+      acceptedAt: string;
+      method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+    }[];
     createdAt: string;
     lastLoginAt: string;
   }
@@ -524,7 +539,7 @@ async function startServer() {
 
       return res.status(401).json({
         success: false,
-        error: 'The email/mobile number or password you entered is incorrect. Please try again.'
+        error: 'Unable to sign in with those credentials. Please try again.'
       });
     }
 
@@ -621,7 +636,9 @@ async function startServer() {
       termsAccepted,
       marketingConsent,
       country,
-      preferredLanguage
+      preferredLanguage,
+      termsVersion,
+      privacyVersion
     } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
@@ -634,7 +651,14 @@ async function startServer() {
     if (!termsAccepted) {
       return res.status(400).json({
         success: false,
-        error: 'You must agree to the Terms of Service and Privacy Policy to create an account.'
+        error: 'You must agree to the Terms & Conditions and acknowledge the Privacy Policy to create an account.'
+      });
+    }
+
+    if (!termsVersion || !privacyVersion) {
+      return res.status(400).json({
+        success: false,
+        error: 'Consent version information is required to create an account.'
       });
     }
 
@@ -695,6 +719,21 @@ async function startServer() {
         expiresAt: Date.now() + 15 * 60 * 1000 // 15 mins
       },
       marketingConsent: Boolean(marketingConsent),
+      consent: {
+        termsVersion: String(termsVersion),
+        privacyVersion: String(privacyVersion),
+        acceptedAt: new Date().toISOString(),
+        jurisdiction: country || 'Unknown',
+        method: 'signup_checkbox'
+      },
+      consentHistory: [
+        {
+          termsVersion: String(termsVersion),
+          privacyVersion: String(privacyVersion),
+          acceptedAt: new Date().toISOString(),
+          method: 'signup_checkbox'
+        }
+      ],
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString()
     };
@@ -708,7 +747,7 @@ async function startServer() {
       timestamp: new Date().toISOString(),
       ipAddress: req.ip || '127.0.0.1',
       status: 'success',
-      details: 'Account created; verification code dispatched'
+      details: `Account created with consent: Terms ${termsVersion}, Privacy ${privacyVersion}; verification code dispatched`
     });
 
     return res.status(201).json({
@@ -1343,6 +1382,72 @@ async function startServer() {
   });
 
   // ---- Protected: Personal Health Dashboard (owner-only aggregate) ----
+  // ---- Protected: consent record (which policy versions were accepted) ----
+  app.get('/api/me/consent', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    return res.json({
+      success: true,
+      consent: user.consent || null,
+      consentHistory: user.consentHistory || [],
+      marketingConsent: Boolean(user.marketingConsent)
+    });
+  });
+
+  // ---- Protected: update optional marketing consent (easy opt-out) ----
+  app.post('/api/me/consent/marketing', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const enabled = Boolean(req.body?.enabled);
+    user.marketingConsent = enabled;
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: enabled ? 'MARKETING_CONSENT_OPTED_IN' : 'MARKETING_CONSENT_WITHDRAWN',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: enabled
+        ? 'Optional marketing consent granted (channel: email/selected channels)'
+        : 'Optional marketing consent withdrawn by user'
+    });
+    return res.json({ success: true, marketingConsent: user.marketingConsent });
+  });
+
+  // ---- Protected: re-acceptance after a policy update (material change) ----
+  app.post('/api/me/consent/accept', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const { termsVersion, privacyVersion } = req.body || {};
+    if (!termsVersion || !privacyVersion) {
+      return res.status(400).json({ success: false, error: 'Both Terms and Privacy versions are required to record consent.' });
+    }
+    // Move the previously accepted versions into history (historic records are preserved).
+    if (user.consent) {
+      user.consentHistory = user.consentHistory || [];
+      user.consentHistory.push({
+        termsVersion: user.consent.termsVersion,
+        privacyVersion: user.consent.privacyVersion,
+        acceptedAt: user.consent.acceptedAt,
+        method: user.consent.method
+      });
+    }
+    user.consent = {
+      termsVersion: String(termsVersion),
+      privacyVersion: String(privacyVersion),
+      acceptedAt: new Date().toISOString(),
+      jurisdiction: user.country || 'Unknown',
+      method: 'settings_reacceptance'
+    };
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'CONSENT_REACCEPTED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Policy re-acceptance recorded: Terms ${termsVersion}, Privacy ${privacyVersion}`
+    });
+    return res.json({ success: true, consent: user.consent, consentHistory: user.consentHistory });
+  });
+
   app.get('/api/me/dashboard', requireAuth, (req: any, res) => {
     const user: ServerPublicUser = req.authUser;
     const data = seedPrivateData(user.id, user.fullName);

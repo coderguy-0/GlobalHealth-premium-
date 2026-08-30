@@ -43,6 +43,10 @@ interface NavbarProps {
   savedCount: number;
   currentUser: UserAccount | null;
   onOpenAuthModal: (mode?: 'login' | 'signup') => void;
+  /** Open the dedicated full-page authentication experience (#auth). */
+  onOpenAuthPage: (mode?: 'login' | 'signup') => void;
+  /** Open Security & Privacy settings for the signed-in user. */
+  onOpenSecuritySettings: () => void;
   onLogout: () => void;
 }
 
@@ -59,6 +63,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   savedCount,
   currentUser,
   onOpenAuthModal,
+  onOpenAuthPage,
+  onOpenSecuritySettings,
   onLogout}) => {
   const { t, setIsLanguageModalOpen } = useLocalization();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -301,6 +307,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button onClick={() => go('my-history')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
                         <History className="h-4 w-4 text-slate-600" /> Activity &amp; Security History
                       </button>
+                      <button onClick={() => { setUserDropdownOpen(false); onOpenSecuritySettings(); }} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <ShieldCheck className="h-4 w-4 text-emerald-600" /> Security &amp; Privacy Settings
+                      </button>
                     </div>
                     <div className="mt-1 border-t border-slate-100 pt-1">
                       <button
@@ -321,7 +330,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   id="navbar-signin-btn"
                   type="button"
-                  onClick={() => onOpenAuthModal('login')}
+                  onClick={() => onOpenAuthPage('login')}
                   className="rounded-xl px-3.5 py-2 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
                   {t('nav.signIn')}
@@ -329,7 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   id="navbar-signup-btn"
                   type="button"
-                  onClick={() => onOpenAuthModal('signup')}
+                  onClick={() => onOpenAuthPage('signup')}
                   className="flex items-center gap-1.5 rounded-xl bg-medical-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition hover:bg-medical-700"
                 >
                   <UserPlus className="h-4 w-4" />
@@ -363,7 +372,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={() => onOpenAuthModal('signup')}
+                onClick={() => onOpenAuthPage('signup')}
                 className="flex items-center gap-1.5 rounded-xl bg-medical-600 px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm"
               >
                 <UserPlus className="h-4 w-4" />
@@ -416,7 +425,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      onOpenAuthModal('login');
+                      onOpenAuthPage('login');
                     }}
                     className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700"
                   >
@@ -426,7 +435,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      onOpenAuthModal('signup');
+                      onOpenAuthPage('signup');
                     }}
                     className="flex items-center justify-center gap-1.5 rounded-xl bg-medical-600 py-2.5 text-xs font-semibold text-white"
                   >

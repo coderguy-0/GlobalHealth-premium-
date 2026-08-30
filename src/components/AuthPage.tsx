@@ -33,6 +33,8 @@ interface AuthPageProps {
   onUpdateUser: (user: PublicUserAccount) => void;
   onReturnToHome: () => void;
   onNavigateToDashboard: () => void;
+  /** Open a full legal page (Terms / Privacy Policy). */
+  onOpenLegalPage?: (tab: 'terms' | 'privacy-policy') => void;
 }
 
 export const AuthPage: React.FC<AuthPageProps> = ({
@@ -42,7 +44,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   onLogout,
   onUpdateUser,
   onReturnToHome,
-  onNavigateToDashboard
+  onNavigateToDashboard,
+  onOpenLegalPage
 }) => {
   const { t, currentLanguage } = useLocalization();
   const [activeSubView, setActiveSubView] = useState<AuthSubView>(initialView);
@@ -73,6 +76,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           currentUser={currentUser}
           onUpdateUser={onUpdateUser}
           onBackToDashboard={onNavigateToDashboard}
+          onOpenLegalPage={onOpenLegalPage}
           onLogout={() => {
             onLogout();
             setActiveSubView('logout-success');
@@ -269,6 +273,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                   }}
                   onNavigate={(view) => setActiveSubView(view)}
                   onRequestHelp={() => setShowHelpModal(true)}
+                  onOpenLegal={onOpenLegalPage}
                   onRequiresVerification={(data) => {
                     setVerificationData({
                       userId: data.userId,
@@ -293,6 +298,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                   }}
                   onNavigate={(view) => setActiveSubView(view)}
                   onRequestHelp={() => setShowHelpModal(true)}
+                  onOpenLegal={onOpenLegalPage}
                 />
               )}
 
@@ -303,6 +309,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     setRecoveryToken(token);
                   }}
                   onRequestHelp={() => setShowHelpModal(true)}
+                  onOpenLegal={onOpenLegalPage}
                 />
               )}
 
@@ -310,6 +317,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 <ResetPasswordForm
                   initialToken={recoveryToken}
                   onSuccess={() => setActiveSubView('login')}
+                  onOpenLegal={onOpenLegalPage}
                   onNavigate={(view) => setActiveSubView(view)}
                   onRequestHelp={() => setShowHelpModal(true)}
                 />
@@ -327,6 +335,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                   }}
                   onNavigate={(view) => setActiveSubView(view)}
                   onRequestHelp={() => setShowHelpModal(true)}
+                  onOpenLegal={onOpenLegalPage}
                 />
               )}
 
@@ -346,8 +355,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} GlobalHealth Portal. All rights reserved. Strict Public User Security Policy.</p>
           <div className="flex items-center gap-4 text-slate-600 font-semibold">
-            <a href="#privacy" className="hover:text-emerald-700 transition">Privacy Policy</a>
-            <a href="#terms" className="hover:text-emerald-700 transition">Terms of Service</a>
+            <button type="button" onClick={() => onOpenLegalPage?.('privacy-policy')} className="hover:text-emerald-700 transition cursor-pointer">Privacy Policy</button>
+            <button type="button" onClick={() => onOpenLegalPage?.('terms')} className="hover:text-emerald-700 transition cursor-pointer">Terms &amp; Conditions</button>
             <button
               type="button"
               onClick={() => setShowHelpModal(true)}

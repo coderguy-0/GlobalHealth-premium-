@@ -20,12 +20,15 @@ import type { UserAccount } from '../../types';
 interface AuthGateProps {
   // Allows a host view to react after successful auth (e.g. resume booking).
   onAuthenticated?: (user: UserAccount) => void;
+  // Registration happens on the dedicated full-page Create Account flow
+  // (stepped, with explicit narrow consent) — never an inline blanket consent.
+  onOpenFullSignup?: () => void;
 }
 
 // A single, consistent authentication gate used across the entire app.
 // Used both as the global "this feature requires an account" modal and as the
 // full-page protected-route experience.
-export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated }) => {
+export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullSignup }) => {
   const { gateOpen, closeGate, gateMode, setGateMode, gateIntent, authenticate } = useAuth();
   const [mode, setLocalMode] = useState<'login' | 'signup'>('login');
   const [busy, setBusy] = useState(false);
@@ -84,71 +87,6 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated }) => {
       }
     } catch (err: any) {
       setError(err.message || 'Unable to sign in. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !signupPassword) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-    if (signupPassword.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      return;
-    }
-    setBusy(true);
-    try {
-      // 1) Create the account.
-      const reg = await apiFetch<{ success: boolean; error?: string; userId?: string; devCode?: string }>(
-        '/api/auth/signup',
-        {
-          method: 'POST',
-          auth: false,
-          body: {
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            email: email.trim(),
-            password: signupPassword,
-            confirmPassword: signupPassword,
-            termsAccepted: true,
-            marketingConsent: false,
-            preferredLanguage: 'English'
-          }
-        }
-      );
-      if (!reg?.success || !reg.userId) {
-        setError(reg?.error || 'Unable to create your account. Please try again.');
-        setBusy(false);
-        return;
-      }
-      // 2) Verify the email automatically in this prototype using the dispatched code.
-      const code = reg.devCode || '123456';
-      const ver = await apiFetch<{ success: boolean; error?: string; user?: any; token?: string }>(
-        '/api/auth/verify-code',
-        { method: 'POST', auth: false, body: { userId: reg.userId, code, type: 'email' } }
-      );
-      if (ver?.success && ver.user && ver.token) {
-        finish(toUserAccount(ver.user), ver.token);
-      } else {
-        // Fallback: log in directly after registration.
-        const login = await apiFetch<{ success: boolean; user?: any; token?: string; error?: string }>(
-          '/api/auth/login',
-          { method: 'POST', auth: false, body: { identifier: email.trim(), password: signupPassword } }
-        );
-        if (login?.success && login.user && login.token) {
-          finish(toUserAccount(login.user), login.token);
-        } else {
-          setError('Your account was created. Please sign in to continue.');
-          switchMode('login');
-          setIdentifier(email.trim());
-        }
-      }
-    } catch (err: any) {
-      setError(err.message || 'Unable to create your account. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -307,92 +245,40 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated }) => {
               </button>
               <p className="text-center text-sm text-slate-500">
                 New to GlobalHealth?{' '}
-                <button type="button" onClick={() => switchMode('signup')} className="font-semibold text-emerald-700 hover:underline">
+                <button type="button" onClick={onOpenFullSignup} className="font-semibold text-emerald-700 hover:underline">
                   Create an account
                 </button>
               </p>
             </form>
           ) : (
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-slate-700">First name</span>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    autoComplete="given-name"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
-                    placeholder="Asha"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-slate-700">Last name</span>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    autoComplete="family-name"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
-                    placeholder="Sharma"
-                  />
-                </label>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-emerald-900">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Create your GlobalHealth account</span>
+                </div>
+                <p className="mt-1.5 text-xs leading-relaxed text-emerald-900/80">
+                  Account creation is a three-step process on a dedicated page: your basic details, a secure password
+                  (with a strength indicator), then a review step where you explicitly accept the GlobalHealth Terms
+                  &amp; Conditions and acknowledge the Privacy Policy. Consent is specific and never pre-ticked.
+                </p>
+                <button
+                  type="button"
+                  onClick={onOpenFullSignup}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Continue to Create Account
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-slate-700">Email address</span>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-slate-700">Password</span>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    autoComplete="new-password"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/30"
-                    placeholder="At least 8 characters"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </label>
-              <button
-                type="submit"
-                disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60"
-              >
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                Create Account
-              </button>
-              <p className="flex items-start gap-1.5 text-xs text-slate-500">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                Your personal health data is private by default and protected at every layer.
-              </p>
               <p className="text-center text-sm text-slate-500">
                 Already have an account?{' '}
                 <button type="button" onClick={() => switchMode('login')} className="font-semibold text-emerald-700 hover:underline">
                   Log in <ArrowRight className="inline h-3.5 w-3.5" />
                 </button>
               </p>
-            </form>
+            </div>
           )}
         </div>
       </div>

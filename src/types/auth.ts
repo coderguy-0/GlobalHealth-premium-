@@ -75,6 +75,20 @@ export interface PublicUserAccount {
   dietaryPreferences?: string[];
   healthGoals?: string[];
   marketingConsent?: boolean;
+  /** Versioned consent record — which policy versions were accepted and when. */
+  consent?: {
+    termsVersion: string;
+    privacyVersion: string;
+    acceptedAt: string;
+    jurisdiction?: string;
+    method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+  };
+  consentHistory?: {
+    termsVersion: string;
+    privacyVersion: string;
+    acceptedAt: string;
+    method: 'signup_checkbox' | 'login_acknowledgement' | 'settings_reacceptance';
+  }[];
 }
 
 export interface PasswordStrength {

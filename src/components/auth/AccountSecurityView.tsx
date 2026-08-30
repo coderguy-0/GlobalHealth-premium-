@@ -20,7 +20,11 @@ import {
   AlertCircle,
   Clock,
   MapPin,
-  Globe
+  Globe,
+  FileText,
+  MousePointerClick,
+  ExternalLink,
+  Ban as BanIcon
 } from 'lucide-react';
 import { PublicUserAccount, PublicUserSession, SecurityAuditLogEntry } from '../../types/auth';
 import { 
@@ -31,23 +35,31 @@ import {
   setupTwoFactor, 
   verifyTwoFactor, 
   getAuditLogs, 
-  calculatePasswordStrength 
+  calculatePasswordStrength,
+  updateMarketingConsent,
+  acceptPolicyVersions
 } from '../../services/authService';
+import { TERMS_VERSION, PRIVACY_VERSION, TERMS_EFFECTIVE_DATE, PRIVACY_EFFECTIVE_DATE } from '../../lib/policyVersions';
 
 interface AccountSecurityViewProps {
   currentUser: PublicUserAccount;
   onUpdateUser: (updated: PublicUserAccount) => void;
   onBackToDashboard: () => void;
   onLogout: () => void;
+  onOpenLegalPage?: (tab: 'terms' | 'privacy-policy') => void;
 }
 
 export const AccountSecurityView: React.FC<AccountSecurityViewProps> = ({
   currentUser,
   onUpdateUser,
   onBackToDashboard,
-  onLogout
+  onLogout,
+  onOpenLegalPage
 }) => {
-  const [activeTab, setActiveTab] = useState<'password' | 'sessions' | '2fa' | 'audit' | 'danger'>('sessions');
+  const [activeTab, setActiveTab] = useState<'password' | 'sessions' | '2fa' | 'audit' | 'consent' | 'danger'>('sessions');
+  const [consentMsg, setConsentMsg] = useState('');
+  const [consentErr, setConsentErr] = useState('');
+  const [consentBusy, setConsentBusy] = useState(false);
 
   // Change Password state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -282,6 +294,18 @@ export const AccountSecurityView: React.FC<AccountSecurityViewProps> = ({
         >
           <KeyRound className="h-3.5 w-3.5" />
           <span>Two-Factor Auth {currentUser.twoFactor?.enabled && '✓'}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('consent')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl transition cursor-pointer ${
+            activeTab === 'consent'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <FileText className="h-3.5 w-3.5" />
+          <span>Privacy &amp; Consent</span>
         </button>
 
         <button
@@ -695,6 +719,177 @@ export const AccountSecurityView: React.FC<AccountSecurityViewProps> = ({
       )}
 
       {/* Tab 5: ACCOUNT MANAGEMENT / DANGER ZONE */}
+      {activeTab === 'consent' && (
+        <div className="max-w-3xl">
+          <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+            <div className="flex items-center gap-2 font-bold text-sm text-emerald-900">
+              <ShieldCheck className="h-4 w-4" />
+              <span>Your consent record</span>
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-emerald-900/80">
+              GlobalHealth records which version of the Terms &amp; Conditions and Privacy Policy you accepted, and
+              when. Consent is specific and itemized — it is never a blanket &ldquo;I consent to everything&rdquo;.
+              You can withdraw optional consents here, and manage or withdraw account-necessary consent in Account
+              Management.
+            </p>
+          </div>
+
+          {consentMsg && (
+            <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">{consentMsg}</div>
+          )}
+          {consentErr && (
+            <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800">{consentErr}</div>
+          )}
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Accepted policy versions</h3>
+              <dl className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="rounded-xl bg-slate-50 p-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Terms &amp; Conditions</dt>
+                  <dd className="mt-1 text-sm font-bold text-slate-900">{currentUser.consent?.termsVersion || '—'}</dd>
+                  <dd className="text-[11px] text-slate-500">Effective {TERMS_EFFECTIVE_DATE}</dd>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Privacy Policy</dt>
+                  <dd className="mt-1 text-sm font-bold text-slate-900">{currentUser.consent?.privacyVersion || '—'}</dd>
+                  <dd className="text-[11px] text-slate-500">Effective {PRIVACY_EFFECTIVE_DATE}</dd>
+                </div>
+              </dl>
+              <p className="mt-2 text-[11px] text-slate-500">
+                Accepted at:{' '}
+                {currentUser.consent?.acceptedAt
+                  ? new Date(currentUser.consent.acceptedAt).toLocaleString()
+                  : '—'}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenLegalPage?.('terms')}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  <ExternalLink className="h-3 w-3" /> Read Terms &amp; Conditions
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegalPage?.('privacy-policy')}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  <ExternalLink className="h-3 w-3" /> Read Privacy Policy
+                </button>
+              </div>
+            </div>
+
+            {/* Policy-update re-acceptance */}
+            {currentUser.consent &&
+              (currentUser.consent.termsVersion !== TERMS_VERSION ||
+                currentUser.consent.privacyVersion !== PRIVACY_VERSION) && (
+                <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
+                    <div className="text-xs text-amber-900">
+                      <span className="font-bold">Updated policies available.</span> We&apos;ve updated our Terms &amp;
+                      Conditions and Privacy Policy. Review them above, then accept the current versions.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={consentBusy}
+                    onClick={async () => {
+                      setConsentBusy(true);
+                      setConsentMsg('');
+                      setConsentErr('');
+                      const result = await acceptPolicyVersions(TERMS_VERSION, PRIVACY_VERSION);
+                      setConsentBusy(false);
+                      if (result.success && currentUser.consent) {
+                        onUpdateUser({
+                          ...currentUser,
+                          consent: result.consent,
+                          consentHistory: result.consentHistory
+                        });
+                        setConsentMsg('You have accepted the updated policies. Thank you.');
+                      } else {
+                        setConsentErr(result.error || 'Could not record acceptance. Please try again.');
+                      }
+                    }}
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-amber-700 transition cursor-pointer disabled:opacity-60"
+                  >
+                    {consentBusy ? 'Recording…' : 'Accept updated policies'}
+                  </button>
+                </div>
+              )}
+
+            {/* Optional marketing consent — withdrawal at comparable ease */}
+            <div className="rounded-xl border border-slate-200 p-3.5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Optional communications</h4>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">
+                    GlobalHealth updates, health education, product news and service communications by email or other
+                    selected channels. This is separate from your account consent, and you can change it here at any
+                    time — the same ease as granting it.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setConsentBusy(true);
+                    setConsentMsg('');
+                    setConsentErr('');
+                    const result = await updateMarketingConsent(!currentUser.marketingConsent);
+                    setConsentBusy(false);
+                    if (result.success) {
+                      onUpdateUser({ ...currentUser, marketingConsent: result.marketingConsent });
+                      setConsentMsg(
+                        result.marketingConsent
+                          ? 'Optional communications enabled.'
+                          : 'Optional communications turned off. Your preference is saved.'
+                      );
+                    } else {
+                      setConsentErr(result.error || 'Could not update your preference. Please try again.');
+                    }
+                  }}
+                  disabled={consentBusy}
+                  aria-pressed={Boolean(currentUser.marketingConsent)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition cursor-pointer disabled:opacity-60 ${
+                    currentUser.marketingConsent
+                      ? 'bg-slate-900 text-white hover:bg-slate-700'
+                      : 'bg-medical-600 text-white hover:bg-medical-700'
+                  }`}
+                >
+                  <MousePointerClick className="h-3 w-3" />
+                  {currentUser.marketingConsent ? 'Opt out' : 'Opt in'}
+                </button>
+              </div>
+              <p className="mt-2 text-[11px] text-slate-400">
+                Current preference: <strong>{currentUser.marketingConsent ? 'Receiving optional communications' : 'Not receiving optional communications'}</strong>
+              </p>
+            </div>
+
+            {/* Withdrawal path — account-necessary consent */}
+            <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-3.5">
+              <div className="flex items-start gap-2">
+                <BanIcon className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                <div className="text-xs text-rose-900">
+                  <span className="font-bold">Withdraw account consent (comparable ease to granting).</span>{' '}
+                  Some GlobalHealth features (personal health records, saved library, appointments) require an account
+                  and the personal information described in the Privacy Policy. Withdrawing that consent means closing
+                  your account — go to <strong>Account Management</strong> to delete or deactivate it. Historic
+                  consent versions remain recorded for compliance.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('danger')}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-[11px] font-bold text-rose-700 hover:bg-rose-100 transition cursor-pointer"
+              >
+                Go to Account Management
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'danger' && (
         <div className="max-w-xl mx-auto bg-white p-6 rounded-3xl border border-rose-200 shadow-sm text-left space-y-6">
           <div>

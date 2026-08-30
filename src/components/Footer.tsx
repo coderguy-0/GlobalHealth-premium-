@@ -7,21 +7,13 @@ interface FooterProps {
   onTabChange: (tab: NavigationTab) => void;
 }
 
-type LegalDoc = 'privacy' | 'terms' | 'editorial' | 'about' | 'contact' | 'accessibility' | null;
+type LegalDoc = 'editorial' | 'about' | 'contact' | 'accessibility' | null;
 
 export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
   const { t, languageOption, setIsLanguageModalOpen } = useLocalization();
   const [legalDoc, setLegalDoc] = useState<LegalDoc>(null);
 
   const legalCopy: Record<NonNullable<LegalDoc>, { title: string; body: string }> = {
-    privacy: {
-      title: 'Privacy policy',
-      body: 'GlobalHealth stores personal health information only for the signed-in account. Records are isolated per user, access is consent-controlled, and emergency numbers on this site are for public information only. We do not sell health data.',
-    },
-    terms: {
-      title: 'Terms of service',
-      body: 'GlobalHealth is an educational health directory and care-coordination workspace. It does not replace professional medical advice, diagnosis or emergency care. Always consult a licensed clinician for personal medical decisions.',
-    },
     editorial: {
       title: 'Medical disclaimer',
       body: 'Public news and research briefs are labelled by source and evidence type. Institutional announcements are published through the Verified Authority portal. Content is educational and is not a prescription. GlobalHealth is not a medical certification body.',
@@ -106,8 +98,8 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
             <ul className="space-y-2.5">
               {columnLink('About', () => setLegalDoc('about'))}
               {columnLink('Contact', () => setLegalDoc('contact'))}
-              {columnLink('Privacy', () => setLegalDoc('privacy'))}
-              {columnLink('Terms', () => setLegalDoc('terms'))}
+              {columnLink('Privacy Policy', () => onTabChange('privacy-policy'))}
+              {columnLink('Terms & Conditions', () => onTabChange('terms'))}
               {columnLink('Accessibility', () => setLegalDoc('accessibility'))}
               {columnLink('Medical Disclaimer', () => setLegalDoc('editorial'))}
             </ul>
@@ -118,9 +110,9 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
         <div className="mt-12 flex flex-col gap-4 border-t border-slate-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11px] text-slate-500">© {new Date().getFullYear()} GlobalHealth. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-slate-500">
-            <button type="button" onClick={() => setLegalDoc('privacy')} className="transition hover:text-slate-300">Privacy</button>
+            <button type="button" onClick={() => onTabChange('privacy-policy')} className="transition hover:text-slate-300">Privacy</button>
             <span aria-hidden="true">•</span>
-            <button type="button" onClick={() => setLegalDoc('terms')} className="transition hover:text-slate-300">Terms</button>
+            <button type="button" onClick={() => onTabChange('terms')} className="transition hover:text-slate-300">Terms</button>
             <span aria-hidden="true">•</span>
             <button type="button" onClick={() => setLegalDoc('accessibility')} className="transition hover:text-slate-300">Accessibility</button>
             <span aria-hidden="true">•</span>

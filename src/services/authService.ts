@@ -83,6 +83,7 @@ export async function loginUser(identifier: string, password: string, rememberMe
 export async function signupUser(formData: {
   firstName: string;
   lastName: string;
+  displayName?: string;
   email: string;
   phoneNumber?: string;
   password: string;
@@ -91,6 +92,9 @@ export async function signupUser(formData: {
   marketingConsent?: boolean;
   country?: string;
   preferredLanguage?: string;
+  /** Versioned consent — the exact Terms/Privacy versions accepted. */
+  termsVersion?: string;
+  privacyVersion?: string;
 }) {
   try {
     const res = await fetch('/api/auth/signup', {
@@ -309,4 +313,32 @@ export async function getAuditLogs(userId: string): Promise<SecurityAuditLogEntr
       details: 'Secure login via GlobalHealth portal'
     }
   ];
+}
+
+// ---- Consent management (versioned) ----
+
+export async function updateMarketingConsent(enabled: boolean) {
+  try {
+    const res = await fetch('/api/me/consent/marketing', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ enabled })
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, error: 'Network connection error. Please try again.' };
+  }
+}
+
+export async function acceptPolicyVersions(termsVersion: string, privacyVersion: string) {
+  try {
+    const res = await fetch('/api/me/consent/accept', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ termsVersion, privacyVersion })
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, error: 'Network connection error. Please try again.' };
+  }
 }

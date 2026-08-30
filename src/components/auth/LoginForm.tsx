@@ -8,6 +8,7 @@ interface LoginFormProps {
   onSuccess: (user: PublicUserAccount, token?: string) => void;
   onNavigate: (view: 'signup' | 'forgot-password' | 'verify-email' | 'verify-phone') => void;
   onRequestHelp?: () => void;
+  onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
   onRequiresVerification?: (data: { userId: string; email?: string; phone?: string; type: 'email' | 'phone' }) => void;
 }
 
@@ -15,6 +16,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onSuccess,
   onNavigate,
   onRequestHelp,
+  onOpenLegal,
   onRequiresVerification
 }) => {
   const { t } = useLocalization();
@@ -61,8 +63,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       }, 400);
     } else {
       setErrorMessage(
-        result.error ||
-        'The email/mobile number or password you entered is incorrect. Please try again.'
+        result.error || 'Unable to sign in with those credentials. Please try again.'
       );
     }
   };
@@ -83,10 +84,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       {/* Form Header */}
       <div className="mb-6 text-left">
         <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
-          Welcome Back
+          Welcome back
         </h1>
         <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-          Access your GlobalHealth account to manage your healthcare preferences, appointments, saved facilities and more.
+          Sign in to your GlobalHealth account.
         </p>
       </div>
 
@@ -191,6 +192,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           </label>
         </div>
 
+        {/* Login consent line — returning users are not forced to re-accept
+            Terms every time; this is an acknowledgement, not a new consent. */}
+        <p className="text-[11px] leading-relaxed text-slate-500">
+          By continuing, you agree to the{' '}
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="font-semibold text-medical-700 hover:underline cursor-pointer">Terms &amp; Conditions</button>{' '}
+          and acknowledge the{' '}
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="font-semibold text-medical-700 hover:underline cursor-pointer">Privacy Policy</button>.
+        </p>
+
         {/* Primary Submit Button */}
         <button
           type="submit"
@@ -252,9 +262,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         </p>
 
         <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-slate-400">
-          <a href="#privacy" className="hover:text-slate-600 transition">Privacy Policy</a>
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</button>
           <span>·</span>
-          <a href="#terms" className="hover:text-slate-600 transition">Terms of Service</a>
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="hover:text-slate-600 transition cursor-pointer">Terms &amp; Conditions</button>
           <span>·</span>
           <button
             type="button"
@@ -264,6 +274,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             Help & Security
           </button>
         </div>
+
+        {/* Security note — accurate, never overclaiming (spec) */}
+        <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-medical-500" />
+          Your account is protected by security measures designed to help safeguard your information. Never share
+          your password or verification code with anyone.
+        </p>
       </div>
     </div>
   );

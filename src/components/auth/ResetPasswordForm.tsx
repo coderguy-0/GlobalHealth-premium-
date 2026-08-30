@@ -7,13 +7,15 @@ interface ResetPasswordFormProps {
   onSuccess: () => void;
   onNavigate: (view: 'login' | 'forgot-password') => void;
   onRequestHelp?: () => void;
+  onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
 }
 
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   initialToken = '',
   onSuccess,
   onNavigate,
-  onRequestHelp
+  onRequestHelp,
+  onOpenLegal
 }) => {
   const [resetToken, setResetToken] = useState(initialToken || 'rst-demo-valid');
   const [newPassword, setNewPassword] = useState('');
@@ -243,9 +245,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         </button>
 
         <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-slate-400">
-          <a href="#privacy" className="hover:text-slate-600 transition">Privacy Policy</a>
+          <button type="button" onClick={() => onOpenLegal?.('privacy-policy')} className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</button>
           <span>·</span>
-          <a href="#terms" className="hover:text-slate-600 transition">Terms of Service</a>
+          <button type="button" onClick={() => onOpenLegal?.('terms')} className="hover:text-slate-600 transition cursor-pointer">Terms &amp; Conditions</button>
           <span>·</span>
           <button
             type="button"

@@ -7,6 +7,8 @@ import { MedicalDisclaimer } from './components/MedicalDisclaimer';
 import { HomePage } from './components/home/HomePage';
 import { GlobalHealthAIAssistant } from './components/ai/GlobalHealthAIAssistant';
 import { ExplorePage } from './components/explore/ExplorePage';
+import { TermsPage } from './components/legal/TermsPage';
+import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
 import { DiseasesSection } from './components/diseases/DiseasesSection';
 import { MedicinesView } from './components/MedicinesView';
 import { MedicalTestsView } from './components/MedicalTestsView';
@@ -26,11 +28,16 @@ import { PortalCredentialForm } from './components/portals/PortalCredentialForm'
 import { NewsStaffSignupScreen } from './components/news/NewsWorkspaceAccessScreens';
 import { NewsManagementLogin } from './components/NewsManagementLogin';
 import { useLocalization } from './context/LocalizationContext';
-import { useAuth } from './context/AuthContext';
+import { useAuth, toUserAccount } from './context/AuthContext';
+import { AuthSubView } from './types/auth';
+import { TERMS_VERSION } from './lib/policyVersions';
 import { newsAuthService } from './services/newsAuthService';
 
 // Heavy workspaces (portals, CMS, health-records suite) are code-split so the
 // public homepage never downloads them until a visitor actually opens one.
+const AuthPage = lazy(() =>
+  import('./components/AuthPage').then((m) => ({ default: m.AuthPage }))
+);
 const AIAssistantView = lazy(() =>
   import('./components/AIAssistantView').then((m) => ({ default: m.AIAssistantView }))
 );
@@ -209,7 +216,7 @@ const OVERLAY_META: Partial<Record<NavigationTab, { title: string; subtitle: str
 
 export default function App() {
   const { currentLanguage, direction } = useLocalization();
-  const { user: currentUser, initializing, requireAuth, gateOpen, logout } = useAuth();
+  const { user: currentUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
   const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
   const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
   // Optional prompt pre-filled when a user asks AI from a context page (e.g. a disease).
@@ -218,6 +225,8 @@ export default function App() {
   // conversation survives page navigation — but it is NOT mounted (nor its
   // lazy chunk loaded) until the user actually opens the assistant.
   const [hasOpenedAssistant, setHasOpenedAssistant] = useState(false);
+  // Which view the dedicated authentication page (#auth) opens on.
+  const [authInitialView, setAuthInitialView] = useState<AuthSubView>('login');
   const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('login');
   // Editorial staff unlock for the News Management workspace (validated via
   // newsAuthService — independent of the patient account gate).
@@ -263,7 +272,7 @@ export default function App() {
     'home', 'explore', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
     'calculators', 'ai-assistant', 'hospitals', 'doctors', 'medical-map', 'community',
     'news', 'news-admin', 'dashboard', 'hospital-portal', 'doctor-portal', 'medauth',
-    'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth'
+    'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth', 'terms', 'privacy-policy'
   ];
 
   const tabFromHash = useCallback((): NavigationTab | null => {
@@ -401,6 +410,20 @@ export default function App() {
     requireAuth({ feature: 'access your personal content and private account data' }, mode);
   };
 
+  // Explicit "Log In" / "Sign Up" CTAs open the dedicated full-page
+  // authentication experience (#auth) instead of the inline gate.
+  const handleOpenAuthPage = (mode: 'login' | 'signup' = 'login') => {
+    setAuthInitialView(mode);
+    setCurrentTab('auth');
+  };
+
+  // Signed-in users open their Security & Privacy settings (password, 2FA,
+  // sessions, audit trail, privacy & consent) via the full auth page.
+  const handleOpenSecuritySettings = () => {
+    setAuthInitialView('security');
+    setCurrentTab('auth');
+  };
+
   const handleToggleSave = (id: string) => {
     if (!currentUser) {
       requireAuth({ feature: 'save items to your private library' }, 'login');
@@ -412,6 +435,15 @@ export default function App() {
       return next;
     });
   };
+
+  // If a signed-in visitor lands on the auth page, take them to their
+  // dashboard instead of showing a login form.
+  useEffect(() => {
+    if (currentUser && currentTab === 'auth' && authInitialView !== 'security') {
+      setCurrentTab('dashboard');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, currentTab, authInitialView]);
 
   // While the session is being verified, show a neutral loading state for
   // protected destinations — never flash private content.
@@ -630,6 +662,8 @@ export default function App() {
         savedCount={savedIds.length}
         currentUser={currentUser}
         onOpenAuthModal={handleOpenAuthModal}
+        onOpenAuthPage={handleOpenAuthPage}
+        onOpenSecuritySettings={handleOpenSecuritySettings}
         onLogout={async () => {
           await logout();
           setOverlayTab(null);
@@ -640,6 +674,30 @@ export default function App() {
 
       {/* Primary Main View Container — stays mounted under overlays */}
       <main className="flex-1">
+        {/* Policy-update re-acceptance banner: when the accepted Terms/Privacy
+            versions are older than the current published versions, surface a
+            clear path to review and accept (spec: material-change re-acceptance). */}
+        {currentUser &&
+          currentUser.consent &&
+          currentUser.consent.termsVersion !== TERMS_VERSION &&
+          currentTab !== 'auth' && (
+            <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5">
+              <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                <p className="text-xs font-medium text-amber-900">
+                  <strong>Updated policies:</strong> We&apos;ve updated our Terms &amp; Conditions and Privacy Policy.
+                  Review them and accept the current versions to continue using your account.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleOpenSecuritySettings}
+                  className="shrink-0 rounded-lg bg-amber-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-amber-700 cursor-pointer"
+                >
+                  Review &amp; Accept
+                </button>
+              </div>
+            </div>
+          )}
+
         {showSecureLoading && !overlayTab && <AuthLoading />}
 
         {!showSecureLoading && (
@@ -712,6 +770,30 @@ export default function App() {
             onHome={() => setCurrentTab('home')}
           />
         )}
+
+        {currentTab === 'auth' && (
+          <Suspense fallback={<RouteFallback />}>
+            <AuthPage
+              initialView={authInitialView}
+              currentUser={currentUser}
+              onLoginSuccess={(user, token) => {
+                authenticate(toUserAccount(user), token || '');
+                if (!intendedTabRef.current) setCurrentTab('dashboard');
+              }}
+              onLogout={async () => {
+                await logout();
+              }}
+              onUpdateUser={persistUserPatch}
+              onReturnToHome={() => setCurrentTab('home')}
+              onNavigateToDashboard={() => setCurrentTab('dashboard')}
+              onOpenLegalPage={(tab) => setCurrentTab(tab)}
+            />
+          </Suspense>
+        )}
+
+        {currentTab === 'terms' && <TermsPage onNavigate={handleNavTabChange} />}
+
+        {currentTab === 'privacy-policy' && <PrivacyPolicyPage onNavigate={handleNavTabChange} />}
 
         {/* AI Assistant workspace: the lazy chunk loads on first open, then
             the workspace stays mounted (hidden) so guest session
@@ -798,7 +880,7 @@ export default function App() {
       <LanguageModal />
 
       {/* Global Authentication Gate (login / create account / access control) */}
-      <AuthGate />
+      <AuthGate onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }} />
 
       {/* Session-expired overlay */}
       <SessionExpiredModal />
