@@ -49,7 +49,7 @@ import {
   DEFICIENCY_DISEASES_DATA, 
   TOXICITY_DISEASES_DATA 
 } from '../data/nutritionData';
-import { Recipe, NutritionFood, VitaminDetail, MineralDetail, DeficiencyDisease, ToxicityDisease, FoodInteraction, MealPlan } from '../types';
+import { Recipe, NutritionFood, VitaminDetail, MineralDetail, DeficiencyDisease, ToxicityDisease, FoodInteraction, MealPlan, NavigationTab } from '../types';
 import { AIMealPlannerView } from './AIMealPlannerView';
 import { FoodDrugInteractionView } from './FoodDrugInteractionView';
 import { FoodComparisonLabView } from './FoodComparisonLabView';
@@ -59,6 +59,8 @@ interface NutritionLibraryViewProps {
   savedIds: string[];
   onToggleSave: (id: string) => void;
   onRequestAuth?: () => void;
+  onNavigate?: (tab: NavigationTab) => void;
+  onAskAI?: (prompt: string) => void;
 }
 
 type NutritionSection = 
@@ -71,7 +73,9 @@ type NutritionSection =
 export const NutritionLibraryView: React.FC<NutritionLibraryViewProps> = ({
   savedIds,
   onToggleSave,
-  onRequestAuth
+  onRequestAuth,
+  onNavigate,
+  onAskAI
 }) => {
   const [activeSection, setActiveSection] = useState<NutritionSection>('recipes');
 
@@ -196,6 +200,8 @@ export const NutritionLibraryView: React.FC<NutritionLibraryViewProps> = ({
             savedIds={savedIds} 
             onToggleSave={onToggleSave}
             hideHeader={true}
+            onNavigate={onNavigate}
+            onAskAI={onAskAI}
           />
         )}
 

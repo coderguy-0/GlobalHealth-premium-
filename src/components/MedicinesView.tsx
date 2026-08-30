@@ -47,12 +47,13 @@ import {
 import { MEDICINES } from '../data/healthData';
 import { PHARMACY_PRODUCTS, VERIFIED_PHARMACY_PARTNERS, PHARMACY_FAQS } from '../data/pharmacyProductsData';
 import { fetchProductAvailability } from '../services/pharmacyInventoryClient';
-import { Medicine } from '../types';
+import { Medicine, NavigationTab } from '../types';
 import { PharmacyProduct, CartItem, UploadedPrescription, PharmacyOrder, PharmacyPartner, PartnerAvailabilityOption } from '../types/pharmacyMarketplace';
 import { useLocalization } from '../context/LocalizationContext';
 import { useAuth } from '../context/AuthContext';
 import { PharmacyProductDetailModal } from './pharmacy/PharmacyProductDetailModal';
 import { MedicineMonographModal } from './MedicineMonographModal';
+import { MedicineDetailPage } from './medicines/MedicineDetailPage';
 import { VerifiedPartnerSelectModal } from './pharmacy/VerifiedPartnerSelectModal';
 import { PharmacyCartSlideOver } from './pharmacy/PharmacyCartSlideOver';
 import { PharmacyCheckoutModal } from './pharmacy/PharmacyCheckoutModal';
@@ -64,6 +65,8 @@ interface MedicinesViewProps {
   onNavigateToPharmacyPortal?: (targetScreen?: 'landing' | 'apply' | 'track' | 'login' | 'dashboard') => void;
   isAuthenticated?: boolean;
   onRequireAuth?: (feature: string) => void;
+  onNavigate?: (tab: NavigationTab) => void;
+  onAskAI?: (prompt: string) => void;
 }
 
 export const MedicinesView: React.FC<MedicinesViewProps> = ({ 
@@ -71,7 +74,9 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   onToggleSave,
   onNavigateToPharmacyPortal,
   isAuthenticated = false,
-  onRequireAuth
+  onRequireAuth,
+  onNavigate,
+  onAskAI
 }) => {
   const { t, formatNumber } = useLocalization();
 
@@ -89,6 +94,39 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [monographSpecialtyFilter, setMonographSpecialtyFilter] = useState<string>('All');
   const [selectedMedicineForMonograph, setSelectedMedicineForMonograph] = useState<Medicine | null>(null);
+
+  // Hash listener for deep links like #medicines/med-1-paracetamol
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '');
+      if (hash.startsWith('medicines/')) {
+        const id = hash.replace('medicines/', '').trim();
+        const found = MEDICINES.find((m) => m.id === id || m.name.toLowerCase().replace(/\s+/g, '-') === id.toLowerCase());
+        if (found) {
+          setSelectedMedicineForMonograph(found);
+        }
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const openMedicine = (med: Medicine) => {
+    setSelectedMedicineForMonograph(med);
+    if (window.location.hash.replace(/^#\/?/, '') !== `medicines/${med.id}`) {
+      window.location.hash = `#medicines/${med.id}`;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const closeMedicine = () => {
+    setSelectedMedicineForMonograph(null);
+    if (window.location.hash.includes('medicines/')) {
+      window.location.hash = '#medicines';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   // Voice search (Web Speech API). Hidden when unsupported — never decorative.
   const [voiceListening, setVoiceListening] = useState(false);
   const [voiceSupported] = useState(
@@ -397,6 +435,36 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
 
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  // If a medicine is selected, render the dedicated full-page MedicineDetailPage
+  if (selectedMedicineForMonograph) {
+    return (
+      <MedicineDetailPage
+        medicine={selectedMedicineForMonograph}
+        isSaved={savedIds.includes(selectedMedicineForMonograph.id)}
+        onToggleSave={() => onToggleSave(selectedMedicineForMonograph.id)}
+        onOpenMedicine={(id) => {
+          const next = MEDICINES.find((m) => m.id === id);
+          if (next) openMedicine(next);
+        }}
+        onBack={closeMedicine}
+        onNavigate={onNavigate}
+        onAskAI={onAskAI}
+        onFindPharmacy={() => {
+          const prod = PHARMACY_PRODUCTS.find(
+            (p) =>
+              p.name.toLowerCase().includes(selectedMedicineForMonograph.name.toLowerCase()) ||
+              selectedMedicineForMonograph.name.toLowerCase().includes(p.name.toLowerCase())
+          );
+          setSelectedMedicineForMonograph(null);
+          setActiveTab('marketplace');
+          if (prod) {
+            setSearchTerm(prod.name);
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <div className="py-6 sm:py-8 bg-slate-50 min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
@@ -660,7 +728,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                         {/* Title & Generic Name */}
                         <div>
                           <h3
-                            onClick={() => setSelectedMedicineForMonograph(med)}
+                            onClick={() => openMedicine(med)}
                             className="text-base font-black text-slate-900 hover:text-emerald-700 cursor-pointer transition flex items-center gap-1.5"
                           >
                             <span>{med.name}</span>
@@ -718,7 +786,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                       {/* Card Actions */}
                       <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center gap-2">
                         <button
-                          onClick={() => setSelectedMedicineForMonograph(med)}
+                          onClick={() => openMedicine(med)}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer shadow-2xs"
                         >
                           <FileText className="h-3.5 w-3.5 text-emerald-400" />
@@ -1428,14 +1496,6 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
           }
         }}
       />
-
-      {/* 6. Complete 15-Section Medicine Monograph Modal */}
-      {selectedMedicineForMonograph && (
-        <MedicineMonographModal
-          medicine={selectedMedicineForMonograph}
-          onClose={() => setSelectedMedicineForMonograph(null)}
-        />
-      )}
 
     </div>
   );

@@ -731,6 +731,11 @@ export default function App() {
             savedIds={savedIds}
             onToggleSave={handleToggleSave}
             onRequestAuth={() => handleOpenAuthModal('login')}
+            onNavigate={setCurrentTab}
+            onAskAI={(prompt) => {
+              setAiInitialPrompt(prompt);
+              setCurrentTab('ai-assistant');
+            }}
           />
         )}
 
@@ -760,6 +765,11 @@ export default function App() {
             onToggleSave={handleToggleSave} 
             isAuthenticated={!!currentUser}
             onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+            onNavigate={setCurrentTab}
+            onAskAI={(prompt) => {
+              setAiInitialPrompt(prompt);
+              setCurrentTab('ai-assistant');
+            }}
             onNavigateToPharmacyPortal={(screen) => {
               // Purchasing / orders / prescription upload require an account.
               const purchaseScreens = ['login', 'dashboard', 'track'];

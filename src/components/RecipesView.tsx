@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ChefHat, 
   Search, 
@@ -28,13 +28,16 @@ import {
 import { ENHANCED_RECIPES } from '../data/nutritionData';
 import { RECIPES } from '../data/healthData';
 import { ALL_1000_RECIPES, RECIPE_CATEGORY_NAMES } from '../data/recipes';
-import { Recipe } from '../types';
+import { Recipe, NavigationTab } from '../types';
 import { RecipeDetailsModal } from './RecipeDetailsModal';
+import { RecipeDetailPage } from './recipes/RecipeDetailPage';
 
 interface RecipesViewProps {
   savedIds: string[];
   onToggleSave: (id: string) => void;
   hideHeader?: boolean;
+  onNavigate?: (tab: NavigationTab) => void;
+  onAskAI?: (prompt: string) => void;
 }
 
 type TagMatchMode = 'any' | 'all';
@@ -43,7 +46,9 @@ type SortOption = 'relevance' | 'protein-desc' | 'calories-asc' | 'calories-desc
 export const RecipesView: React.FC<RecipesViewProps> = ({ 
   savedIds, 
   onToggleSave,
-  hideHeader = false
+  hideHeader = false,
+  onNavigate,
+  onAskAI
 }) => {
   // Search & Sorting
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,6 +93,39 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
     });
     return list;
   }, []);
+
+  // Hash listener for deep links like #recipes/recipe-1-mediterranean-bowl or #recipes/rec-1
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '');
+      if (hash.startsWith('recipes/')) {
+        const id = hash.replace('recipes/', '').trim();
+        const found = allRecipes.find((r) => r.id === id || r.title.toLowerCase().replace(/\s+/g, '-') === id.toLowerCase());
+        if (found) {
+          setActiveModalRecipe(found);
+        }
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, [allRecipes]);
+
+  const openRecipe = (recipe: Recipe) => {
+    setActiveModalRecipe(recipe);
+    if (window.location.hash.replace(/^#\/?/, '') !== `recipes/${recipe.id}`) {
+      window.location.hash = `#recipes/${recipe.id}`;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const closeRecipe = () => {
+    setActiveModalRecipe(null);
+    if (window.location.hash.includes('recipes/')) {
+      window.location.hash = '#recipes';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Category counts
   const categoryCounts = useMemo(() => {
@@ -430,9 +468,23 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
     window.scrollTo({ top: 180, behavior: 'smooth' });
   };
 
-  const handleOpenRecipeModal = (recipe: Recipe) => {
-    setActiveModalRecipe(recipe);
-  };
+  // If a recipe is selected, render the dedicated full-page RecipeDetailPage
+  if (activeModalRecipe) {
+    return (
+      <RecipeDetailPage
+        recipe={activeModalRecipe}
+        isSaved={savedIds.includes(activeModalRecipe.id)}
+        onToggleSave={() => onToggleSave(activeModalRecipe.id)}
+        onOpenRecipe={(id) => {
+          const next = allRecipes.find((r) => r.id === id);
+          if (next) openRecipe(next);
+        }}
+        onBack={closeRecipe}
+        onNavigate={onNavigate}
+        onAskAI={onAskAI}
+      />
+    );
+  }
 
   return (
     <div className={`${hideHeader ? '' : 'py-8 bg-slate-50 min-h-screen'}`}>
@@ -1061,7 +1113,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
                     </div>
 
                     <h3 
-                      onClick={() => handleOpenRecipeModal(recipe)}
+                      onClick={() => openRecipe(recipe)}
                       className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition leading-snug cursor-pointer"
                     >
                       {recipe.title}
@@ -1096,8 +1148,8 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
                 {/* Card Action Footer */}
                 <div className="p-6 pt-0 flex items-center justify-end gap-3 border-t border-slate-100 mt-2">
                   <button
-                    onClick={() => handleOpenRecipeModal(recipe)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition mt-3"
+                    onClick={() => openRecipe(recipe)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition mt-3 cursor-pointer"
                   >
                     <span>View More</span>
                     <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
@@ -1183,14 +1235,6 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
             </button>
           </div>
         )}
-
-        {/* Dedicated Recipe Details Modal */}
-        <RecipeDetailsModal
-          recipe={activeModalRecipe}
-          onClose={() => setActiveModalRecipe(null)}
-          isSaved={activeModalRecipe ? savedIds.includes(activeModalRecipe.id) : false}
-          onToggleSave={onToggleSave}
-        />
 
       </div>
     </div>
