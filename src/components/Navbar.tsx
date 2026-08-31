@@ -196,7 +196,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               id="nav-doctors"
               type="button"
               onClick={() => go('doctors')}
-              className={navLinkClass(currentTab === 'doctors' || currentTab === 'hospitals')}
+              className={navLinkClass(currentTab === 'doctors')}
             >
               Doctors
             </button>

@@ -50,8 +50,11 @@ const WellnessFitnessView = lazy(() =>
 const CalculatorsView = lazy(() =>
   import('./components/CalculatorsView').then((m) => ({ default: m.CalculatorsView }))
 );
-const HospitalsDoctorsView = lazy(() =>
-  import('./components/HospitalsDoctorsView').then((m) => ({ default: m.HospitalsDoctorsView }))
+const HospitalsView = lazy(() =>
+  import('./components/HospitalsView').then((m) => ({ default: m.HospitalsView }))
+);
+const DoctorsView = lazy(() =>
+  import('./components/DoctorsView').then((m) => ({ default: m.DoctorsView }))
 );
 const MedicalMapView = lazy(() =>
   import('./components/medical-map/MedicalMapView').then((m) => ({ default: m.MedicalMapView }))
@@ -873,8 +876,17 @@ export default function App() {
         </div>
         )}
 
-        {(currentTab === 'doctors' || currentTab === 'hospitals') && (
-          <HospitalsDoctorsView
+        {/* Hospitals and Doctors are two separate pages with their own routes. */}
+        {currentTab === 'hospitals' && (
+          <HospitalsView
+            onTabChange={setCurrentTab}
+            isAuthenticated={!!currentUser}
+            onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+          />
+        )}
+
+        {currentTab === 'doctors' && (
+          <DoctorsView
             onTabChange={setCurrentTab}
             isAuthenticated={!!currentUser}
             onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
