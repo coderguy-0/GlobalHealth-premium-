@@ -62,12 +62,12 @@ export const InsuranceView: React.FC = () => {
 
               <div className="pt-2 border-t border-[#DCEBE4] space-y-1 text-xs">
                 <div className="flex items-center justify-between text-[#52635C]">
-                  <span>Discount:</span>
-                  <span className="font-bold text-[#17221E]">{ins.discountPercentage}% Off Tariff</span>
+                  <span>Settlement TAT:</span>
+                  <span className="font-bold text-[#17221E]">{ins.settlementTurnaroundDays} days</span>
                 </div>
                 <div className="flex items-center justify-between text-[#52635C]">
-                  <span>Agreement Due:</span>
-                  <span className="font-mono text-[#17221E]">{ins.renewalDue}</span>
+                  <span>Active Pre-Auths:</span>
+                  <span className="font-mono text-[#17221E]">{ins.activePreAuthCount}</span>
                 </div>
               </div>
             </div>
@@ -120,12 +120,12 @@ export const InsuranceView: React.FC = () => {
                   <td className="py-3 px-3 text-right">
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                        c.status === 'Pre-Auth Approved'
+                        c.claimStatus === 'Pre-Auth Approved'
                           ? 'bg-[#E8F7F1] text-[#008F68] border border-[#BDE4D5]'
                           : 'bg-[#FFF7E6] text-[#A86E00] border border-[#FED88B]'
                       }`}
                     >
-                      {c.status}
+                      {c.claimStatus}
                     </span>
                   </td>
                 </tr>

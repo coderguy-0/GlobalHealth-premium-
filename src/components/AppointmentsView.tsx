@@ -490,7 +490,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <h3 className="text-sm font-extrabold text-slate-900 truncate">{doctor.name}</h3>
-                          <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" title="Board-Certified Specialist" />
+                          <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" aria-label="Board-Certified Specialist" />
                         </div>
                         <div className="text-xs font-semibold text-emerald-700">{doctor.specialty}</div>
                         <div className="text-[11px] text-slate-500 truncate">{doctor.degree || 'MD, Clinical Specialist'}</div>

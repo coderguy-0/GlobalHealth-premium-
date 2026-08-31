@@ -103,7 +103,7 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       patientPhone,
       doctorName,
       doctorId: chosenDoc?.id || 'DOC-GEN-01',
-      department: selectedSpecialty,
+      departmentName: selectedSpecialty,
       date: appointmentDate,
       timeSlot: appointmentTime,
       type: consultationType === 'In-Person OPD' ? 'In-Person Consultation' : 'Video Teleconsultation',

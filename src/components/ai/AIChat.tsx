@@ -18,7 +18,7 @@ interface AIChatProps {
   displayName: string;
   /** True while the history/sidebar is still loading (keeps welcome hidden). */
   initializing?: boolean;
-  historyError?: { kind: 'network' | 'auth'; message: string } | null;
+  historyError?: { kind: 'network' | 'unavailable' | 'auth' | 'message'; message: string } | null;
   onRetryHistory?: () => void;
   onSignIn?: () => void;
   /** A whole send failed (e.g. persistence) — shown above the input. */

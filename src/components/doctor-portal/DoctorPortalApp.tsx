@@ -26,7 +26,7 @@ const Inner: React.FC<DoctorPortalAppProps> = ({ onBackToGlobalHealth }) => {
         <DoctorAuth
           onBackToGlobalHealth={onBackToGlobalHealth}
           onLoginSuccess={enterWorkspace}
-          onVerified={enterWorkspace}
+          onVerified={() => setPhase('onboarding')}
         />
       )}
       {phase === 'onboarding' && (

@@ -1614,8 +1614,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <EditProfileModal
         isOpen={isEditProfileOpen}
         onClose={() => setIsEditProfileOpen(false)}
-        currentProfile={profile}
-        onSaveProfile={handleSaveProfile}
+        initialProfile={profile}
+        onSave={handleSaveProfile}
       />
 
       {/* 2. Add Medication Reminder Modal */}

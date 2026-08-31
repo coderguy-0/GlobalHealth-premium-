@@ -99,6 +99,12 @@ export const DiseaseSearch: React.FC<DiseaseSearchProps> = ({
     if (term) recordRecent(term);
     setQuery('');
     setFocused(false);
+    // A disease suggestion has its own handler and opens the disease page
+    // directly; only the taxonomy kinds go to onSelectSuggestion.
+    if (s.kind === 'disease') {
+      onSelectDisease(s.id ?? slugify(s.label));
+      return;
+    }
     onSelectSuggestion(s.kind, s.label);
   };
 
@@ -171,7 +177,7 @@ export const DiseaseSearch: React.FC<DiseaseSearchProps> = ({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             aria-label={placeholder}
-            aria-expanded={panelOpen}
+            aria-expanded={!!panelOpen}
             className="w-full bg-transparent px-2 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
           />
           {typeof window !== 'undefined' && 'SpeechRecognition' in window ? (

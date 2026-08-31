@@ -3,13 +3,13 @@ import {
   Activity, ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, Phone, User,
   ShieldCheck, CheckCircle2, AlertCircle, RefreshCw, KeyRound, HelpCircle, Stethoscope
 } from 'lucide-react';
-import { doctorPortalApi } from './doctorPortalData';
+import { doctorPortalApi, type DoctorProfile } from './doctorPortalData';
 
 export type PortalAuthPhase = 'login' | 'signup' | 'forgot' | 'reset' | 'verify';
 
 interface DoctorAuthProps {
   initialPhase: PortalAuthPhase;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (doctor: DoctorProfile) => void;
   /** Called after email/phone verification completes (→ guided onboarding). */
   onVerified: () => void;
   onBackToGlobalHealth: () => void;
@@ -84,7 +84,7 @@ export const DoctorAuth: React.FC<DoctorAuthProps> = ({ initialPhase, onLoginSuc
     setBusy(true);
     const res = await doctorPortalApi.login(identifier, password);
     setBusy(false);
-    if (res.success) onLoginSuccess();
+    if (res.success) onLoginSuccess(res.doctor);
     else setError(res.error || 'Unable to sign in with those credentials.');
   };
 

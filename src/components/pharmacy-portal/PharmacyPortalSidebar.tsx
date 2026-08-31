@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PharmacyPortalNavTab } from '../../types/pharmacyPortal';
 import { 
   LayoutDashboard, 
   ShoppingBag, 
@@ -22,24 +23,9 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
-export type PortalTabId = 
-  | 'dashboard'
-  | 'orders'
-  | 'prescriptions'
-  | 'medicines'
-  | 'inventory'
-  | 'marketplace-sync'
-  | 'batches'
-  | 'pricing'
-  | 'branches'
-  | 'staff'
-  | 'deliveries'
-  | 'payments'
-  | 'analytics'
-  | 'documents'
-  | 'support'
-  | 'audit-logs'
-  | 'profile';
+// The sidebar and the portal shell must agree on tab ids, otherwise a nav
+// item renders nothing. PharmacyPortalNavTab is the single source of truth.
+export type PortalTabId = PharmacyPortalNavTab;
 
 interface PharmacyPortalSidebarProps {
   activeTab: PortalTabId;
@@ -70,17 +56,17 @@ export const PharmacyPortalSidebar: React.FC<PharmacyPortalSidebarProps> = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'orders', label: 'Orders', icon: ShoppingBag, badge: effectiveOrders > 0 ? effectiveOrders : undefined, badgeColor: 'bg-emerald-500' },
     { id: 'prescriptions', label: 'Prescription Inbox', icon: FileCheck2, badge: pendingRxCount > 0 ? pendingRxCount : undefined, badgeColor: 'bg-amber-500' },
-    { id: 'medicines', label: 'Medicine Catalog', icon: Pill },
+    { id: 'catalog', label: 'Medicine Catalog', icon: Pill },
     { id: 'inventory', label: 'Inventory & Stock', icon: Package, badge: lowStockCount > 0 ? lowStockCount : undefined, badgeColor: 'bg-rose-500' },
     { id: 'marketplace-sync', label: 'Marketplace Sync', icon: Globe2 },
     { id: 'batches', label: 'Batch & Expiry', icon: CalendarClock },
     { id: 'pricing', label: 'Pricing Rules', icon: DollarSign },
     { id: 'branches', label: 'Branches & Depots', icon: Building2 },
     { id: 'staff', label: 'Staff & Roles', icon: Users },
-    { id: 'deliveries', label: 'Delivery & Pickup', icon: Truck },
+    { id: 'delivery', label: 'Delivery & Pickup', icon: Truck },
     { id: 'payments', label: 'Payments & Payouts', icon: CreditCard },
     { id: 'analytics', label: 'Analytics & KPIs', icon: BarChart3 },
-    { id: 'documents', label: 'Compliance Documents', icon: FileText },
+    { id: 'compliance', label: 'Compliance Documents', icon: FileText },
     { id: 'support', label: 'Support & Tickets', icon: HelpCircle },
     { id: 'audit-logs', label: 'Audit Logs', icon: Activity },
     { id: 'profile', label: 'Pharmacy Profile', icon: Store }
