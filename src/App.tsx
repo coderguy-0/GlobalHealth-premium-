@@ -250,7 +250,7 @@ const OVERLAY_META: Partial<Record<NavigationTab, { title: string; subtitle: str
 
 export default function App() {
   const { currentLanguage, direction } = useLocalization();
-  const { user: currentUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
+  const { user: currentUser, publicUser, setPublicUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
   const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
   const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
   // Optional prompt pre-filled when a user asks AI from a context page (e.g. a disease).
@@ -304,7 +304,7 @@ export default function App() {
   // ---- Hash-based deep linking + back-button protection for protected URLs ----
   const VALID_TABS: NavigationTab[] = [
     'home', 'explore', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
-    'calculators', 'ai-assistant', 'hospitals', 'doctors', 'medical-map', 'community',
+    'calculators', 'ai-assistant', 'hospitals', 'doctors', 'appointments', 'medical-map', 'community',
     'news', 'news-admin', 'dashboard', 'hospital-portal', 'doctor-portal', 'medauth',
     'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth', 'terms', 'privacy-policy'
   ];
@@ -762,6 +762,8 @@ export default function App() {
 
         {(currentTab === 'nutrition' || currentTab === 'recipes') && (
           <NutritionLibraryView
+            key={currentTab}
+            initialSection={currentTab === 'recipes' ? 'recipes' : 'foods'}
             savedIds={savedIds}
             onToggleSave={handleToggleSave}
             onRequestAuth={() => handleOpenAuthModal('login')}
@@ -835,15 +837,18 @@ export default function App() {
           <Suspense fallback={<RouteFallback />}>
             <AuthPage
               initialView={authInitialView}
-              currentUser={currentUser}
+              currentUser={publicUser}
               onLoginSuccess={(user, token) => {
-                authenticate(toUserAccount(user), token || '');
+                authenticate(toUserAccount(user), token || '', user);
                 if (!intendedTabRef.current) setCurrentTab('dashboard');
               }}
               onLogout={async () => {
                 await logout();
               }}
-              onUpdateUser={persistUserPatch}
+              onUpdateUser={(updated) => {
+                setPublicUser(updated);
+                persistUserPatch(toUserAccount(updated));
+              }}
               onReturnToHome={() => setCurrentTab('home')}
               onNavigateToDashboard={() => setCurrentTab('dashboard')}
               onOpenLegalPage={(tab) => setCurrentTab(tab)}

@@ -57,6 +57,8 @@ import { FoodComparisonLabView } from './FoodComparisonLabView';
 import { RecipesView } from './RecipesView';
 
 interface NutritionLibraryViewProps {
+  /** Section to open on mount: /recipes lands on recipes, /nutrition on foods. */
+  initialSection?: NutritionSection;
   savedIds: string[];
   onToggleSave: (id: string) => void;
   onRequestAuth?: () => void;
@@ -79,13 +81,14 @@ type NutritionSection =
   | 'comparison';
 
 export const NutritionLibraryView: React.FC<NutritionLibraryViewProps> = ({
+  initialSection = 'recipes',
   savedIds,
   onToggleSave,
   onRequestAuth,
   onNavigate,
   onAskAI
 }) => {
-  const [activeSection, setActiveSection] = useState<NutritionSection>('recipes');
+  const [activeSection, setActiveSection] = useState<NutritionSection>(initialSection);
 
   // Foods State
   const [foodSearch, setFoodSearch] = useState('');

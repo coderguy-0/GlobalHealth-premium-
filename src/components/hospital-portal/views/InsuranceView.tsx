@@ -120,7 +120,7 @@ export const InsuranceView: React.FC = () => {
                   <td className="py-3 px-3 text-right">
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                        c.claimStatus === 'Pre-Auth Approved'
+                        c.claimStatus === 'Initial Pre-Auth Approved'
                           ? 'bg-[#E8F7F1] text-[#008F68] border border-[#BDE4D5]'
                           : 'bg-[#FFF7E6] text-[#A86E00] border border-[#FED88B]'
                       }`}

@@ -300,7 +300,7 @@ const ReferralsView: React.FC = () => {
 const DocumentsView: React.FC = () => {
   const { doctor, documents, addDocument, activeFacilityId } = useDoctorPortal();
   const [name, setName] = useState('');
-  const [kind, setKind] = useState('private');
+  const [kind, setKind] = useState<'private' | 'credential'>('private');
   const facility = FACILITIES.find((f) => f.id === activeFacilityId);
 
   return (
@@ -315,7 +315,7 @@ const DocumentsView: React.FC = () => {
         <p className="mt-1 text-[11px] text-slate-500">PDF or images up to 10 MB. Files are encrypted at rest and versioned on update.</p>
         <div className="mx-auto mt-3 flex max-w-md flex-wrap items-center justify-center gap-2">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Document name, e.g. CME certificate" className="w-full max-w-[240px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs focus:border-medical-500 focus:outline-none focus:ring-2 focus:ring-medical-500/20 sm:flex-1" aria-label="Document name" />
-          <select value={kind} onChange={(e) => setKind(e.target.value)} className="cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none" aria-label="Document visibility">
+          <select value={kind} onChange={(e) => setKind(e.target.value as 'private' | 'credential')} className="cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none" aria-label="Document visibility">
             <option value="private">Private (only me)</option>
             <option value="credential">Credential document</option>
           </select>

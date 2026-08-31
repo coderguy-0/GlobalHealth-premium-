@@ -142,7 +142,7 @@ export const AppointmentsView: React.FC = () => {
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
                         apt.status === 'Inside Chamber'
                           ? 'bg-[#E8F7F1] text-[#008F68] border border-[#BDE4D5]'
-                          : apt.status === 'Consultation Completed'
+                          : apt.status === 'Completed'
                           ? 'bg-[#F1FAF6] text-[#52635C]'
                           : 'bg-[#FFF7E6] text-[#A86E00] border border-[#FED88B]'
                       }`}

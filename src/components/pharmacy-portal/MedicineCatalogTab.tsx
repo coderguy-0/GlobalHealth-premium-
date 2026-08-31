@@ -44,9 +44,9 @@ export const MedicineCatalogTab: React.FC<MedicineCatalogTabProps> = ({
   const [dosageForm, setDosageForm] = useState('Tablet');
   const [packSize, setPackSize] = useState('Strip of 10 Tablets');
   const [unit, setUnit] = useState('Strip');
-  const [category, setCategory] = useState('Heart Health');
+  const [category, setCategory] = useState<PortalMedicine['category']>('Heart Health');
   const [prescriptionClassification, setPrescriptionClassification] = useState<PrescriptionClassification>('Prescription Required');
-  const [rxSchedule, setRxSchedule] = useState('Schedule H');
+  const [rxSchedule, setRxSchedule] = useState<PortalMedicine['rxSchedule']>('Schedule H');
   const [sku, setSku] = useState('');
   const [barcode, setBarcode] = useState('');
   const [mrp, setMrp] = useState('150');
@@ -490,7 +490,7 @@ export const MedicineCatalogTab: React.FC<MedicineCatalogTabProps> = ({
                   <label className="font-bold text-slate-300">Category</label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => setCategory(e.target.value as PortalMedicine['category'])}
                     className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-500 cursor-pointer"
                   >
                     <option value="Heart Health">Heart Health</option>
@@ -520,7 +520,7 @@ export const MedicineCatalogTab: React.FC<MedicineCatalogTabProps> = ({
                   <label className="font-bold text-slate-300">Rx Drug Schedule</label>
                   <select
                     value={rxSchedule}
-                    onChange={(e) => setRxSchedule(e.target.value)}
+                    onChange={(e) => setRxSchedule(e.target.value as PortalMedicine['rxSchedule'])}
                     className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-500 cursor-pointer"
                   >
                     <option value="Schedule H">Schedule H</option>

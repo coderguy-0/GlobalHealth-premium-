@@ -89,6 +89,8 @@ export const RegisterHospitalModal: React.FC = () => {
       {
         name: adminName,
         email: adminEmail,
+        hospitalName: name,
+        createdAt: new Date().toISOString(),
         role: adminRole,
         department: 'Hospital Administration',
         employeeId: `EMP-ADM-${Math.floor(100 + Math.random() * 900)}`,

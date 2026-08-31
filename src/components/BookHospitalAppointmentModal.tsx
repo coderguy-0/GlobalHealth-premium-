@@ -104,11 +104,12 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       doctorName,
       doctorId: chosenDoc?.id || 'DOC-GEN-01',
       departmentName: selectedSpecialty,
-      date: appointmentDate,
-      timeSlot: appointmentTime,
+      patientMRN: `MRN-WEB-${Date.now().toString().slice(-6)}`,
+      chamber: 'OPD Reception',
+      appointmentTime: `${appointmentDate} ${appointmentTime}`,
       type: consultationType === 'In-Person OPD' ? 'In-Person Consultation' : 'Video Teleconsultation',
-      reason: chiefComplaint || 'Routine Medical Consultation',
-      notes: `Booked via Public Healthcare Directory for ${hospital.name}`
+      triagePriority: 'Normal Priority',
+      paymentStatus: 'Pending at Counter'
     });
 
     // Write to Patient EHR Context

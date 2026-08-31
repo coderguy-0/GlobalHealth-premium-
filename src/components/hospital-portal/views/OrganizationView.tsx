@@ -254,7 +254,7 @@ export const OrganizationView: React.FC = () => {
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     ot.status === 'In Surgery'
                       ? 'bg-[#FFF1F1] text-[#C53939] border border-[#F2CCCC]'
-                      : ot.status === 'Cleaning / Sanitizing'
+                      : ot.status === 'Sanitization in Progress'
                       ? 'bg-[#FFF7E6] text-[#A86E00] border border-[#FED88B]'
                       : 'bg-[#E8F7F1] text-[#008F68] border border-[#BDE4D5]'
                   }`}
@@ -365,7 +365,7 @@ export const OrganizationView: React.FC = () => {
 
                 <h3 className="text-sm font-bold text-[#17221E]">{dept.name}</h3>
                 <p className="text-xs text-[#52635C] mt-0.5 line-clamp-2">
-                  {dept.description || `${dept.wingName || 'Main Hospital Tower'} • ${dept.floor || 'Level 2'}`}
+                  {`${dept.wingName || 'Main Hospital Tower'} • ${dept.floor || 'Level 2'}`}
                 </p>
 
                 {/* Subspecialties Badges */}

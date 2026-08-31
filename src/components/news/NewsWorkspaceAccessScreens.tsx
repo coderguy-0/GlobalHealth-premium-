@@ -43,7 +43,7 @@ const Field: React.FC<{
       <span className="pointer-events-none absolute left-3 top-3 text-slate-500">{icon}</span>
       {textarea ? (
         <textarea
-          {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          {...(rest as unknown as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
           rows={rows}
           className={`${inputCls} pl-10 py-2.5 resize-none`}
         />
