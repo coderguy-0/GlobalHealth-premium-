@@ -146,7 +146,7 @@ export const MedicineMonographModal: React.FC<MedicineMonographModalProps> = ({
               }`}
             >
               <FileText className="h-4 w-4" />
-              <span>Full Clinical Monograph (15 Sections)</span>
+              <span>View More</span>
             </button>
 
             <button

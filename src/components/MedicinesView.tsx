@@ -69,6 +69,26 @@ interface MedicinesViewProps {
   onAskAI?: (prompt: string) => void;
 }
 
+/**
+ * One- or two-sentence plain-language answer to "what is this medicine?".
+ *
+ * Mirrors plainLanguageSummary() used by the disease cards so both directories
+ * read the same way: the card states what the entry is, and every clinical
+ * detail lives behind "View More".
+ */
+function medicineShortSummary(med: Medicine): string {
+  const raw = (med.whatIs || med.description || '').replace(/\s+/g, ' ').trim();
+  if (raw) {
+    if (raw.length <= 160) return raw;
+    const cut = raw.slice(0, 160);
+    const lastDot = cut.lastIndexOf('.');
+    return lastDot > 80 ? cut.slice(0, lastDot + 1) : `${cut.trimEnd()}…`;
+  }
+  // Fall back to the recognised uses so a card is never left blank.
+  if (med.uses?.length) return `Used for ${med.uses.slice(0, 2).join(' and ').toLowerCase()}.`;
+  return 'Tap View More for the full clinical information on this medicine.';
+}
+
 export const MedicinesView: React.FC<MedicinesViewProps> = ({ 
   savedIds, 
   onToggleSave,
@@ -88,7 +108,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   };
 
   // Active Main Tab: 400 Clinical Monographs, Verified Pharmacy Store, My Orders, Drug Interactions
-  const [activeTab, setActiveTab] = useState<'monographs' | 'marketplace' | 'orders' | 'interactions'>('monographs');
+  const [activeTab, setActiveTab] = useState<'monographs' | 'orders' | 'interactions'>('monographs');
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
@@ -456,10 +476,10 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
               selectedMedicineForMonograph.name.toLowerCase().includes(p.name.toLowerCase())
           );
           setSelectedMedicineForMonograph(null);
-          setActiveTab('marketplace');
-          if (prod) {
-            setSearchTerm(prod.name);
-          }
+          // The in-page store tab has been removed; send the visitor to the
+          // verified pharmacy portal instead.
+          if (prod) setSearchTerm(prod.name);
+          onNavigateToPharmacyPortal?.('landing');
         }}
       />
     );
@@ -550,18 +570,6 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
             >
               <FileText className="h-4 w-4 text-emerald-600" />
               <span>400 Clinical Monographs ({MEDICINES.length})</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('marketplace')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                activeTab === 'marketplace'
-                  ? 'bg-white text-emerald-800 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Pill className="h-4 w-4" />
-              <span>Pharmacy Store ({PHARMACY_PRODUCTS.length})</span>
             </button>
 
             <button
@@ -738,49 +746,13 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                           </p>
                         </div>
 
-                        {/* Available Forms */}
-                        {med.forms && med.forms.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {med.forms.map((f, i) => (
-                              <span key={i} className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">
-                                {f}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        {/* Short plain-language summary — the card answers
+                            "what is this?" only; everything else lives behind
+                            View More (mirrors the disease card). */}
+                        <p className="text-[13px] leading-relaxed text-slate-500 line-clamp-2">
+                          {medicineShortSummary(med)}
+                        </p>
 
-                        {/* Key Medically Recognized Uses */}
-                        {med.uses && med.uses.length > 0 && (
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                              Primary Clinical Indications:
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                              {med.uses.slice(0, 3).map((use, i) => (
-                                <span key={i} className="text-[11px] font-medium bg-emerald-50/80 text-emerald-900 border border-emerald-100 px-2 py-0.5 rounded-lg">
-                                  {use}
-                                </span>
-                              ))}
-                              {med.uses.length > 3 && (
-                                <span className="text-[10px] text-slate-400 self-center">
-                                  +{med.uses.length - 3} more
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Dosage Preview snippet */}
-                        <div className="bg-slate-50 rounded-2xl p-3 border border-slate-100 text-[11px] text-slate-600 space-y-1">
-                          <div>
-                            <strong className="text-slate-900">Adult Dosage:</strong> {med.dosageAdults || med.dosage || 'Follow prescribed medical regimen.'}
-                          </div>
-                          {med.dosageChildren && (
-                            <div>
-                              <strong className="text-slate-900">Pediatric:</strong> {med.dosageChildren}
-                            </div>
-                          )}
-                        </div>
                       </div>
 
                       {/* Card Actions */}
@@ -790,7 +762,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer shadow-2xs"
                         >
                           <FileText className="h-3.5 w-3.5 text-emerald-400" />
-                          <span>Full Monograph (15 Sections)</span>
+                          <span>View More</span>
                         </button>
                       </div>
                     </div>
@@ -801,423 +773,6 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* TAB 2: Verified Pharmacy Store & Partner Purchasing */}
-        {/* ========================================================================= */}
-        {activeTab === 'marketplace' && (
-          <div className="space-y-7">
-            
-            {/* 3. Single Prominent Search Bar */}
-            <div className="relative">
-              <div className="relative rounded-2xl bg-white shadow-xs border border-slate-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition p-1">
-                <div className="flex items-center px-3.5 py-2.5">
-                  <Search className="h-5 w-5 text-slate-400 shrink-0 mr-3" />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setShowSearchSuggestions(true);
-                    }}
-                    onFocus={() => setShowSearchSuggestions(true)}
-                    placeholder="Search medicines, brands, generics, or healthcare products…"
-                    className="w-full text-xs sm:text-sm text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="p-1 rounded-full text-slate-400 hover:bg-slate-100 transition mr-2 cursor-pointer"
-                      aria-label="Clear search"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                  {voiceSupported && (
-                <button
-                  onClick={voiceListening ? stopVoiceSearch : startVoiceSearch}
-                  className={`p-1.5 rounded-xl transition cursor-pointer ${
-                    voiceListening ? 'bg-emerald-100 text-emerald-700 animate-pulse' : 'text-slate-400 hover:text-emerald-700 hover:bg-slate-100'
-                  }`}
-                  title={voiceListening ? 'Stop voice search' : 'Voice search — say a medicine name'}
-                  aria-label={voiceListening ? 'Stop voice search' : 'Start voice search'}
-                  aria-pressed={voiceListening}
-                >
-                  <Mic className="h-4 w-4" />
-                </button>
-              )}
-              {voiceListening && (
-                <span className="hidden sm:inline text-[10px] font-bold text-emerald-700 animate-pulse shrink-0">Listening…</span>
-              )}
-                </div>
-              </div>
-
-              {/* Suggestions Dropdown */}
-              {showSearchSuggestions && searchSuggestions.length > 0 && (
-                <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 overflow-hidden divide-y divide-slate-100 animate-in fade-in">
-                  <div className="px-4 py-2 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                    <span>Search Suggestions</span>
-                    <button onClick={() => setShowSearchSuggestions(false)} className="text-slate-400 hover:text-slate-600">
-                      Close
-                    </button>
-                  </div>
-                  {searchSuggestions.map((item, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSearchTerm(item.title);
-                        setShowSearchSuggestions(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-xs hover:bg-emerald-50/70 flex items-center justify-between group transition cursor-pointer"
-                    >
-                      <span className="font-bold text-slate-800 group-hover:text-emerald-800">{item.title}</span>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-emerald-100 group-hover:text-emerald-800">
-                        {item.type}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 2. Popular Healthcare Categories (Horizontal Scrollable Chips) */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-900">
-                <span className="uppercase tracking-wider text-slate-500 text-[11px]">Popular Healthcare Categories</span>
-                {selectedCategory !== 'All' && (
-                  <button
-                    onClick={() => setSelectedCategory('All')}
-                    className="text-emerald-700 hover:underline cursor-pointer"
-                  >
-                    Reset to All Categories
-                  </button>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-bold transition cursor-pointer shrink-0 border ${
-                      selectedCategory === cat
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                        : 'bg-white text-slate-700 hover:bg-slate-100 border-slate-200'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Results Count Strip */}
-            <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
-              <span>
-                Showing <strong>{filteredProducts.length}</strong> available medicines & healthcare products
-              </span>
-            </div>
-
-            {/* 5. Medicine Listing Cards Grid */}
-            {filteredProducts.length === 0 ? (
-              <div className="p-12 text-center rounded-3xl bg-white border border-slate-200 space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
-                  <Search className="h-7 w-7" />
-                </div>
-                <h4 className="font-bold text-slate-800 text-base">No Matching Medicines Found</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  We couldn't find a medicine matching your search terms. Try searching by generic active ingredient or clear filters.
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('All');
-                  }}
-                  className="rounded-xl bg-emerald-600 text-white px-4 py-2 text-xs font-bold hover:bg-emerald-700 transition cursor-pointer"
-                >
-                  Clear Filters
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {filteredProducts.map((product) => {
-                  const isSaved = savedIds.includes(product.id);
-                  const isRx = product.prescriptionRequired;
-
-                  const stockLabel = product.availability === 'in_stock' 
-                    ? 'In Stock' 
-                    : product.availability === 'low_stock' 
-                    ? 'Limited Stock' 
-                    : 'Currently Unavailable';
-
-                  const stockBadgeClass = product.availability === 'in_stock'
-                    ? 'bg-emerald-100 text-emerald-800'
-                    : product.availability === 'low_stock'
-                    ? 'bg-amber-100 text-amber-900'
-                    : 'bg-rose-100 text-rose-800';
-
-                  return (
-                    <div
-                      key={product.id}
-                      className="rounded-3xl bg-white border border-slate-200 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between overflow-hidden group"
-                    >
-                      {/* Card Visual Area */}
-                      <div>
-                        <div className="relative aspect-[4/3] bg-slate-900 overflow-hidden">
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-
-                          {/* Top Badges */}
-                          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1">
-                            {isRx ? (
-                              <span className="rounded-full bg-amber-500 text-slate-950 px-2.5 py-0.5 text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
-                                <FileText className="h-3 w-3" />
-                                <span>Prescription Required</span>
-                              </span>
-                            ) : (
-                              <span className="rounded-full bg-blue-600 text-white px-2.5 py-0.5 text-[10px] font-extrabold shadow-sm">
-                                OTC
-                              </span>
-                            )}
-
-                            <button
-                              onClick={() => onToggleSave(product.id)}
-                              className={`p-1.5 rounded-full backdrop-blur-md transition cursor-pointer ${
-                                isSaved
-                                  ? 'bg-rose-500 text-white shadow-xs'
-                                  : 'bg-black/40 text-white hover:bg-black/60'
-                              }`}
-                              title={isSaved ? 'Remove from saved' : 'Save medicine'}
-                            >
-                              <Bookmark className="h-3.5 w-3.5 fill-current" />
-                            </button>
-                          </div>
-
-                          {/* Bottom Dosage Form Badge */}
-                          <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-slate-900 px-2 py-0.5 rounded-md text-[10px] font-bold shadow-2xs">
-                            {product.dosageForm} • {product.strength}
-                          </div>
-                        </div>
-
-                        {/* Card Body Content */}
-                        <div className="p-4 space-y-2.5">
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase tracking-wider block">
-                              {product.subCategory}
-                            </span>
-                            <h3 
-                              onClick={() => setSelectedProductForDetail(product)}
-                              className="font-bold text-slate-900 text-sm leading-snug line-clamp-2 hover:text-emerald-700 cursor-pointer transition"
-                            >
-                              {product.name}
-                            </h3>
-                            <p className="text-[11px] text-slate-500 truncate">
-                              Generic: <strong className="text-slate-700">{product.genericName}</strong>
-                            </p>
-                          </div>
-
-                          {/* Pack Size & Manufacturer */}
-                          <div className="text-[11px] text-slate-500 flex items-center justify-between border-t border-slate-100 pt-2">
-                            <span>Pack: <strong className="text-slate-700">{product.packSize}</strong></span>
-                            <span className="truncate max-w-[120px]">{product.manufacturer}</span>
-                          </div>
-
-                          {/* Availability Indicator */}
-                          <div className="flex items-center justify-between text-[11px] pt-1">
-                            <span className="text-slate-500">Status:</span>
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${stockBadgeClass}`}>
-                              {stockLabel}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card Footer: Starting Price & View Medicine Button */}
-                      <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
-                        <div className="flex items-baseline justify-between">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-xs text-slate-500 font-semibold">Starting from</span>
-                            <span className="text-lg font-black text-slate-900 font-mono">
-                              ₹{product.price.toFixed(2)}
-                            </span>
-                          </div>
-                          <span className="text-xs text-slate-400 font-semibold line-through">
-                            MRP ₹{product.mrp.toFixed(2)}
-                          </span>
-                        </div>
-
-                        {/* Primary View Medicine Button */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() => setSelectedProductForDetail(product)}
-                            className="flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 py-2.5 text-xs font-bold transition cursor-pointer shadow-2xs"
-                          >
-                            <Eye className="h-3.5 w-3.5 text-emerald-600" />
-                            <span>View Medicine</span>
-                          </button>
-
-                          <button
-                            onClick={() => { if (requirePurchaseAuth('purchase medicines')) setSelectedProductForBuying(product); }}
-                            className="flex items-center justify-center gap-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 text-xs font-bold transition shadow-2xs cursor-pointer group"
-                          >
-                            <Building2 className="h-3.5 w-3.5 text-emerald-200 group-hover:scale-110 transition-transform" />
-                            <span>Buy Medicine</span>
-                          </button>
-                        </div>
-                      </div>
-
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* How GlobalHealth Pharmacy Works (Step-by-step) */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
-              <div className="text-center space-y-1">
-                <span className="text-xs font-mono font-bold text-emerald-700 uppercase tracking-wider">
-                  Safe Pharmacy Journey
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  How Medicine Discovery & Verified Purchasing Works
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  A clinical-first model ensuring accurate drug education, clear prescription verification, and trusted fulfillment.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black">
-                    1
-                  </div>
-                  <h4 className="font-bold text-slate-900 text-sm">1. Search & Overview</h4>
-                  <p className="text-slate-600 leading-relaxed text-[11px]">
-                    Find medicine indications, active ingredients, dosage forms, and safety warnings first.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-black">
-                    2
-                  </div>
-                  <h4 className="font-bold text-slate-900 text-sm">2. Select Verified Partner</h4>
-                  <p className="text-slate-600 leading-relaxed text-[11px]">
-                    Compare nearby licensed pharmacy partners by distance, live inventory, and fulfillment speed.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-black">
-                    3
-                  </div>
-                  <h4 className="font-bold text-slate-900 text-sm">3. Prescription Review</h4>
-                  <p className="text-slate-600 leading-relaxed text-[11px]">
-                    Upload doctor prescription for Schedule H medicines. Registered pharmacists inspect dosage and indications.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-black">
-                    4
-                  </div>
-                  <h4 className="font-bold text-slate-900 text-sm">4. Secure Dispatch</h4>
-                  <p className="text-slate-600 leading-relaxed text-[11px]">
-                    Receive tamper-evident packages dispatched with cold-chain protection and real-time live GPS delivery tracking.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Price Transparency & Trust Box */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-4">
-                <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold uppercase">
-                  <DollarSign className="h-4 w-4" />
-                  <span>Price Transparency Guaranteed</span>
-                </div>
-                <h4 className="text-lg font-black text-white">Clear Pricing, Before You Pay</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  No hidden surcharges. Every order displays product MRP, discount savings, itemized GST, and transparent delivery costs upfront.
-                </p>
-                <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700 text-xs space-y-1.5 font-mono">
-                  <div className="flex justify-between text-slate-400"><span>Product MRP:</span><span>₹175.00</span></div>
-                  <div className="flex justify-between text-emerald-400 font-bold"><span>Verified Discount:</span><span>-₹26.00</span></div>
-                  <div className="flex justify-between text-slate-400"><span>Standard Delivery:</span><span>FREE (Over ₹500)</span></div>
-                  <div className="flex justify-between text-slate-400"><span>Estimated GST (5%):</span><span>₹7.45</span></div>
-                  <div className="flex justify-between text-white font-bold border-t border-slate-700 pt-1.5"><span>Final Payable:</span><span>₹156.45</span></div>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
-                <div className="flex items-center gap-2 text-blue-600 font-mono text-xs font-bold uppercase">
-                  <ShieldCheck className="h-4 w-4" />
-                  <span>Accredited Pharmacy Quality</span>
-                </div>
-                <h4 className="text-lg font-black text-slate-900">Clinical Safety & Quality Standards</h4>
-                <div className="space-y-2.5 text-xs text-slate-600">
-                  <div className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Accredited Partners Only:</strong> Retail depots licensed under State Drug Control Authorities.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Cold-Chain Integrity:</strong> Calibrated temperature sensors for biologicals & insulins.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Pharmacist Supervision:</strong> Every prescription order audited by a Registered Pharmacist (R.Ph).</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* FAQs Accordion */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-emerald-700 uppercase tracking-wider">
-                  Patient Help & Support
-                </span>
-                <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                  Frequently Asked Questions
-                </h3>
-              </div>
-
-              <div className="divide-y divide-slate-100 text-xs">
-                {PHARMACY_FAQS.map((faq, idx) => {
-                  const isOpen = activeFaqIndex === idx;
-                  return (
-                    <div key={idx} className="py-3.5">
-                      <button
-                        onClick={() => setActiveFaqIndex(isOpen ? null : idx)}
-                        className="w-full flex items-center justify-between text-left font-bold text-slate-900 hover:text-emerald-700 transition cursor-pointer"
-                      >
-                        <span className="text-xs sm:text-sm">{faq.question}</span>
-                        {isOpen ? (
-                          <ChevronUp className="h-4 w-4 text-slate-400 shrink-0 ml-2" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4 text-slate-400 shrink-0 ml-2" />
-                        )}
-                      </button>
-                      {isOpen && (
-                        <p className="mt-2 text-slate-600 leading-relaxed text-xs animate-in fade-in">
-                          {faq.answer}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-          </div>
-        )}
 
         {/* ========================================================================= */}
         {/* TAB 2: My Orders & Prescriptions */}
@@ -1274,7 +829,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                   <h5 className="font-bold text-slate-800 text-sm">No Orders Placed Yet</h5>
                   <p className="text-xs text-slate-500">Your completed pharmacy purchases will appear here with live tracking.</p>
                   <button
-                    onClick={() => setActiveTab('medicines')}
+                    onClick={() => setActiveTab('monographs')}
                     className="rounded-xl bg-emerald-600 text-white px-4 py-2 text-xs font-bold hover:bg-emerald-700 transition cursor-pointer"
                   >
                     Browse Medicines
