@@ -31,6 +31,9 @@ export type NavigationTab =
   | 'terms'
   | 'privacy-policy';
 
+/** Sub-view of the personal Dashboard that a navigation action can request. */
+export type DashboardViewMode = 'details' | 'dashboard' | 'ehr' | 'saved';
+
 export * from './types/auth';
 
 export type LanguageCode = string;
@@ -333,6 +336,12 @@ export interface RecipeDiseasePreventionItem {
 }
 
 export interface Recipe {
+  /** Cuisine/menu grouping. Optional: not every seeded recipe carries one. */
+  category?: string;
+  /** Glycemic index of a standard serving, when clinically assessed. */
+  glycemicIndex?: number;
+  /** Glycemic load of a standard serving, when clinically assessed. */
+  glycemicLoad?: number;
   id: string;
   title: string;
   description: string;
@@ -697,6 +706,8 @@ export interface Doctor {
   bio: string;
   title?: string;
   degree?: string;
+  /** Qualifications summary, e.g. 'MBBS, MD'. Populated from portal rosters. */
+  education?: string;
   fellowships?: string[];
   licenseNumber?: string;
   languages?: string[];

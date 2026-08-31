@@ -16,7 +16,7 @@ export const AnalyticsView: React.FC = () => {
 
   const totalOccupied = beds.filter((b) => b.status === 'Occupied').length;
   const occupancyRate = beds.length > 0 ? Math.round((totalOccupied / beds.length) * 100) : 0;
-  const totalClaimsVal = claims.reduce((acc, curr) => acc + curr.claimedAmount, 0);
+  const totalClaimsVal = claims.reduce((acc, curr) => acc + curr.estimatedCost, 0);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">

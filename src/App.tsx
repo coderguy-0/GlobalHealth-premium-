@@ -6,20 +6,8 @@ import { Footer } from './components/Footer';
 import { MedicalDisclaimer } from './components/MedicalDisclaimer';
 import { HomePage } from './components/home/HomePage';
 import { GlobalHealthAIAssistant } from './components/ai/GlobalHealthAIAssistant';
-import { ExplorePage } from './components/explore/ExplorePage';
 import { TermsPage } from './components/legal/TermsPage';
 import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
-import { DiseasesSection } from './components/diseases/DiseasesSection';
-import { MedicinesView } from './components/MedicinesView';
-import { MedicalTestsView } from './components/MedicalTestsView';
-import { NutritionLibraryView } from './components/NutritionLibraryView';
-import { WellnessFitnessView } from './components/WellnessFitnessView';
-import { CalculatorsView } from './components/CalculatorsView';
-
-import { HospitalsDoctorsView } from './components/HospitalsDoctorsView';
-import { MedicalMapView } from './components/medical-map/MedicalMapView';
-import { CommunityView } from './components/CommunityView';
-import { NewsView } from './components/NewsView';
 import { LanguageModal } from './components/LanguageModal';
 import { AuthGate } from './components/auth/AuthGate';
 import { ProtectedScreen, AuthLoading, SessionExpiredModal } from './components/auth/ProtectedScreen';
@@ -35,6 +23,48 @@ import { newsAuthService } from './services/newsAuthService';
 
 // Heavy workspaces (portals, CMS, health-records suite) are code-split so the
 // public homepage never downloads them until a visitor actually opens one.
+//
+// The content directories below (diseases, medicines, lab tests, nutrition &
+// recipes, wellness, calculators, hospitals, map, community, news) each embed
+// large static datasets. Importing them eagerly pulled ~28MB of data into the
+// initial bundle, so every first-time visitor paid for content they had not
+// navigated to yet. They are lazy so the landing page stays light.
+const ExplorePage = lazy(() =>
+  import('./components/explore/ExplorePage').then((m) => ({ default: m.ExplorePage }))
+);
+const DiseasesSection = lazy(() =>
+  import('./components/diseases/DiseasesSection').then((m) => ({ default: m.DiseasesSection }))
+);
+const MedicinesView = lazy(() =>
+  import('./components/MedicinesView').then((m) => ({ default: m.MedicinesView }))
+);
+const MedicalTestsView = lazy(() =>
+  import('./components/MedicalTestsView').then((m) => ({ default: m.MedicalTestsView }))
+);
+const NutritionLibraryView = lazy(() =>
+  import('./components/NutritionLibraryView').then((m) => ({ default: m.NutritionLibraryView }))
+);
+const WellnessFitnessView = lazy(() =>
+  import('./components/WellnessFitnessView').then((m) => ({ default: m.WellnessFitnessView }))
+);
+const CalculatorsView = lazy(() =>
+  import('./components/CalculatorsView').then((m) => ({ default: m.CalculatorsView }))
+);
+const HospitalsView = lazy(() =>
+  import('./components/HospitalsView').then((m) => ({ default: m.HospitalsView }))
+);
+const DoctorsView = lazy(() =>
+  import('./components/DoctorsView').then((m) => ({ default: m.DoctorsView }))
+);
+const MedicalMapView = lazy(() =>
+  import('./components/medical-map/MedicalMapView').then((m) => ({ default: m.MedicalMapView }))
+);
+const CommunityView = lazy(() =>
+  import('./components/CommunityView').then((m) => ({ default: m.CommunityView }))
+);
+const NewsView = lazy(() =>
+  import('./components/NewsView').then((m) => ({ default: m.NewsView }))
+);
 const AuthPage = lazy(() =>
   import('./components/AuthPage').then((m) => ({ default: m.AuthPage }))
 );
@@ -91,7 +121,8 @@ const RouteFallback: React.FC = () => (
   </div>
 );
 
-export type DashboardViewMode = 'details' | 'dashboard' | 'ehr' | 'saved';
+import type { DashboardViewMode } from './types';
+export type { DashboardViewMode };
 
 // Tabs that expose personal/private data and require an authenticated session.
 // NOTE: news-admin is intentionally NOT here — editorial staff authenticate via
@@ -219,7 +250,7 @@ const OVERLAY_META: Partial<Record<NavigationTab, { title: string; subtitle: str
 
 export default function App() {
   const { currentLanguage, direction } = useLocalization();
-  const { user: currentUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
+  const { user: currentUser, publicUser, setPublicUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
   const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
   const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
   // Optional prompt pre-filled when a user asks AI from a context page (e.g. a disease).
@@ -273,7 +304,7 @@ export default function App() {
   // ---- Hash-based deep linking + back-button protection for protected URLs ----
   const VALID_TABS: NavigationTab[] = [
     'home', 'explore', 'diseases', 'medicines', 'medical-tests', 'nutrition', 'recipes', 'wellness',
-    'calculators', 'ai-assistant', 'hospitals', 'doctors', 'medical-map', 'community',
+    'calculators', 'ai-assistant', 'hospitals', 'doctors', 'appointments', 'medical-map', 'community',
     'news', 'news-admin', 'dashboard', 'hospital-portal', 'doctor-portal', 'medauth',
     'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth', 'terms', 'privacy-policy'
   ];
@@ -690,6 +721,9 @@ export default function App() {
 
       {/* Primary Main View Container — stays mounted under overlays */}
       <main className="flex-1">
+        {/* One route-level Suspense boundary: every lazily code-split view below
+            resolves through this fallback. */}
+        <Suspense fallback={<RouteFallback />}>
         {/* Policy-update re-acceptance banner: when the accepted Terms/Privacy
             versions are older than the current published versions, surface a
             clear path to review and accept (spec: material-change re-acceptance). */}
@@ -728,6 +762,8 @@ export default function App() {
 
         {(currentTab === 'nutrition' || currentTab === 'recipes') && (
           <NutritionLibraryView
+            key={currentTab}
+            initialSection={currentTab === 'recipes' ? 'recipes' : 'foods'}
             savedIds={savedIds}
             onToggleSave={handleToggleSave}
             onRequestAuth={() => handleOpenAuthModal('login')}
@@ -801,15 +837,18 @@ export default function App() {
           <Suspense fallback={<RouteFallback />}>
             <AuthPage
               initialView={authInitialView}
-              currentUser={currentUser}
+              currentUser={publicUser}
               onLoginSuccess={(user, token) => {
-                authenticate(toUserAccount(user), token || '');
+                authenticate(toUserAccount(user), token || '', user);
                 if (!intendedTabRef.current) setCurrentTab('dashboard');
               }}
               onLogout={async () => {
                 await logout();
               }}
-              onUpdateUser={persistUserPatch}
+              onUpdateUser={(updated) => {
+                setPublicUser(updated);
+                persistUserPatch(toUserAccount(updated));
+              }}
               onReturnToHome={() => setCurrentTab('home')}
               onNavigateToDashboard={() => setCurrentTab('dashboard')}
               onOpenLegalPage={(tab) => setCurrentTab(tab)}
@@ -843,8 +882,17 @@ export default function App() {
         </div>
         )}
 
-        {(currentTab === 'doctors' || currentTab === 'hospitals') && (
-          <HospitalsDoctorsView
+        {/* Hospitals and Doctors are two separate pages with their own routes. */}
+        {currentTab === 'hospitals' && (
+          <HospitalsView
+            onTabChange={setCurrentTab}
+            isAuthenticated={!!currentUser}
+            onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+          />
+        )}
+
+        {currentTab === 'doctors' && (
+          <DoctorsView
             onTabChange={setCurrentTab}
             isAuthenticated={!!currentUser}
             onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
@@ -897,6 +945,7 @@ export default function App() {
         )}
           </>
         )}
+        </Suspense>
       </main>
 
       {/* Footer */}

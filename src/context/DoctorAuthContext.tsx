@@ -295,7 +295,7 @@ export const DoctorAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       email?: string;
       organization?: string;
       specialty?: string;
-      role?: string;
+      role?: DoctorAccount['role'];
       department?: string;
       registrationNo?: string;
     }) => {

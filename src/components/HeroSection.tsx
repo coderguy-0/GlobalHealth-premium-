@@ -11,7 +11,9 @@ import {
   Bot,
 } from 'lucide-react';
 import { NavigationTab } from '../types';
-import { HEALTH_CONDITIONS, MEDICINES, MEDICAL_TESTS, RECIPES, DOCTORS, HOSPITALS } from '../data/healthData';
+import { RECIPES, DOCTORS, HOSPITALS } from '../data/directorySeed';
+import { loadDiseases, loadMedicines, loadMedicalTests } from '../data/catalogLoaders';
+import { useCatalog } from '../lib/useCatalog';
 import { Button } from './ui/Button';
 import { SearchSkeleton } from './ui/Skeleton';
 
@@ -83,6 +85,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
     }
   };
 
+  // The three large catalogs are fetched only once the visitor actually starts
+  // searching, so the landing page itself never downloads them.
+  const searchActive = query.trim().length > 0;
+  const { items: HEALTH_CONDITIONS } = useCatalog(loadDiseases, searchActive);
+  const { items: MEDICINES } = useCatalog(loadMedicines, searchActive);
+  const { items: MEDICAL_TESTS } = useCatalog(loadMedicalTests, searchActive);
+
   const hits = useMemo<SearchHit[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -115,7 +124,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onTabChange }) => {
       .map((r) => ({ id: r.id, type: 'Recipe', title: r.title, subtitle: `${r.calories} kcal`, tab: 'recipes' as NavigationTab }));
 
     return [...conditions, ...medicines, ...tests, ...doctors, ...hospitals, ...recipes];
-  }, [query]);
+  }, [query, HEALTH_CONDITIONS, MEDICINES, MEDICAL_TESTS]);
 
   const grouped = useMemo(() => {
     const order = ['Disease', 'Medicine', 'Lab test', 'Doctor', 'Hospital', 'Recipe'];

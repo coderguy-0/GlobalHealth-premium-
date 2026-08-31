@@ -338,7 +338,7 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
   );
 
   const runAssistantReply = useCallback(
-    async (prompt: string, onDone: (content: string) => void): Promise<{ ok: true } | { ok: false; err: SendError; stopped: boolean }> => {
+    async (prompt: string, onDone: (content: string) => void): Promise<{ ok: true; err?: undefined; stopped?: boolean } | { ok: false; err: SendError; stopped: boolean }> => {
       const controller = new AbortController();
       abortRef.current = controller;
       try {

@@ -194,8 +194,6 @@ const HospitalPortalInner: React.FC<HospitalPortalViewProps> = ({ onBackToPublic
         return <SettingsView />;
       case 'global-admin':
         return <GlobalAdminView />;
-      case 'auth':
-        return <AuthPage />;
       default:
         return <DashboardView />;
     }

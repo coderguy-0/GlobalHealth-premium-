@@ -1,3 +1,9 @@
+// Shared implementation behind the two public directory pages.
+//
+// Hospitals (#/hospitals) and Doctors (#/doctors) are separate pages with their
+// own hero, trust strip and result set. They share this component because the
+// search / filter / booking machinery is identical; the `section` prop decides
+// which directory is rendered. See HospitalsView.tsx and DoctorsView.tsx.
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Building2, 
@@ -34,7 +40,11 @@ import { useHospitalPortal } from '../context/HospitalContext';
 import { HospitalFacility } from '../types/hospitalPortal';
 import { fetchPublicHospitals, CentralHospitalRecord } from '../services/hospitalRegistryClient';
 
-interface HospitalsDoctorsViewProps {
+export interface HealthDirectoryPageProps {
+  /** Which directory this page shows. Driven by the route ('hospitals' or
+   *  'doctors') so each is a genuinely separate page with its own URL, hero
+   *  and result set, rather than two tabs behind one address. */
+  section: UserWebsiteMainTab;
   onTabChange?: (tab: any) => void;
   isAuthenticated?: boolean;
   onRequireAuth?: (feature: string) => void;
@@ -107,7 +117,8 @@ const normalizeHospital = (f: HospitalFacility | Hospital): Hospital => {
   };
 };
 
-export const HospitalsDoctorsView: React.FC<HospitalsDoctorsViewProps> = ({
+export const DirectoryPage: React.FC<HealthDirectoryPageProps> = ({
+  section,
   onTabChange,
   isAuthenticated = false,
   onRequireAuth
@@ -120,8 +131,10 @@ export const HospitalsDoctorsView: React.FC<HospitalsDoctorsViewProps> = ({
   };
   const { hospitals: liveHospitals, doctors: livePortalDoctors } = useHospitalPortal();
 
-  // Active Main Navigation Tab on Public User Website
-  const [activeTab, setActiveTab] = useState<UserWebsiteMainTab>('hospitals');
+  // Which directory is being shown. Comes from the route, so /#/hospitals and
+  // /#/doctors are two independent pages.
+  const activeTab = section;
+  const isHospitals = section === 'hospitals';
   
   // Search and Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -266,13 +279,13 @@ export const HospitalsDoctorsView: React.FC<HospitalsDoctorsViewProps> = ({
           map.set(pd.id, {
             id: pd.id,
             name: pd.name,
-            specialty: pd.department || pd.specialty,
-            hospital: pd.hospitalName || 'Apex Institute of Medical Sciences',
+            specialty: pd.departmentName || pd.specialty,
+            hospital: 'Apex Institute of Medical Sciences',
             location: 'New Delhi, India',
             experienceYears: pd.experienceYears || 14,
             rating: 4.9,
             availability: 'Today 09:00 AM - 05:00 PM',
-            consultationFee: pd.opdConsultationFee || '$120',
+            consultationFee: pd.consultationFee || '$120',
             availableSlots: ['09:00 AM', '11:15 AM', '02:30 PM', '04:30 PM'],
             telehealthAvailable: true,
             languages: ['English', 'Hindi'],
@@ -457,15 +470,21 @@ export const HospitalsDoctorsView: React.FC<HospitalsDoctorsViewProps> = ({
             <div className="space-y-3 max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30">
                 <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-                <span>Public Transparency Health Portal • Verified Directory</span>
+                <span>
+                  {isHospitals
+                    ? 'Public Transparency Health Portal • Verified Hospital Registry'
+                    : 'Public Transparency Health Portal • Verified Doctor Directory'}
+                </span>
               </div>
               
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Global Hospital Registry &amp; Verified Doctors Directory
+                {isHospitals ? 'Global Hospital Registry' : 'Verified Doctors Directory'}
               </h1>
               
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Real-time verified public healthcare directory. Browse accredited hospital networks, specialized clinical institutes, verified practicing medical faculty, and emergency services.
+                {isHospitals
+                  ? 'Real-time verified hospital registry. Browse accredited hospital networks, specialized clinical institutes, bed and ICU capacity, trauma levels and 24/7 emergency services.'
+                  : 'Real-time verified directory of practising medical faculty. Browse board-certified specialists by department, experience and consultation mode, then book an appointment.'}
               </p>
             </div>
           </div>
@@ -503,94 +522,80 @@ export const HospitalsDoctorsView: React.FC<HospitalsDoctorsViewProps> = ({
         {/* 2. COMPACT CREDIBILITY & VERIFICATION TRUST LAYER */}
         {/* ========================================================================= */}
         <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-            <div className="h-9 w-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-              <Building2 className="h-4.5 w-4.5" />
+          {(isHospitals
+            ? [
+                { icon: <Building2 className="h-4.5 w-4.5" />, tone: 'bg-blue-50 text-blue-600', title: 'Verified Hospitals', sub: `${allHospitals.length} Accredited Centers` },
+                { icon: <Award className="h-4.5 w-4.5" />, tone: 'bg-amber-50 text-amber-600', title: 'Accreditation Records', sub: 'JCI & NABH Audited' },
+                { icon: <Activity className="h-4.5 w-4.5" />, tone: 'bg-indigo-50 text-indigo-600', title: 'Capacity Published', sub: 'Beds, ICU & Trauma Level' },
+                { icon: <PhoneCall className="h-4.5 w-4.5" />, tone: 'bg-rose-50 text-rose-600', title: 'Emergency Services', sub: '24/7 Trauma Level I/II' },
+                { icon: <Clock className="h-4.5 w-4.5" />, tone: 'bg-teal-50 text-teal-600', title: 'Updated Registry', sub: 'Daily Portal Sync' },
+              ]
+            : [
+                { icon: <Stethoscope className="h-4.5 w-4.5" />, tone: 'bg-emerald-50 text-emerald-600', title: 'Verified Doctors', sub: `${allDoctors.length} Specialists` },
+                { icon: <FileCheck2 className="h-4.5 w-4.5" />, tone: 'bg-blue-50 text-blue-600', title: 'Board Certified', sub: 'Council Licence Checked' },
+                { icon: <Video className="h-4.5 w-4.5" />, tone: 'bg-indigo-50 text-indigo-600', title: 'Telehealth Ready', sub: 'Video & In-Person OPD' },
+                { icon: <Calendar className="h-4.5 w-4.5" />, tone: 'bg-amber-50 text-amber-600', title: 'Live Availability', sub: 'Published Slot Roster' },
+                { icon: <Clock className="h-4.5 w-4.5" />, tone: 'bg-teal-50 text-teal-600', title: 'Updated Roster', sub: 'Daily Portal Sync' },
+              ]
+          ).map((card, i, arr) => (
+            <div
+              key={card.title}
+              className={`flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs ${
+                i === arr.length - 1 ? 'col-span-2 sm:col-span-1' : ''
+              }`}
+            >
+              <div className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${card.tone}`}>
+                {card.icon}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900">{card.title}</div>
+                <div className="text-[11px] text-slate-500 font-medium">{card.sub}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Verified Hospitals</div>
-              <div className="text-[11px] text-slate-500 font-medium">{allHospitals.length} Accredited Centers</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-              <Stethoscope className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Verified Doctors</div>
-              <div className="text-[11px] text-slate-500 font-medium">{allDoctors.length} Specialists</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-              <Award className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Accreditation Records</div>
-              <div className="text-[11px] text-slate-500 font-medium">JCI & NABH Audited</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-            <div className="h-9 w-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-              <PhoneCall className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Emergency Services</div>
-              <div className="text-[11px] text-slate-500 font-medium">24/7 Trauma Level I/II</div>
-            </div>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1 flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-            <div className="h-9 w-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
-              <Clock className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Updated Directory</div>
-              <div className="text-[11px] text-slate-500 font-medium">Daily Roster Sync</div>
-            </div>
-          </div>
+          ))}
         </section>
 
         {/* ========================================================================= */}
-        {/* 3. SEGMENTED SWITCHER: HOSPITALS VS DOCTORS */}
+        {/* 3. DIRECTORY CONTEXT + LINK TO THE OTHER DIRECTORY                        */}
+        {/* Hospitals and Doctors are separate pages; this is a cross-link, not a tab */}
         {/* ========================================================================= */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-200/80 border border-slate-200 shadow-inner w-full sm:w-auto">
-            <button
-              onClick={() => {
-                setActiveTab('hospitals');
-                setSearchTerm('');
-              }}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer ${
-                activeTab === 'hospitals'
-                  ? 'bg-white text-blue-700 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div
+              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 ${
+                isHospitals ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'
               }`}
             >
-              <Building2 className="h-4 w-4 shrink-0" />
-              <span>Hospitals · {allHospitals.length}</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('doctors');
-                setSearchTerm('');
-              }}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer ${
-                activeTab === 'doctors'
-                  ? 'bg-white text-emerald-700 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Stethoscope className="h-4 w-4 shrink-0" />
-              <span>Doctors & Specialists · {allDoctors.length}</span>
-            </button>
+              {isHospitals ? <Building2 className="h-5 w-5" /> : <Stethoscope className="h-5 w-5" />}
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 leading-tight">
+                {isHospitals ? 'Hospitals' : 'Doctors & Specialists'}
+              </h2>
+              <p className="text-[11px] font-medium text-slate-500">
+                {isHospitals
+                  ? `${allHospitals.length} verified hospitals in the registry`
+                  : `${allDoctors.length} verified specialists in the directory`}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {onTabChange && (
+              <button
+                type="button"
+                onClick={() => onTabChange(isHospitals ? 'doctors' : 'hospitals')}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition shadow-xs cursor-pointer ${
+                  isHospitals
+                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                    : 'bg-blue-50 hover:bg-blue-100 text-blue-800 border-blue-200'
+                }`}
+              >
+                {isHospitals ? <Stethoscope className="h-3.5 w-3.5" /> : <Building2 className="h-3.5 w-3.5" />}
+                <span>{isHospitals ? 'Looking for a doctor?' : 'Looking for a hospital?'}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            )}
             {onTabChange && (
               <button
                 type="button"

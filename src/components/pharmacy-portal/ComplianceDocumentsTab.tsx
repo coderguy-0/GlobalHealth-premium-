@@ -23,7 +23,7 @@ export const ComplianceDocumentsTab: React.FC<ComplianceDocumentsTabProps> = ({
   onDocumentsUpdated
 }) => {
   const [isUploadModal, setIsUploadModal] = useState(false);
-  const [docType, setDocType] = useState('Drug License Renewal');
+  const [docType, setDocType] = useState<RegulatoryDocument['type']>('Drug License (Form 20B/21B)');
   const [docNumber, setDocNumber] = useState('');
   const [issuingAuthority, setIssuingAuthority] = useState('State Drugs Standard Control Organization');
   const [expiryDate, setExpiryDate] = useState('2029-12-31');
@@ -142,14 +142,17 @@ export const ComplianceDocumentsTab: React.FC<ComplianceDocumentsTabProps> = ({
                 <label className="font-bold text-slate-300">Document Type *</label>
                 <select
                   value={docType}
-                  onChange={(e) => setDocType(e.target.value)}
+                  onChange={(e) => setDocType(e.target.value as RegulatoryDocument['type'])}
                   className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-500 cursor-pointer"
                 >
-                  <option value="Drug License Renewal">Drug License Renewal (Form 20B/21B)</option>
+                  <option value="Drug License (Form 20B/21B)">Drug License (Form 20B/21B)</option>
                   <option value="Pharmacist Registration Certificate">Pharmacist Registration Certificate (PCI)</option>
-                  <option value="Premises Fire & Safety Clearance">Premises Fire & Safety Clearance</option>
-                  <option value="GST Certificate Update">GST Registration Certificate</option>
-                  <option value="Cold Chain Temperature Calibration">Cold Storage Calibration Certificate</option>
+                  <option value="Premises Fire &amp; Safety Clearance">Premises Fire &amp; Safety Clearance</option>
+                  <option value="GST Registration">GST Registration Certificate</option>
+                  <option value="FSSAI License">FSSAI License</option>
+                  <option value="Business Establishment Proof">Business Establishment Proof</option>
+                  <option value="Bank Account Verification">Bank Account Verification</option>
+                  <option value="Identity Proof">Identity Proof</option>
                 </select>
               </div>
 

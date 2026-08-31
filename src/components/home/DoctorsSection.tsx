@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Stethoscope, MapPin, CalendarCheck, Languages, ArrowRight } from 'lucide-react';
 import { NavigationTab } from '../../types';
-import { DOCTORS } from '../../data/healthData';
+import { DOCTORS } from '../../data/directorySeed';
 import { DOCTOR_SPECIALTIES } from './homeData';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Button } from '../ui/Button';

@@ -92,7 +92,7 @@ export const BookAmbulanceModal: React.FC<BookAmbulanceModalProps> = ({
 
     const availableUnit = ambulances.find((a) => a.status === 'Available') || ambulances[0];
     const unitName = availableUnit?.vehicleNumber || (ambulanceType === 'ALS' ? 'ALS-04 (Mercedes ICU)' : 'BLS-02 (Toyota HiAce)');
-    const paramedic = availableUnit?.assignedParamedic || 'Paramedic Capt. Robert Evans, EMT-P';
+    const paramedic = availableUnit?.paramedicName || 'Paramedic Capt. Robert Evans, EMT-P';
     const dispatchId = `AMB-DISP-${Math.floor(100000 + Math.random() * 900000)}`;
     const eta = urgency === 'stat' ? 7 : urgency === 'urgent' ? 18 : 35;
 

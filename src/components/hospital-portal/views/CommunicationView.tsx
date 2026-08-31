@@ -16,8 +16,8 @@ export const CommunicationView: React.FC = () => {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [priority, setPriority] = useState<'Normal' | 'Urgent' | 'Emergency Alert'>('Normal');
-  const [targetAudience, setTargetAudience] = useState<'All Staff' | 'Clinical Doctors Only' | 'Nursing Staff' | 'Administration'>('All Staff');
+  const [priority, setPriority] = useState<'General Notice' | 'Urgent Clinical Memo' | 'Emergency Code Red'>('General Notice');
+  const [targetAudience, setTargetAudience] = useState<'All Personnel' | 'Doctors & Specialists' | 'Nursing Staff' | 'Administrative & Billing'>('All Personnel');
 
   const handlePublish = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +27,8 @@ export const CommunicationView: React.FC = () => {
       content,
       priority,
       targetAudience,
-      authorName: currentUser?.name || 'Hospital Administration',
+      activeUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      author: currentUser?.name || 'Hospital Administration',
       authorRole: currentRole
     });
     setTitle('');
@@ -73,10 +74,10 @@ export const CommunicationView: React.FC = () => {
                 onChange={(e) => setTargetAudience(e.target.value as any)}
                 className="w-full px-3 py-1.5 text-xs bg-white border border-[#D8E7E0] rounded-lg text-[#17221E] focus:outline-none focus:border-[#008F68]"
               >
-                <option value="All Staff">All Hospital Personnel</option>
-                <option value="Clinical Doctors Only">Clinical Specialists & HODs</option>
+                <option value="All Personnel">All Hospital Personnel</option>
+                <option value="Doctors & Specialists">Clinical Specialists & HODs</option>
                 <option value="Nursing Staff">Nursing & Inpatient Floor Leads</option>
-                <option value="Administration">Operations & Finance Desk</option>
+                <option value="Administrative & Billing">Operations & Finance Desk</option>
               </select>
             </div>
             <div>
@@ -86,9 +87,9 @@ export const CommunicationView: React.FC = () => {
                 onChange={(e) => setPriority(e.target.value as any)}
                 className="w-full px-3 py-1.5 text-xs bg-white border border-[#D8E7E0] rounded-lg text-[#17221E] focus:outline-none focus:border-[#008F68]"
               >
-                <option value="Normal">Normal Advisory</option>
-                <option value="Urgent">Urgent Circular</option>
-                <option value="Emergency Alert">Critical Emergency Alert</option>
+                <option value="General Notice">Normal Advisory</option>
+                <option value="Urgent Clinical Memo">Urgent Circular</option>
+                <option value="Emergency Code Red">Critical Emergency Alert</option>
               </select>
             </div>
           </div>
@@ -139,8 +140,8 @@ export const CommunicationView: React.FC = () => {
       {/* Announcements Stream */}
       <div className="space-y-4">
         {announcements.map((ann) => {
-          const isEmergency = ann.priority === 'Emergency Alert';
-          const isUrgent = ann.priority === 'Urgent';
+          const isEmergency = ann.priority === 'Emergency Code Red';
+          const isUrgent = ann.priority === 'Urgent Clinical Memo';
           return (
             <div
               key={ann.id}
@@ -164,7 +165,7 @@ export const CommunicationView: React.FC = () => {
                   <div>
                     <h3 className="text-sm font-bold text-[#17221E]">{ann.title}</h3>
                     <p className="text-[11px] text-[#52635C]">
-                      Target: <strong className="text-[#17221E]">{ann.targetAudience}</strong> • Issued by {ann.authorName} ({ann.authorRole})
+                      Target: <strong className="text-[#17221E]">{ann.targetAudience}</strong> • Issued by {ann.author} ({ann.authorRole})
                     </p>
                   </div>
                 </div>

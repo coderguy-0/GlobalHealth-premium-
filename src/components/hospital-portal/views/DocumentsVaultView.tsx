@@ -17,9 +17,9 @@ export const DocumentsVaultView: React.FC = () => {
 
   const filteredDocs = documents.filter(
     (d) =>
-      d.documentTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       d.issuingAuthority.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.certificateNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      d.licenseNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -71,7 +71,7 @@ export const DocumentsVaultView: React.FC = () => {
                   <FileText className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#17221E]">{doc.documentTitle}</h3>
+                  <h3 className="text-sm font-bold text-[#17221E]">{doc.title}</h3>
                   <p className="text-xs text-[#008F68] font-semibold">{doc.issuingAuthority}</p>
                 </div>
               </div>
@@ -79,11 +79,11 @@ export const DocumentsVaultView: React.FC = () => {
               <div className="p-3 rounded-xl bg-[#F6FBF8] border border-[#DCEBE4] space-y-1 text-xs">
                 <div className="flex items-center justify-between text-[#52635C]">
                   <span>Certificate No:</span>
-                  <span className="font-mono font-bold text-[#17221E]">{doc.certificateNumber}</span>
+                  <span className="font-mono font-bold text-[#17221E]">{doc.licenseNumber}</span>
                 </div>
                 <div className="flex items-center justify-between text-[#52635C]">
                   <span>Valid Until:</span>
-                  <span className="font-mono font-bold text-[#17221E]">{doc.validUntil}</span>
+                  <span className="font-mono font-bold text-[#17221E]">{doc.expiryDate}</span>
                 </div>
               </div>
             </div>
@@ -91,7 +91,7 @@ export const DocumentsVaultView: React.FC = () => {
             <div className="pt-3 border-t border-[#DCEBE4] flex items-center justify-between">
               <span className="text-[11px] text-[#52635C]">Encrypted PDF Vault</span>
               <button
-                onClick={() => alert(`Downloading verified institutional credential: ${doc.documentTitle}`)}
+                onClick={() => alert(`Downloading verified institutional credential: ${doc.title}`)}
                 className="flex items-center gap-1.5 text-xs font-bold text-[#008F68] hover:underline cursor-pointer"
               >
                 <Download className="h-3.5 w-3.5" />

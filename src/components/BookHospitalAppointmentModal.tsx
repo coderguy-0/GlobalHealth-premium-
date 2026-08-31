@@ -54,13 +54,13 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       .map((d) => ({
         id: d.id,
         name: d.name,
-        specialty: d.department || d.specialty,
-        hospital: d.hospitalName || hospital.name,
+        specialty: d.departmentName || d.specialty,
+        hospital: hospital.name,
         location: `${hospital.city}, ${hospital.country}`,
         experienceYears: d.experienceYears || 12,
         rating: 4.9,
         reviewCount: 140,
-        consultationFee: d.opdConsultationFee || '$150',
+        consultationFee: d.consultationFee || '$150',
         availableSlots: ['09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM'],
         telehealthAvailable: true,
         languages: ['English'],
@@ -103,12 +103,13 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       patientPhone,
       doctorName,
       doctorId: chosenDoc?.id || 'DOC-GEN-01',
-      department: selectedSpecialty,
-      date: appointmentDate,
-      timeSlot: appointmentTime,
-      type: consultationType === 'In-Person OPD' ? 'In-Person OPD' : 'Teleconsultation',
-      reason: chiefComplaint || 'Routine Medical Consultation',
-      notes: `Booked via Public Healthcare Directory for ${hospital.name}`
+      departmentName: selectedSpecialty,
+      patientMRN: `MRN-WEB-${Date.now().toString().slice(-6)}`,
+      chamber: 'OPD Reception',
+      appointmentTime: `${appointmentDate} ${appointmentTime}`,
+      type: consultationType === 'In-Person OPD' ? 'In-Person Consultation' : 'Video Teleconsultation',
+      triagePriority: 'Normal Priority',
+      paymentStatus: 'Pending at Counter'
     });
 
     // Write to Patient EHR Context

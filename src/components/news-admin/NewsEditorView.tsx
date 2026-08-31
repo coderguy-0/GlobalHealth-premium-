@@ -161,7 +161,9 @@ export const NewsEditorView: React.FC<NewsEditorViewProps> = ({
   // Publishing Controls (Right Column)
   const [status, setStatus] = useState<NewsStatus>(initialArticle?.status || 'draft');
   const [visibility, setVisibility] = useState<'Public' | 'Medical Professionals Only' | 'Internal Draft'>(
-    initialArticle?.visibility || 'Public'
+    initialArticle?.visibility === 'Medical Professionals Only' || initialArticle?.visibility === 'Internal Draft'
+      ? initialArticle.visibility
+      : 'Public'
   );
   const [publishTiming, setPublishTiming] = useState<'immediate' | 'scheduled'>(initialArticle?.publishTiming || 'immediate');
   const [scheduledDate, setScheduledDate] = useState(initialArticle?.scheduledDate || '2026-08-18');

@@ -249,12 +249,12 @@ export const OrganizationView: React.FC = () => {
               className="p-4 rounded-xl border border-[#DCEBE4] bg-[#F6FBF8] space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-[#52635C]">{ot.otNumber}</span>
+                <span className="font-mono text-xs font-bold text-[#52635C]">{ot.name}</span>
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     ot.status === 'In Surgery'
                       ? 'bg-[#FFF1F1] text-[#C53939] border border-[#F2CCCC]'
-                      : ot.status === 'Cleaning / Sanitizing'
+                      : ot.status === 'Sanitization in Progress'
                       ? 'bg-[#FFF7E6] text-[#A86E00] border border-[#FED88B]'
                       : 'bg-[#E8F7F1] text-[#008F68] border border-[#BDE4D5]'
                   }`}
@@ -265,14 +265,14 @@ export const OrganizationView: React.FC = () => {
 
               <div>
                 <h4 className="text-sm font-bold text-[#17221E]">{ot.name}</h4>
-                <p className="text-xs text-[#008F68] font-semibold">{ot.otType}</p>
+                <p className="text-xs text-[#008F68] font-semibold">{ot.specialty}</p>
                 <p className="text-xs text-[#52635C]">{ot.wingName} • {ot.floor}</p>
               </div>
 
-              {ot.currentSurgeon && (
+              {ot.leadSurgeon && (
                 <div className="p-2 rounded-lg bg-white border border-[#DCEBE4] text-xs">
                   <span className="text-[10px] font-bold text-[#52635C] block">Lead Operating Surgeon</span>
-                  <span className="font-bold text-[#17221E]">{ot.currentSurgeon}</span>
+                  <span className="font-bold text-[#17221E]">{ot.leadSurgeon}</span>
                   <p className="text-[10px] text-[#52635C]">Proc: {ot.currentProcedure}</p>
                 </div>
               )}
@@ -365,7 +365,7 @@ export const OrganizationView: React.FC = () => {
 
                 <h3 className="text-sm font-bold text-[#17221E]">{dept.name}</h3>
                 <p className="text-xs text-[#52635C] mt-0.5 line-clamp-2">
-                  {dept.description || `${dept.wingName || 'Main Hospital Tower'} • ${dept.floor || 'Level 2'}`}
+                  {`${dept.wingName || 'Main Hospital Tower'} • ${dept.floor || 'Level 2'}`}
                 </p>
 
                 {/* Subspecialties Badges */}
@@ -397,7 +397,7 @@ export const OrganizationView: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-[#52635C] flex items-center gap-1">
-                    <Phone className="h-3 w-3" /> Ext: {dept.phoneExtension || dept.contactExtension || '4000'}
+                    <Phone className="h-3 w-3" /> Ext: {dept.phoneExtension || dept.phoneExtension || '4000'}
                   </span>
                   <span className="font-mono text-[#52635C]">
                     {dept.totalBeds ? `${dept.totalBeds} Beds Quota` : `${dept.specialistsCount || 6} Doctors`}

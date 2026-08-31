@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { FlaskConical, Search, ArrowRight, TestTube2 } from 'lucide-react';
 import { NavigationTab } from '../../types';
-import { MEDICAL_TESTS } from '../../data/healthData';
+import { loadMedicalTests } from '../../data/catalogLoaders';
+import { useCatalog } from '../../lib/useCatalog';
 import { LAB_CATEGORIES } from './homeData';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Reveal } from '../ui/Reveal';
@@ -14,6 +15,7 @@ interface LabTestsSectionProps {
 export const LabTestsSection: React.FC<LabTestsSectionProps> = ({ onTabChange }) => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('All');
+  const { items: MEDICAL_TESTS } = useCatalog(loadMedicalTests);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -24,7 +26,7 @@ export const LabTestsSection: React.FC<LabTestsSectionProps> = ({ onTabChange })
       if (!q) return true;
       return test.name.toLowerCase().includes(q) || test.purpose.toLowerCase().includes(q);
     }).slice(0, 4);
-  }, [query, category]);
+  }, [query, category, MEDICAL_TESTS]);
 
   return (
     <section className="gh-section bg-slate-50/60" aria-labelledby="lab-tests-title">

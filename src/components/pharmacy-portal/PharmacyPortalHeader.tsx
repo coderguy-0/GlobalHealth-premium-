@@ -76,14 +76,16 @@ export const PharmacyPortalHeader: React.FC<PharmacyPortalHeaderProps> = ({
     phone: '+91 98110 00000',
     status: 'Active',
     assignedBranchId: 'branch-1',
+    assignedBranchName: 'Main Dispensary',
+    lastLogin: new Date().toISOString(),
     permissions: {
       canReviewPrescriptions: true,
       canModifyPrices: true,
       canManageInventory: true,
       canManageStaff: true,
       canViewFinancials: true,
-      canManageDeliveries: true,
-      canSubmitRegulatoryDocs: true
+      canDispenseMedicines: true,
+      canManageBranches: true
     }
   };
 

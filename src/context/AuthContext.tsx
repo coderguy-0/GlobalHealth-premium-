@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import type { PublicUserAccount } from '../types/auth';
 import { UserAccount } from '../types';
 import { apiFetch, clearStoredSession, getStoredToken, storeSession } from '../services/authClient';
 
@@ -14,6 +15,12 @@ export interface AuthIntent {
 
 interface AuthContextValue {
   user: UserAccount | null;
+  /**
+   * The server's account record, kept alongside `user` because UserAccount
+   * drops the security fields (role, verification flags, twoFactor) that the
+   * account-security screen needs.
+   */
+  publicUser: PublicUserAccount | null;
   // True until the initial session check against the server completes.
   initializing: boolean;
   // True when the active session has expired server-side.
@@ -27,7 +34,9 @@ interface AuthContextValue {
   closeGate: () => void;
   setGateMode: (mode: 'login' | 'signup') => void;
   // Called by login/signup flows with the authenticated user + token.
-  authenticate: (user: UserAccount, token: string) => void;
+  authenticate: (user: UserAccount, token: string, publicUser?: PublicUserAccount | null) => void;
+  /** Replaces the cached server account after a security change (e.g. 2FA). */
+  setPublicUser: (user: PublicUserAccount) => void;
   logout: () => Promise<void>;
   dismissSessionExpired: () => void;
 }
@@ -63,6 +72,7 @@ function toUserAccount(serverUser: any): UserAccount {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserAccount | null>(null);
+  const [publicUser, setPublicUser] = useState<PublicUserAccount | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
@@ -85,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
         if (!cancelled && res?.user) {
           setUser(toUserAccount(res.user));
+          setPublicUser(res.user as PublicUserAccount);
         }
       } catch {
         // Token invalid or expired — clear it and stay logged out.
@@ -110,9 +121,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setGateOpen(false);
   }, []);
 
-  const authenticate = useCallback((u: UserAccount, token: string) => {
+  const authenticate = useCallback((u: UserAccount, token: string, pu?: PublicUserAccount | null) => {
     storeSession(token, u);
     setUser(u);
+    if (pu !== undefined) setPublicUser(pu);
     setGateOpen(false);
     setSessionExpired(false);
   }, []);
@@ -132,6 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     clearStoredSession();
     setUser(null);
+    setPublicUser(null);
     pendingIntentRef.current = null;
     setGateOpen(false);
   }, []);
@@ -144,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const detail = (e as CustomEvent).detail || {};
       clearStoredSession();
       setUser(null);
+    setPublicUser(null);
       if (detail.reason === 'expired') setSessionExpired(true);
     };
     window.addEventListener('globalhealth:unauthorized', handler);
@@ -159,14 +173,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Logout happened in another tab.
         clearStoredSession();
         setUser(null);
+    setPublicUser(null);
       } else if (token !== e.oldValue) {
         // Login / session changed in another tab — validate before trusting.
         try {
           const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
           setUser(res?.user ? toUserAccount(res.user) : null);
+          setPublicUser((res?.user as PublicUserAccount) ?? null);
         } catch {
           clearStoredSession();
           setUser(null);
+    setPublicUser(null);
         }
       }
     };
@@ -184,6 +201,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     requireAuth,
     closeGate,
     setGateMode,
+    publicUser,
+    setPublicUser,
     authenticate,
     logout,
     dismissSessionExpired

@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Search, Pill, ArrowRight, ShieldCheck } from 'lucide-react';
 import { NavigationTab } from '../../types';
-import { MEDICINES } from '../../data/healthData';
+import { loadMedicines } from '../../data/catalogLoaders';
+import { useCatalog } from '../../lib/useCatalog';
 import { MEDICINE_CATEGORIES } from './homeData';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Button } from '../ui/Button';
@@ -15,6 +16,7 @@ interface MedicinesSectionProps {
 export const MedicinesSection: React.FC<MedicinesSectionProps> = ({ onTabChange }) => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('All');
+  const { items: MEDICINES } = useCatalog(loadMedicines);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -28,7 +30,7 @@ export const MedicinesSection: React.FC<MedicinesSectionProps> = ({ onTabChange 
         m.category.toLowerCase().includes(q)
       );
     }).slice(0, 4);
-  }, [query, category]);
+  }, [query, category, MEDICINES]);
 
   return (
     <section className="gh-section" aria-labelledby="medicines-title">

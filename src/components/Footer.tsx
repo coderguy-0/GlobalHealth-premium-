@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Heart, X, Globe2, Accessibility, Info, Mail } from 'lucide-react';
-import { NavigationTab } from '../types';
+import { NavigationTab, DashboardViewMode } from '../types';
 import { useLocalization } from '../context/LocalizationContext';
 
 interface FooterProps {
-  onTabChange: (tab: NavigationTab) => void;
+  onTabChange: (tab: NavigationTab, dashboardMode?: DashboardViewMode) => void;
 }
 
 type LegalDoc = 'editorial' | 'about' | 'contact' | 'accessibility' | null;

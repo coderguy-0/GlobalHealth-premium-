@@ -486,7 +486,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
         )}
 
         {/* Feed Tab (public reading) & Saved Tab (private, gated above) */}
-        {activeTab === 'feed' && (
+        {(activeTab === 'feed' || (activeTab === 'saved' && isAuthenticated)) && (
           <CommunityFeed
             posts={displayedPosts}
             currentFilter={activeTab === 'saved' ? 'saved' : feedFilter}

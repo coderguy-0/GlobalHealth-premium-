@@ -90,7 +90,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
       .filter(
         (r) =>
           r.id !== recipe.id &&
-          (r.category === recipe.category ||
+          ((recipe.category !== undefined && r.category === recipe.category) ||
             r.dietTags?.some((t) => recipe.dietTags?.includes(t)))
       )
       .slice(0, 4);
@@ -450,7 +450,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => onNavigate('meal-planner')}
+                  onClick={() => onNavigate('nutrition')}
                   className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
                 >
                   <Sparkles className="h-4 w-4 mr-1.5 text-amber-400" />
@@ -887,7 +887,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       <span className="block truncate text-[13px] font-bold text-slate-800 group-hover:text-emerald-800">
                         {related[0].title}
                       </span>
-                      <span className="block text-[11px] text-slate-500">{related[0].category} · {related[0].calories} kcal</span>
+                      <span className="block text-[11px] text-slate-500">{related[0].category || 'Healthy Cuisine'} · {related[0].calories} kcal</span>
                     </span>
                   </button>
                 </div>
@@ -904,7 +904,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                         {related[1]?.title || related[0].title}
                       </span>
                       <span className="block text-[11px] text-slate-500">
-                        {related[1]?.category || related[0].category} · {related[1]?.calories || related[0].calories} kcal
+                        {related[1]?.category || related[0].category || 'Healthy Cuisine'} · {related[1]?.calories || related[0].calories} kcal
                       </span>
                     </span>
                     <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5" />

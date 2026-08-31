@@ -87,7 +87,9 @@ export interface EnterpriseMedication {
   formularyCategory: 'Standard' | 'Restricted' | 'Specialty' | 'Reserve / Stewardship';
   isHighAlert: boolean; // ISMP High-Alert Flag
   isLookAlikeSoundAlike?: boolean; // LASA Flag
-  isControlledSubstance: boolean; // Schedule X / Narcotic
+  isControlledSubstance: boolean;
+  /** True when the drug may only be dispensed against a prescription. */
+  isPrescriptionRequired?: boolean; // Schedule X / Narcotic
   isAntibioticStewardship: boolean;
   requiresColdChain: boolean;
   idealTempRange?: string; // "2°C - 8°C"

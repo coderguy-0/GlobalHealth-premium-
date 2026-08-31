@@ -66,7 +66,7 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
         a.patientName.toLowerCase().includes(q) ||
         a.mrn.toLowerCase().includes(q) ||
         a.type.toLowerCase().includes(q) ||
-        a.chiefComplaint?.toLowerCase().includes(q)
+        a.reason?.toLowerCase().includes(q)
     );
 
     const matchedMeds: { patient: PatientRecord; medication: string }[] = [];
@@ -273,7 +273,7 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
                             </span>
                           </div>
                           <p className="text-[11px] text-slate-600 mt-0.5">
-                            {a.chiefComplaint}
+                            {a.reason}
                           </p>
                         </div>
 

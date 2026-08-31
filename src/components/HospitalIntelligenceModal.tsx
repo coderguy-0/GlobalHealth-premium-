@@ -405,7 +405,7 @@ export const HospitalIntelligenceModal: React.FC<HospitalIntelligenceModalProps>
           name: i.name,
           category: 'Imaging',
           department: `Radiology • ${i.bodyRegion}`,
-          tat: `${i.scanDurationMinutes} mins scan • Same Day Verified Report`,
+          tat: `${i.averageScanDurationMinutes} mins scan • Same Day Verified Report`,
           selfPay: `${currencySymbol}${i.price.toLocaleString()}`,
           insuranceRate: 'Pre-auth Tier 1 Covered',
           availability: `${i.scannerModel} (${i.roomSuite})`,
@@ -1496,10 +1496,10 @@ export const HospitalIntelligenceModal: React.FC<HospitalIntelligenceModalProps>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {(liveMeds && liveMeds.length > 0 ? liveMeds : [
-                    { id: '1', brandName: 'Augmentin 625 Duo', genericName: 'Amoxicillin + Clavulanic Acid', form: 'Tablet', strength: '625 mg', unitSellingPrice: 210, isPrescriptionRequired: true, currentStock: 450, reorderThreshold: 100 },
-                    { id: '2', brandName: 'Lantus Solostar', genericName: 'Insulin Glargine', form: 'Injection', strength: '100 IU/ml', unitSellingPrice: 890, isPrescriptionRequired: true, currentStock: 120, reorderThreshold: 30 },
-                    { id: '3', brandName: 'Dolo 650', genericName: 'Paracetamol', form: 'Tablet', strength: '650 mg', unitSellingPrice: 32, isPrescriptionRequired: false, currentStock: 1200, reorderThreshold: 200 },
-                    { id: '4', brandName: 'Meronem 1g IV', genericName: 'Meropenem Trihydrate', form: 'Vial IV', strength: '1000 mg', unitSellingPrice: 1450, isPrescriptionRequired: true, currentStock: 85, reorderThreshold: 20 }
+                    { id: '1', brandName: 'Augmentin 625 Duo', genericName: 'Amoxicillin + Clavulanic Acid', dosageForm: 'Tablet', strength: '625 mg', unitPrice: 210, isPrescriptionRequired: true, currentStock: 450, reorderLevel: 100 },
+                    { id: '2', brandName: 'Lantus Solostar', genericName: 'Insulin Glargine', dosageForm: 'Injection', strength: '100 IU/ml', unitPrice: 890, isPrescriptionRequired: true, currentStock: 120, reorderLevel: 30 },
+                    { id: '3', brandName: 'Dolo 650', genericName: 'Paracetamol', dosageForm: 'Tablet', strength: '650 mg', unitPrice: 32, isPrescriptionRequired: false, currentStock: 1200, reorderLevel: 200 },
+                    { id: '4', brandName: 'Meronem 1g IV', genericName: 'Meropenem Trihydrate', dosageForm: 'Vial IV', strength: '1000 mg', unitPrice: 1450, isPrescriptionRequired: true, currentStock: 85, reorderLevel: 20 }
                   ])
                     .filter((m) => 
                       !pharmacySearch || 
@@ -1510,13 +1510,13 @@ export const HospitalIntelligenceModal: React.FC<HospitalIntelligenceModalProps>
                       <div key={med.id} className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
                         <div>
                           <div className="font-bold text-slate-900 text-xs">{med.brandName}</div>
-                          <div className="text-[10px] text-slate-500">{med.genericName} • {med.form} {med.strength}</div>
+                          <div className="text-[10px] text-slate-500">{med.genericName} • {med.dosageForm} {med.strength}</div>
                           <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded mt-1 inline-block ${med.isPrescriptionRequired ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>
                             {med.isPrescriptionRequired ? 'Rx Required' : 'OTC Open'}
                           </span>
                         </div>
                         <div className="text-right">
-                          <div className="font-black text-slate-900 text-xs">{currencySymbol}{med.unitSellingPrice.toLocaleString()}</div>
+                          <div className="font-black text-slate-900 text-xs">{currencySymbol}{med.unitPrice.toLocaleString()}</div>
                           <div className="text-[9px] text-emerald-700 font-semibold mt-0.5">In Stock ({med.currentStock})</div>
                         </div>
                       </div>
