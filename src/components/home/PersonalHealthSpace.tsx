@@ -9,13 +9,13 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react';
-import { NavigationTab, UserAccount } from '../../types';
+import { NavigationTab, DashboardViewMode, UserAccount } from '../../types';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Button } from '../ui/Button';
 import { Reveal } from '../ui/Reveal';
 
 interface PersonalHealthSpaceProps {
-  onTabChange: (tab: NavigationTab) => void;
+  onTabChange: (tab: NavigationTab, dashboardMode?: DashboardViewMode) => void;
   currentUser: UserAccount | null;
   onOpenAuth: (mode: 'login' | 'signup') => void;
 }

@@ -200,7 +200,7 @@ export const MedicineDetailPage: React.FC<MedicineDetailPageProps> = ({
                   {medicine.category}
                 </span>
 
-                {medicine.prescriptionRequired || (medicine.prescriptionStatus && medicine.prescriptionStatus.toLowerCase().includes('rx')) ? (
+                {!medicine.overTheCounter || (medicine.prescriptionStatus && medicine.prescriptionStatus.toLowerCase().includes('rx')) ? (
                   <span className="rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 px-3 py-1 text-xs font-extrabold flex items-center gap-1">
                     <FileText className="h-3 w-3" />
                     Prescription Required (Rx)
@@ -401,7 +401,7 @@ export const MedicineDetailPage: React.FC<MedicineDetailPageProps> = ({
                 <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Regulatory Status</span>
                   <span className="font-extrabold text-slate-900 text-sm">
-                    {medicine.prescriptionRequired ? 'Rx Prescription Only' : 'OTC Approved'}
+                    {!medicine.overTheCounter ? 'Rx Prescription Only' : 'OTC Approved'}
                   </span>
                 </div>
 

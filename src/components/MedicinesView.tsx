@@ -69,6 +69,10 @@ interface MedicinesViewProps {
   onAskAI?: (prompt: string) => void;
 }
 
+/** Monograph cards rendered per page. Mirrors the disease and lab-test
+ *  directories, which paginate rather than mounting the whole catalog. */
+const MONOGRAPHS_PER_PAGE = 24;
+
 /**
  * One- or two-sentence plain-language answer to "what is this medicine?".
  *
@@ -113,6 +117,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [monographSpecialtyFilter, setMonographSpecialtyFilter] = useState<string>('All');
+  const [monographPage, setMonographPage] = useState(1);
   const [selectedMedicineForMonograph, setSelectedMedicineForMonograph] = useState<Medicine | null>(null);
 
   // Hash listener for deep links like #medicines/med-1-paracetamol
@@ -404,7 +409,25 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
 
       return matchesSearch && matchesSpecialty;
     });
+  }, [searchTerm, monographSpecialtyFilter, MEDICINES]);
+
+  // Rendering all 400 monographs at once produced ~10k DOM nodes and made the
+  // page feel sluggish. Show one page at a time, like the other directories.
+  const monographTotalPages = Math.max(1, Math.ceil(filteredMonographs.length / MONOGRAPHS_PER_PAGE));
+  const visibleMonographs = useMemo(() => {
+    const start = (monographPage - 1) * MONOGRAPHS_PER_PAGE;
+    return filteredMonographs.slice(start, start + MONOGRAPHS_PER_PAGE);
+  }, [filteredMonographs, monographPage]);
+
+  // Any change to the query or specialty puts the reader back on page 1.
+  useEffect(() => {
+    setMonographPage(1);
   }, [searchTerm, monographSpecialtyFilter]);
+
+  // Guard against a page index left beyond the end of a shrunken result set.
+  useEffect(() => {
+    if (monographPage > monographTotalPages) setMonographPage(monographTotalPages);
+  }, [monographPage, monographTotalPages]);
 
   // Clinical drug interaction checker
   const checkInteractions = () => {
@@ -669,8 +692,14 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
             {/* Header info */}
             <div className="flex items-center justify-between text-xs text-slate-600 px-1">
               <div>
-                Showing <strong className="text-slate-900 font-bold">{filteredMonographs.length}</strong> of{' '}
-                <strong className="text-slate-900 font-bold">{MEDICINES.length}</strong> complete clinical medicine monographs
+                Showing{' '}
+                <strong className="text-slate-900 font-bold">
+                  {filteredMonographs.length === 0
+                    ? 0
+                    : `${(monographPage - 1) * MONOGRAPHS_PER_PAGE + 1}-${Math.min(monographPage * MONOGRAPHS_PER_PAGE, filteredMonographs.length)}`}
+                </strong>{' '}
+                of <strong className="text-slate-900 font-bold">{filteredMonographs.length}</strong>{' '}
+                {filteredMonographs.length === MEDICINES.length ? 'complete clinical medicine monographs' : `matching monographs (of ${MEDICINES.length})`}
               </div>
               {monographSpecialtyFilter !== 'All' && (
                 <button
@@ -697,7 +726,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredMonographs.map((med) => {
+                {visibleMonographs.map((med) => {
                   const isSaved = savedIds.includes(med.id);
                   return (
                     <div
@@ -711,7 +740,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                             {med.category || 'Therapeutics'}
                           </span>
                           <div className="flex items-center gap-1.5">
-                            {med.prescriptionRequired ? (
+                            {!med.overTheCounter ? (
                               <span className="rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-extrabold px-2 py-0.5 flex items-center gap-1">
                                 <FileText className="h-2.5 w-2.5" />
                                 <span>Prescription (Rx)</span>
@@ -768,6 +797,33 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Pager */}
+            {filteredMonographs.length > MONOGRAPHS_PER_PAGE && (
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  disabled={monographPage <= 1}
+                  onClick={() => setMonographPage((n) => Math.max(1, n - 1))}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                >
+                  Previous
+                </button>
+
+                <span className="text-xs font-semibold text-slate-500">
+                  Page {monographPage} of {monographTotalPages}
+                </span>
+
+                <button
+                  type="button"
+                  disabled={monographPage >= monographTotalPages}
+                  onClick={() => setMonographPage((n) => Math.min(monographTotalPages, n + 1))}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                >
+                  Next
+                </button>
               </div>
             )}
           </div>

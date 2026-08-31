@@ -44,6 +44,14 @@ import {
 
 type TabType = 'fleet' | 'ppm' | 'breakdowns' | 'safety-aerb' | 'spares' | 'calculators';
 
+/** Response-time SLA (minutes) the biomedical team commits to per breakdown priority. */
+const BREAKDOWN_SLA_TARGET_MINUTES: Record<string, number> = {
+  'Code Red - STAT (Life Support Failure)': 15,
+  'High Priority (OR / Diagnostic Interrupted)': 60,
+  'Medium Priority (Backup Unit Available)': 240,
+  'Low / Routine': 1440
+};
+
 export const EquipmentView: React.FC = () => {
   const {
     assets,
@@ -201,7 +209,8 @@ export const EquipmentView: React.FC = () => {
       priority: breakdownPriority,
       symptomDescription: breakdownSymptom,
       errorCode: breakdownErrorCode,
-      assignedEngineer: asset.assignedBioEngineer || 'Duty Biomedical Engineer'
+      assignedEngineer: asset.assignedBioEngineer || 'Duty Biomedical Engineer',
+      slaTargetMinutes: BREAKDOWN_SLA_TARGET_MINUTES[breakdownPriority] ?? 240
     });
 
     setIsReportBreakdownModalOpen(false);

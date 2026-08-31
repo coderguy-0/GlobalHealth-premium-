@@ -108,11 +108,11 @@ export const InsuranceView: React.FC = () => {
                     <div className="text-[10px] text-[#52635C] font-mono">{c.patientMRN}</div>
                   </td>
                   <td className="py-3 px-3">
-                    <div className="font-bold text-[#17221E]">{c.tpaProvider}</div>
+                    <div className="font-bold text-[#17221E]">{c.tpaName}</div>
                     <div className="text-[10px] text-[#52635C] font-mono">Pol: {c.policyNumber}</div>
                   </td>
                   <td className="py-3 px-3 font-mono font-bold text-[#17221E]">
-                    ₹{c.claimedAmount.toLocaleString()}
+                    ₹{c.estimatedCost.toLocaleString()}
                   </td>
                   <td className="py-3 px-3 font-mono font-bold text-[#008F68]">
                     {c.approvedAmount ? `₹${c.approvedAmount.toLocaleString()}` : 'Pending Pre-Auth'}

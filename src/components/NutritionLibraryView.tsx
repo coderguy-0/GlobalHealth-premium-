@@ -11,6 +11,7 @@ import {
   Apple,
   Salad,
   Pill,
+  Gem,
   ShieldAlert,
   BookOpen,
   CalendarDays,
@@ -63,11 +64,18 @@ interface NutritionLibraryViewProps {
   onAskAI?: (prompt: string) => void;
 }
 
-type NutritionSection = 
+type NutritionSection =
   | 'recipes'
+  | 'foods'
+  | 'vitamins'
+  | 'minerals'
+  | 'macros'
+  | 'synergies'
   | 'mealplans'
   | 'interactions'
   | 'guidelines'
+  | 'deficiencies'
+  | 'toxicities'
   | 'comparison';
 
 export const NutritionLibraryView: React.FC<NutritionLibraryViewProps> = ({
@@ -120,11 +128,21 @@ export const NutritionLibraryView: React.FC<NutritionLibraryViewProps> = ({
   const foodA = NUTRITION_FOODS.find(f => f.id === compareFoodA) || NUTRITION_FOODS[0];
   const foodB = NUTRITION_FOODS.find(f => f.id === compareFoodB) || NUTRITION_FOODS[1];
 
+  // Every section rendered below must appear here, otherwise it is unreachable.
+  // Foods, vitamins, minerals, macros, synergies, deficiencies and toxicities
+  // were fully built but had no way in until this nav was completed.
   const sectionsNav = [
     { id: 'recipes', label: 'Healthy Recipes', icon: <ChefHat className="h-4 w-4" />, count: ENHANCED_RECIPES.length },
+    { id: 'foods', label: 'Foods & Nutritional Values', icon: <Salad className="h-4 w-4" />, count: NUTRITION_FOODS.length },
+    { id: 'vitamins', label: 'Vitamins', icon: <Pill className="h-4 w-4" />, count: VITAMINS_DATA.length },
+    { id: 'minerals', label: 'Minerals', icon: <Gem className="h-4 w-4" />, count: MINERALS_DATA.length },
+    { id: 'macros', label: 'Macronutrients', icon: <Flame className="h-4 w-4" />, count: MACRONUTRIENTS_DATA.length },
+    { id: 'synergies', label: 'Nutrient Synergies', icon: <Sparkles className="h-4 w-4" />, count: MICRONUTRIENT_SYNERGIES.length },
     { id: 'mealplans', label: 'AI Meal Planner', icon: <Sparkles className="h-4 w-4 text-emerald-500" /> },
     { id: 'interactions', label: 'Food & Drug Interactions', icon: <AlertTriangle className="h-4 w-4" />, count: FOOD_INTERACTIONS_DATA.length },
     { id: 'guidelines', label: 'Dietary Guidelines & Limits', icon: <BookOpen className="h-4 w-4" />, count: DIETARY_GUIDELINES_DATA.length },
+    { id: 'deficiencies', label: 'Deficiency Diseases', icon: <AlertTriangle className="h-4 w-4" />, count: DEFICIENCY_DISEASES_DATA.length },
+    { id: 'toxicities', label: 'Toxicity & Overdose', icon: <AlertTriangle className="h-4 w-4" />, count: TOXICITY_DISEASES_DATA.length },
     { id: 'comparison', label: 'Food Comparison Lab', icon: <Scale className="h-4 w-4" /> }
   ];
 

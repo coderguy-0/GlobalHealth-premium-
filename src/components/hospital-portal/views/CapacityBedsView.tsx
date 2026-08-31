@@ -47,7 +47,7 @@ export const CapacityBedsView: React.FC = () => {
 
   const totalOccupied = beds.filter((b) => b.status === 'Occupied').length;
   const totalAvailable = beds.filter((b) => b.status === 'Available').length;
-  const totalSanitizing = beds.filter((b) => b.status === 'Cleaning / Sanitizing').length;
+  const totalSanitizing = beds.filter((b) => b.status === 'Sanitization in Progress').length;
   const totalVentilatorBeds = beds.filter((b) => b.ventilatorAttached).length;
 
   const handleConfirmAdmission = (e: React.FormEvent) => {
@@ -72,7 +72,7 @@ export const CapacityBedsView: React.FC = () => {
 
   const handleConfirmDischarge = () => {
     if (!selectedBedForDischarge) return;
-    updateBedStatus(selectedBedForDischarge.id, 'Cleaning / Sanitizing');
+    updateBedStatus(selectedBedForDischarge.id, 'Sanitization in Progress');
     setSelectedBedForDischarge(null);
     setDischargeSummaryGenerated(false);
   };
@@ -176,7 +176,7 @@ export const CapacityBedsView: React.FC = () => {
         {filteredBeds.map((bed) => {
           const isOccupied = bed.status === 'Occupied';
           const isAvailable = bed.status === 'Available';
-          const isCleaning = bed.status === 'Cleaning / Sanitizing';
+          const isCleaning = bed.status === 'Sanitization in Progress';
 
           return (
             <div
@@ -222,7 +222,7 @@ export const CapacityBedsView: React.FC = () => {
                     <span className="font-mono text-[10px] text-slate-500 font-semibold">{bed.assignedPatientId}</span>
                   </div>
                   <div className="text-[11px] text-slate-600">
-                    Attending: <span className="font-medium text-slate-900">{bed.attendingDoctorName || 'Dr. Marcus Brody'}</span>
+                    Attending: <span className="font-medium text-slate-900">{bed.assignedDoctorName || 'Dr. Marcus Brody'}</span>
                   </div>
                   {bed.ventilatorAttached && (
                     <div className="flex items-center gap-1 text-[10px] font-bold text-teal-800 pt-1">
@@ -260,7 +260,7 @@ export const CapacityBedsView: React.FC = () => {
                       Discharge Summary
                     </button>
                     <button
-                      onClick={() => updateBedStatus(bed.id, 'Cleaning / Sanitizing')}
+                      onClick={() => updateBedStatus(bed.id, 'Sanitization in Progress')}
                       className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-lg text-xs border border-amber-200 cursor-pointer"
                       title="Send for Sanitization"
                     >
@@ -390,7 +390,7 @@ export const CapacityBedsView: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Attending:</span>
-                <span className="font-bold text-slate-900">{selectedBedForDischarge.attendingDoctorName || 'Dr. Marcus Brody'}</span>
+                <span className="font-bold text-slate-900">{selectedBedForDischarge.assignedDoctorName || 'Dr. Marcus Brody'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Discharge Status:</span>

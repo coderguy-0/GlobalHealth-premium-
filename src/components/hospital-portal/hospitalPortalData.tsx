@@ -887,7 +887,7 @@ interface HospitalPortalState {
   notificationPrefs: Record<string, boolean>;
   activeStaffRole: StaffRole;
   setActiveHospital: (id: string) => void;
-  setOrganizations: (orgs: HospitalOrganization[]) => void;
+  setOrganizations: React.Dispatch<React.SetStateAction<HospitalOrganization[]>>;
   updateOrganization: (patch: Partial<HospitalOrganization>) => void;
   submitProfileForReview: () => void;
   publishProfile: () => void;
@@ -963,7 +963,8 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
     const organization = organizations.find((o) => o.id === activeHospitalId) ?? organizations[0];
 
     const setActiveHospital = useCallback((id: string) => setActiveHospitalId(id), []);
-    const setOrganizations = useCallback((orgs: HospitalOrganization[]) => setOrganizationsState(orgs), []);
+    // Pass through to the raw state setter so functional updaters keep working.
+    const setOrganizations = setOrganizationsState;
 
     const updateOrganization = useCallback((patch: Partial<HospitalOrganization>) => {
       setOrganizations((prev) => prev.map((o) => {

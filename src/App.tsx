@@ -121,7 +121,8 @@ const RouteFallback: React.FC = () => (
   </div>
 );
 
-export type DashboardViewMode = 'details' | 'dashboard' | 'ehr' | 'saved';
+import type { DashboardViewMode } from './types';
+export type { DashboardViewMode };
 
 // Tabs that expose personal/private data and require an authenticated session.
 // NOTE: news-admin is intentionally NOT here — editorial staff authenticate via

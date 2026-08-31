@@ -226,6 +226,8 @@ export interface TransfusionRequisition {
   urgency: 'STAT / Emergency (<15 mins)' | 'Urgent (1 Hour)' | 'Elective OT';
   orderingDoctor: string;
   department: string;
+  /** Free-text clinical justification captured on the requisition form. */
+  clinicalIndication?: string;
   status: 'Pending Crossmatch' | 'Crossmatched & Issued' | 'Transfused' | 'Cancelled';
   requestedAt: string;
 }

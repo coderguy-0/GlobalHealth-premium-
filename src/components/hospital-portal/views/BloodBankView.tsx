@@ -50,12 +50,12 @@ export const BloodBankView: React.FC = () => {
     createTransfusionRequest({
       patientName,
       patientMRN: patientMRN || `MRN-${Math.floor(1000 + Math.random() * 9000)}`,
-      wardBed: 'Trauma Bay 1 / ER',
       bloodGroup,
       component,
       unitsRequested: unitsRequested || 1,
       urgency,
-      attendingPhysician: 'Dr. Trauma Resuscitation Lead',
+      orderingDoctor: 'Dr. Trauma Resuscitation Lead',
+      department: 'Emergency & Trauma',
       clinicalIndication: clinicalIndication || 'Emergency Hemorrhage Resuscitation'
     });
     setPatientName('');
@@ -66,19 +66,19 @@ export const BloodBankView: React.FC = () => {
     createTransfusionRequest({
       patientName: 'TRAUMA MASS CASUALTY PATIENT',
       patientMRN: `STAT-MTP-${Math.floor(100 + Math.random() * 900)}`,
-      wardBed: 'Trauma Bay 1 (STAT MTP)',
       bloodGroup: 'O-Negative (O-)' as any,
       component: 'PRBC (Packed Red Blood Cells)' as any,
       unitsRequested: 4,
       urgency: 'STAT Emergency (Crossmatch ASAP)' as any,
-      attendingPhysician: 'Dr. Marcus Brody (Trauma Attending)',
+      orderingDoctor: 'Dr. Marcus Brody (Trauma Attending)',
+      department: 'Emergency & Trauma',
       clinicalIndication: 'Massive Transfusion Protocol (MTP 1:1:1 Package - 4 PRBC + 4 FFP + 1 Platelet Pack)'
     });
   };
 
   const totalPRBC = bloodBank.reduce((acc, curr) => acc + curr.prbcUnits, 0);
   const totalFFP = bloodBank.reduce((acc, curr) => acc + curr.ffpUnits, 0);
-  const totalPlatelets = bloodBank.reduce((acc, curr) => acc + curr.plateletsUnits, 0);
+  const totalPlatelets = bloodBank.reduce((acc, curr) => acc + curr.plateletUnits, 0);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -288,7 +288,7 @@ export const BloodBankView: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-600">Platelets:</span>
-                  <span className="font-mono font-bold text-slate-900">{item.plateletsUnits}</span>
+                  <span className="font-mono font-bold text-slate-900">{item.plateletUnits}</span>
                 </div>
               </div>
 

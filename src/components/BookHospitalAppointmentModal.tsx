@@ -54,13 +54,13 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       .map((d) => ({
         id: d.id,
         name: d.name,
-        specialty: d.department || d.specialty,
-        hospital: d.hospitalName || hospital.name,
+        specialty: d.departmentName || d.specialty,
+        hospital: hospital.name,
         location: `${hospital.city}, ${hospital.country}`,
         experienceYears: d.experienceYears || 12,
         rating: 4.9,
         reviewCount: 140,
-        consultationFee: d.opdConsultationFee || '$150',
+        consultationFee: d.consultationFee || '$150',
         availableSlots: ['09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM'],
         telehealthAvailable: true,
         languages: ['English'],
@@ -106,7 +106,7 @@ export const BookHospitalAppointmentModal: React.FC<BookHospitalAppointmentModal
       department: selectedSpecialty,
       date: appointmentDate,
       timeSlot: appointmentTime,
-      type: consultationType === 'In-Person OPD' ? 'In-Person OPD' : 'Teleconsultation',
+      type: consultationType === 'In-Person OPD' ? 'In-Person Consultation' : 'Video Teleconsultation',
       reason: chiefComplaint || 'Routine Medical Consultation',
       notes: `Booked via Public Healthcare Directory for ${hospital.name}`
     });
