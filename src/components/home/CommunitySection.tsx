@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { MessageSquare, TrendingUp, BookOpen, ArrowRight, Lock } from 'lucide-react';
 import { NavigationTab } from '../../types';
-import { FORUM_POSTS } from '../../data/healthData';
+import { FORUM_POSTS } from '../../data/forumPosts';
 import { COMMUNITY_DISTINCTIONS } from './homeData';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Button } from '../ui/Button';

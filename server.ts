@@ -1,3 +1,7 @@
+// Load environment variables from .env before anything else reads process.env.
+// Without this, GEMINI_API_KEY (and any other secret placed in .env) is never
+// visible to the server and the AI Assistant fails with a 500.
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -7228,7 +7232,7 @@ Request ID: ${requestId}`,
       const apiKey = process.env.GEMINI_API_KEY;
 
       if (!apiKey) {
-        return res.status(500).json({
+        return res.status(503).json({
           error: 'GEMINI_API_KEY is not configured on the server.',
         });
       }
@@ -7319,7 +7323,17 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`[MedAuth & GlobalHealth Enterprise] Server listening on http://0.0.0.0:${PORT}`);
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn(
+        '[GlobalHealth] GEMINI_API_KEY is not set. The site runs normally, but the AI Assistant ' +
+        'will return a "not configured" message. Add GEMINI_API_KEY to your .env file to enable it.'
+      );
+    }
   });
 }
 
-startServer();
+// Surface startup failures instead of dying as a silent unhandled rejection.
+startServer().catch((err) => {
+  console.error('[GlobalHealth] Fatal: the server failed to start.\n', err);
+  process.exit(1);
+});
