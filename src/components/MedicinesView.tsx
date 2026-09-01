@@ -152,6 +152,32 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Start the real pharmacy purchase flow from any medicine card. The
+  // monograph catalogue is larger than the currently listed marketplace
+  // products, so fall back to the partner portal when a live listing is not
+  // available instead of showing a dead or misleading checkout button.
+  const handleBuyMedicine = (medicine: Medicine) => {
+    if (!requirePurchaseAuth('buy medicines from a verified pharmacy')) return;
+    const queryName = medicine.name.toLowerCase();
+    const queryGeneric = medicine.genericName.toLowerCase();
+    const product = PHARMACY_PRODUCTS.find((candidate) => {
+      const name = candidate.name.toLowerCase();
+      const generic = candidate.genericName.toLowerCase();
+      return name.includes(queryName) || queryName.includes(name) ||
+        generic.includes(queryGeneric) || queryGeneric.includes(generic);
+    });
+
+    if (product) {
+      setSelectedProductForBuying(product);
+      return;
+    }
+
+    // No verified, live marketplace listing exists for this monograph yet.
+    // Keep the action useful by opening the partner catalogue rather than
+    // pretending that a product can be purchased.
+    onNavigateToPharmacyPortal?.('landing');
+  };
   // Voice search (Web Speech API). Hidden when unsupported — never decorative.
   const [voiceListening, setVoiceListening] = useState(false);
   const [voiceSupported] = useState(
@@ -788,10 +814,19 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                       <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center gap-2">
                         <button
                           onClick={() => openMedicine(med)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer shadow-2xs"
+                          className="min-w-0 flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer shadow-2xs"
                         >
                           <FileText className="h-3.5 w-3.5 text-emerald-400" />
                           <span>View More</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleBuyMedicine(med)}
+                          className="min-w-0 flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer shadow-2xs"
+                          aria-label={`Buy ${med.name} from a verified pharmacy`}
+                        >
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                          <span>Buy Now</span>
                         </button>
                       </div>
                     </div>

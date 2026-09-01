@@ -28,6 +28,9 @@ interface ArticlePreviewModalProps {
   updatedAt?: string;
   correctionNotice?: string;
   onReport?: () => void;
+  /** Public readers use the same article renderer as CMS preview, but as a
+   * full-page detail view matching medicines and diseases. */
+  fullPage?: boolean;
 }
 
 export const ArticlePreviewModal: React.FC<ArticlePreviewModalProps> = ({
@@ -38,11 +41,16 @@ export const ArticlePreviewModal: React.FC<ArticlePreviewModalProps> = ({
   submittedByAuthority,
   updatedAt,
   correctionNotice,
-  onReport
+  onReport,
+  fullPage = false
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+    <div className={fullPage
+      ? 'min-h-screen bg-slate-50'
+      : 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto'}>
+      <div className={fullPage
+        ? 'min-h-screen w-full overflow-hidden bg-white'
+        : 'w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 border border-slate-200'}>
         {/* Preview Top Banner */}
         <div className="bg-slate-900 text-white px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs">
@@ -82,7 +90,7 @@ export const ArticlePreviewModal: React.FC<ArticlePreviewModalProps> = ({
         </div>
 
         {/* Reader Container */}
-        <div className="p-6 sm:p-10 max-h-[85vh] overflow-y-auto space-y-6">
+        <div className={fullPage ? 'mx-auto max-w-5xl p-6 sm:p-10 lg:p-14 space-y-6' : 'p-6 sm:p-10 max-h-[85vh] overflow-y-auto space-y-6'}>
           {/* Breaking News Banner */}
           {article.isBreaking && (
             <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-600 text-white text-xs font-black uppercase tracking-wider animate-pulse shadow-md">

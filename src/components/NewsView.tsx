@@ -373,6 +373,7 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
             submittedByAuthority={authArt?.submittedBy || null}
             updatedAt={authArt?.updatedAt || activeArticleModal.lastUpdated}
             correctionNotice={authArt?.correctionNotice || undefined}
+            fullPage
             onReport={() => { setActiveArticleModal(null); openReport(activeArticleModal); }}
           />
         );

@@ -6,6 +6,12 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    // The app intentionally ships several large, data-rich clinical modules.
+    // Keep the build warning useful without treating known content bundles as
+    // a failed build; route-level lazy loading still protects initial load.
+    build: {
+      chunkSizeWarningLimit: 12000,
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

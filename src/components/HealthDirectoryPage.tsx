@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { DOCTORS, HOSPITALS } from '../data/healthData';
 import { Doctor, Hospital } from '../types';
-import { HospitalIntelligenceModal } from './HospitalIntelligenceModal';
+import { HospitalDetailPage } from './HospitalDetailPage';
 import { BookAmbulanceModal } from './BookAmbulanceModal';
 import { BookHospitalAppointmentModal } from './BookHospitalAppointmentModal';
 import { useHospitalPortal } from '../context/HospitalContext';
@@ -452,6 +452,30 @@ export const DirectoryPage: React.FC<HealthDirectoryPageProps> = ({
     setAppointmentReason('');
     setBookingSuccess(false);
   };
+
+  // Hospital profiles follow the same full-page detail pattern as medicine
+  // and disease pages. This keeps discovery consistent and avoids trapping a
+  // profile inside a modal on smaller screens.
+  if (isHospitals && selectedHospital) {
+    return (
+      <HospitalDetailPage
+        hospital={selectedHospital}
+        onBack={() => setSelectedHospital(null)}
+        onBookAppointment={(hospital) => {
+          if (requireBookingAuth('book a hospital appointment')) {
+            setSelectedHospital(null);
+            setSelectedAppointmentHospital(hospital);
+          }
+        }}
+        onBookAmbulance={(hospital) => {
+          if (requireBookingAuth('book an ambulance')) {
+            setSelectedHospital(null);
+            setSelectedAmbulanceHospital(hospital);
+          }
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/70 py-8 px-4 sm:px-6 lg:px-8 text-slate-800 antialiased">
@@ -1127,25 +1151,8 @@ export const DirectoryPage: React.FC<HealthDirectoryPageProps> = ({
       {/* MODALS: HOSPITAL INTELLIGENCE, AMBULANCE, APPOINTMENT */}
       {/* ========================================================================= */}
 
-      {/* Hospital Full Intelligence Modal */}
-      {selectedHospital && (
-        <HospitalIntelligenceModal
-          hospital={selectedHospital}
-          onClose={() => setSelectedHospital(null)}
-          onBookDoctor={(doc) => {
-            setSelectedHospital(null);
-            handleOpenAppointmentForDoctor(doc);
-          }}
-          onBookAmbulance={(hosp) => {
-            setSelectedHospital(null);
-            if (requireBookingAuth('book an ambulance')) setSelectedAmbulanceHospital(hosp);
-          }}
-          onBookAppointment={(hosp) => {
-            setSelectedHospital(null);
-            if (requireBookingAuth('book a hospital appointment')) setSelectedAppointmentHospital(hosp);
-          }}
-        />
-      )}
+      {/* Hospital profiles render as a full page above, matching the medicine
+          and disease detail experience. */}
 
       {/* Book Ambulance Modal */}
       {selectedAmbulanceHospital && (

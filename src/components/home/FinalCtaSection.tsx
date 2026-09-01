@@ -26,7 +26,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ onTabChange, c
               with confidence.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg" onClick={() => onTabChange('diseases')}>
+              <Button size="lg" onClick={() => onTabChange('explore')}>
                 Explore GlobalHealth
                 <ArrowRight className="h-4 w-4" />
               </Button>
