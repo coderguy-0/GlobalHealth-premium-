@@ -80,6 +80,10 @@ export const PharmacyPortalApp: React.FC<PharmacyPortalAppProps> = ({
     }
   }, [initialScreen]);
   const [activeTab, setActiveTab] = useState<PharmacyPortalNavTab>('dashboard');
+  // Keep the selected branch in the shell so every branch-aware action starts
+  // from the same operational context instead of silently reverting to the
+  // first branch after a header interaction.
+  const [currentBranchId, setCurrentBranchId] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<PharmacyStaffMember | null>(null);
 
@@ -349,7 +353,8 @@ export const PharmacyPortalApp: React.FC<PharmacyPortalAppProps> = ({
       <PharmacyPortalHeader
         profile={profile}
         branches={branches}
-        currentBranchId={branches[0]?.id || 'branch-1'}
+        currentBranchId={currentBranchId || branches[0]?.id || 'branch-1'}
+        onBranchChange={setCurrentBranchId}
         currentUser={currentUser || staff[0]}
         currentStaff={currentUser || staff[0]}
         onNavigateTab={(tab) => setActiveTab(tab as any)}

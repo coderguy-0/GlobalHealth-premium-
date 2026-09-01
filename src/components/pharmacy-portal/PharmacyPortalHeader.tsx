@@ -112,6 +112,8 @@ export const PharmacyPortalHeader: React.FC<PharmacyPortalHeaderProps> = ({
   };
 
   const unreadCount = safeNotifs.filter(n => !n.isRead).length;
+  const isVerified = profile.verificationStatus === 'Verified';
+  const verificationLabel = profile.verificationStatus || 'Verification Pending';
 
   const handleReturnToMain = () => {
     if (onReturnToMainApp) onReturnToMainApp();
@@ -164,11 +166,17 @@ export const PharmacyPortalHeader: React.FC<PharmacyPortalHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsBadgeOpen(!isBadgeOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold hover:bg-emerald-500/30 transition cursor-pointer"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold transition cursor-pointer ${
+                isVerified
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                  : profile.verificationStatus === 'Suspended' || profile.verificationStatus === 'Rejected'
+                    ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
+                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+              }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden lg:inline">Verified Partner</span>
-              <span className="text-[10px] font-mono text-emerald-400/80">99% Compliance</span>
+              <ShieldCheck className={`w-3.5 h-3.5 ${isVerified ? 'text-emerald-400' : profile.verificationStatus === 'Suspended' || profile.verificationStatus === 'Rejected' ? 'text-rose-400' : 'text-amber-400'}`} />
+              <span className="hidden lg:inline">{isVerified ? 'Verified Partner' : verificationLabel}</span>
+              <span className="text-[10px] font-mono opacity-80">{profile.complianceScore}% Compliance</span>
             </button>
 
             {/* Popover */}
