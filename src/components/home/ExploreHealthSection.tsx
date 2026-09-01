@@ -22,7 +22,7 @@ export const ExploreHealthSection: React.FC<ExploreHealthSectionProps> = ({ onTa
           action={
             <button
               type="button"
-              onClick={() => onTabChange('diseases')}
+              onClick={() => onTabChange('explore')}
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-medical-700 transition hover:text-medical-800"
             >
               Explore all health topics
