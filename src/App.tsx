@@ -767,7 +767,7 @@ export default function App() {
         {(currentTab === 'nutrition' || currentTab === 'recipes') && (
           <NutritionLibraryView
             key={currentTab}
-            initialSection={currentTab === 'recipes' ? 'recipes' : 'foods'}
+            initialSection="recipes"
             savedIds={savedIds}
             onToggleSave={handleToggleSave}
             onRequestAuth={() => handleOpenAuthModal('login')}
