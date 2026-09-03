@@ -47,6 +47,21 @@ async function startServer() {
   app.use(express.json({ limit: '15mb' }));
   app.use(express.urlencoded({ extended: true }));
 
+  // Enterprise request identity + basic security headers.
+  app.use((req, res, next) => {
+    const incoming = Array.isArray(req.headers['x-request-id']) ? req.headers['x-request-id'][0] : req.headers['x-request-id'];
+    const requestId =
+      typeof incoming === 'string' && /^[A-Za-z0-9_.-]{1,80}$/.test(incoming)
+        ? incoming
+        : `req-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    (req as any).requestId = requestId;
+    res.setHeader('X-Request-Id', requestId);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('X-XSS-Protection', '0');
+    next();
+  });
+
   // Native CORS middleware
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -73,7 +88,32 @@ async function startServer() {
         heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),
         heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024),
       },
-      version: '2.4.0-enterprise'
+      version: '2.4.0-enterprise',
+      requestId: (req as any).requestId,
+    });
+  });
+
+  // Readiness probe (safe for orchestrators/load balancers). It does not expose
+  // secrets or internal architecture; it only confirms the HTTP server and
+  // runtime persistence directory are usable.
+  app.get('/api/ready', (req, res) => {
+    const runtimeWritable = (() => {
+      try {
+        fs.mkdirSync(RUNTIME_DIR, { recursive: true });
+        const probe = path.join(RUNTIME_DIR, '.ready-probe');
+        fs.writeFileSync(probe, String(Date.now()), 'utf8');
+        fs.unlinkSync(probe);
+        return true;
+      } catch {
+        return false;
+      }
+    })();
+    return res.status(runtimeWritable ? 200 : 503).json({
+      success: runtimeWritable,
+      status: runtimeWritable ? 'READY' : 'NOT_READY',
+      timestamp: new Date().toISOString(),
+      uptimeSeconds: Math.floor(process.uptime()),
+      requestId: (req as any).requestId,
     });
   });
 
@@ -7612,6 +7652,23 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
   // ----------------------------------------------------------------------
   app.use('/api', (req, res) => {
     return res.status(404).json({ success: false, error: 'API endpoint not found.' });
+  });
+
+  // Centralized API error boundary. User-facing errors never leak stack
+  // traces, SQL, provider keys, or database internals.
+  app.use('/api', (err: any, req: any, res: any, _next: any) => {
+    console.error(`[GlobalHealth] API error ${req.requestId || ''}:`, err);
+    return res.status(err?.status || 500).json({
+      success: false,
+      error: {
+        code: err?.code || 'INTERNAL_ERROR',
+        message:
+          err?.message && (err?.status === 429 || err?.status === 401 || err?.status === 403 || err?.status === 400)
+            ? err.message
+            : 'Something went wrong. Please try again.',
+      },
+      requestId: req.requestId,
+    });
   });
 
   // ----------------------------------------------------------------------
