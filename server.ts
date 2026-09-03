@@ -7492,6 +7492,7 @@ Request ID: ${requestId}`,
       // (intent, answer mode, transparency guidance). Bounded and sanitized so
       // it cannot inject privileged instructions or leak private data.
       const ctxSystem = cleanCtx((userContext as any)?.systemContext, 5000) || '';
+      const ctxHistory = cleanCtx((userContext as any)?.conversationHistory, 8000) || '';
 
       const identityInstruction =
         (userContext as any)?.authenticated && ctxName
@@ -7511,7 +7512,7 @@ SAFETY RULES (never violate):
 - Always end with a short note that this is educational information and not a substitute for professional medical advice.
 Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}${
         ctxSystem ? `\nPLATFORM CONTEXT GUIDANCE (non-authoritative, from GlobalHealth's understanding layer): ${ctxSystem}` : ''
-      }`;
+      }${ctxHistory ? `\nCURRENT CONVERSATION HISTORY (recent, for continuity and reference resolution):\n${ctxHistory}\nUse this only to understand the user's current thread. Never repeat earlier answers verbatim.` : ''}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',

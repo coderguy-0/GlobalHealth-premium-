@@ -365,6 +365,7 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
     async (
       prompt: string,
       systemContext: string,
+      conversationHistory: string,
       onDone: (content: string) => void
     ): Promise<{ ok: true; err?: undefined; stopped?: boolean } | { ok: false; err: SendError; stopped: boolean }> => {
       const controller = new AbortController();
@@ -374,8 +375,8 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
           prompt,
           currentLanguage,
           isSignedIn
-            ? { displayName: user!.fullName, mrn: activePatient.mrn, authenticated: true, systemContext }
-            : { authenticated: false, systemContext },
+            ? { displayName: user!.fullName, mrn: activePatient.mrn, authenticated: true, systemContext, conversationHistory }
+            : { authenticated: false, systemContext, conversationHistory },
           controller.signal
         );
         onDone(response);
@@ -492,7 +493,11 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
 
       // General AI reply.
       setLoadingReply(true);
-      const result = await runAssistantReply(text, aiContext.systemContext, (content) => {
+      const conversationHistory = [...messages, userMsg]
+        .slice(-8)
+        .map((m) => `${m.role === 'user' ? 'You' : 'GlobalHealth AI'}: ${m.content}`)
+        .join('\n');
+      const result = await runAssistantReply(text, aiContext.systemContext, conversationHistory, (content) => {
         const bot: AIMessage = {
           id: createAiMessageId('assistant'),
           role: 'assistant',
@@ -543,7 +548,8 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
       language: currentLanguage,
       recentTopics: messages.slice(-6).map((m) => m.content),
     });
-    const result = await runAssistantReply(prompt, retryContext.systemContext, (content) => {
+    const history = messages.slice(-8).map((m) => `${m.role === 'user' ? 'You' : 'GlobalHealth AI'}: ${m.content}`).join('\n');
+    const result = await runAssistantReply(prompt, retryContext.systemContext, history, (content) => {
       // Replace the failed placeholder with the real reply.
       if (isSignedIn) {
         setActiveUserConversation((prev) => {

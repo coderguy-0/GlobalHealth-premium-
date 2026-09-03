@@ -249,6 +249,10 @@ export interface AssistantRequestContext {
   /** Client-computed transparency/intent/answer-mode guidance. The server
    * treats this as non-authoritative enhancement, not as a privileged claim. */
   systemContext?: string;
+  /** Compact recent conversation history (role: content) used to resolve
+   * references ("the second one"), maintain topic continuity, and avoid
+   * repeating prior answers. Bounded and sanitized server-side. */
+  conversationHistory?: string;
 }
 
 /** Calls the Gemini-backed assistant endpoint with the signed-in caller's own
