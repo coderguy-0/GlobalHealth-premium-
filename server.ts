@@ -1503,6 +1503,28 @@ async function startServer() {
     next();
   }
 
+  // Server-side EHR access share tokens. The token is a capability created only
+  // by the signed-in account owner; it is never trusted from the client.
+  const EHR_CONSENT_SHARES = new Map<
+    string,
+    { token: string; userId: string; granteeName: string; granteeType: string; scopes: string[]; expiresAt: number; createdAt: number; revokedAt?: number }
+  >();
+  const EHR_CONSENT_SHARE_DIR = path.join(RUNTIME_DIR, 'ehr-consent-shares.json');
+  try {
+    const persisted = readJsonFile<
+      { token: string; userId: string; granteeName: string; granteeType: string; scopes: string[]; expiresAt: number; createdAt: number; revokedAt?: number }[]
+    >(EHR_CONSENT_SHARE_DIR, []);
+    for (const share of persisted) {
+      if (share && typeof share.token === 'string' && typeof share.userId === 'string') {
+        EHR_CONSENT_SHARES.set(share.token, share);
+      }
+    }
+  } catch {
+    /* persistence load already logged */
+  }
+  const persistEhrConsentShares = () =>
+    writeJsonFile(EHR_CONSENT_SHARE_DIR, [...EHR_CONSENT_SHARES.values()]);
+
   // GET /api/auth/me — validate the current session and return the user.
   app.get('/api/auth/me', (req, res) => {
     const user = authenticate(req);
@@ -1514,6 +1536,91 @@ async function startServer() {
       });
     }
     return res.json({ success: true, user: sanitizeUser(user) });
+  });
+
+  // ---- Protected: create a server-scoped EHR access share token ----.
+  const ALLOWED_CONSENT_SCOPES = new Set(['Vitals', 'Labs', 'Medications', 'Diagnoses', 'Imaging', 'Clinical Notes']);
+  app.post('/api/ehr/consent-share', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const { granteeName, granteeType, scopes, durationDays } = req.body || {};
+    const cleanName = typeof granteeName === 'string' ? granteeName.trim().slice(0, 120) : '';
+    const cleanType = typeof granteeType === 'string' ? granteeType.trim().slice(0, 40) : 'Physician';
+    if (!cleanName) {
+      return res.status(400).json({ success: false, error: 'Provider name is required.' });
+    }
+    const cleanScopes = Array.isArray(scopes)
+      ? [...new Set(scopes.filter((s: unknown): s is string => typeof s === 'string' && ALLOWED_CONSENT_SCOPES.has(s)))].slice(0, ALLOWED_CONSENT_SCOPES.size)
+      : [];
+    if (cleanScopes.length === 0) {
+      return res.status(400).json({ success: false, error: 'Select at least one record scope to share.' });
+    }
+    const days = Number(durationDays);
+    const validDays = [1, 7, 30, 365].includes(days) ? days : 7;
+    const token = `gh-ehr-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}${Math.random().toString(36).slice(2, 10)}`;
+    const now = Date.now();
+    EHR_CONSENT_SHARES.set(token, {
+      token,
+      userId: user.id,
+      granteeName: cleanName,
+      granteeType: cleanType,
+      scopes: cleanScopes,
+      createdAt: now,
+      expiresAt: now + validDays * 86400000,
+    });
+    persistEhrConsentShares();
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'EHR_CONSENT_SHARE_CREATED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Created ${validDays}-day EHR access share for ${cleanName} (${cleanScopes.length} scope(s))`
+    });
+    return res.status(201).json({
+      success: true,
+      token,
+      url: `/api/ehr/shared-consent/${token}`,
+      expiresAt: now + validDays * 86400000,
+      scope: cleanScopes,
+    });
+  });
+
+  // ---- Public verification of a non-revoked, unexpired share link ----.
+  app.get('/api/ehr/shared-consent/:token', (req, res) => {
+    const share = EHR_CONSENT_SHARES.get(req.params.token);
+    if (!share || share.revokedAt || share.expiresAt < Date.now()) {
+      return res.status(404).json({ success: false, error: 'This access link is invalid or has expired.' });
+    }
+    return res.json({
+      success: true,
+      granteeName: share.granteeName,
+      granteeType: share.granteeType,
+      scopes: share.scopes,
+      createdAt: share.createdAt,
+      expiresAt: share.expiresAt,
+      revocable: true,
+    });
+  });
+
+  // ---- Protected: revoke an EHR access share (owner only) ----.
+  app.delete('/api/ehr/consent-share/:token', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const share = EHR_CONSENT_SHARES.get(req.params.token);
+    if (!share) return res.status(404).json({ success: false, error: 'This access link could not be found.' });
+    if (share.userId !== user.id) return res.status(403).json({ success: false, error: 'You do not have permission to revoke this access link.' });
+    share.revokedAt = Date.now();
+    persistEhrConsentShares();
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'EHR_CONSENT_SHARE_REVOKED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Revoked EHR access share for ${share.granteeName}`
+    });
+    return res.json({ success: true, revoked: true });
   });
 
   // ---- Protected: Personal Health Dashboard (owner-only aggregate) ----
