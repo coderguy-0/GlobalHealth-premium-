@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { PortalMedicine } from '../../types/pharmacyPortal';
 import { PharmacyPortalService } from '../../services/pharmacyPortalStore';
+import { PharmacyFeeConfigurationPanel } from './PharmacyFeeConfigurationPanel';
 
 interface PricingManagementTabProps {
   medicines?: PortalMedicine[];
@@ -25,6 +26,7 @@ export const PricingManagementTab: React.FC<PricingManagementTabProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [editedPrices, setEditedPrices] = useState<{ [id: string]: number }>({});
   const [isSavedToast, setIsSavedToast] = useState(false);
+  const [activeSection, setActiveSection] = useState<'prices' | 'fees'>('prices');
 
   const filteredMedicines = (medicines || []).filter(m =>
     m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,14 +61,24 @@ export const PricingManagementTab: React.FC<PricingManagementTabProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleSaveAll}
-              disabled={Object.keys(editedPrices).length === 0}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs transition disabled:opacity-40 cursor-pointer shadow-md shadow-teal-950/50"
-            >
-              <Save className="w-3.5 h-3.5" />
-              <span>Save Modified Prices ({Object.keys(editedPrices).length})</span>
-            </button>
+            <div className="inline-flex rounded-xl bg-slate-950 border border-slate-800 p-1">
+              <button onClick={() => setActiveSection('prices')} className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${activeSection === 'prices' ? 'bg-teal-500/20 text-teal-300' : 'text-slate-400'}`}>
+                Product Prices
+              </button>
+              <button onClick={() => setActiveSection('fees')} className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${activeSection === 'fees' ? 'bg-teal-500/20 text-teal-300' : 'text-slate-400'}`}>
+                Platform Fees
+              </button>
+            </div>
+            {activeSection === 'prices' && (
+              <button
+                onClick={handleSaveAll}
+                disabled={Object.keys(editedPrices).length === 0}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs transition disabled:opacity-40 cursor-pointer shadow-md shadow-teal-950/50"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Modified Prices ({Object.keys(editedPrices).length})</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -77,19 +89,23 @@ export const PricingManagementTab: React.FC<PricingManagementTabProps> = ({
           </div>
         )}
 
-        <div className="relative text-xs">
-          <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search medicine to adjust price..."
-            className="w-full rounded-xl bg-slate-950 border border-slate-800 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
-          />
-        </div>
+        {activeSection === 'prices' && (
+          <div className="relative text-xs">
+            <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search medicine to adjust price..."
+              className="w-full rounded-xl bg-slate-950 border border-slate-800 pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Pricing Table */}
+      {activeSection === 'fees' && <PharmacyFeeConfigurationPanel onConfigUpdated={() => undefined} />}
+
+      {activeSection === 'prices' && (
       <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -157,6 +173,7 @@ export const PricingManagementTab: React.FC<PricingManagementTabProps> = ({
           </table>
         </div>
       </div>
+      )}
 
     </div>
   );

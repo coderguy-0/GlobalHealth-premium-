@@ -31,6 +31,27 @@ export type PharmacyStaffRole =
   | 'Finance Manager'
   | 'Delivery Coordinator';
 
+export interface PharmacyFeeConfiguration {
+  id: string;
+  pharmacyId: string;
+  currency: 'INR';
+  platformCommissionPercent: number;
+  paymentProcessingPercent: number;
+  paymentProcessingFixedFee: number;
+  deliveryFeeMode: 'PHARMACY_PAID' | 'CUSTOMER_PAID' | 'SHARED';
+  deliveryContributionPercent: number;
+  standardDeliveryFee: number;
+  expressDeliveryFee: number;
+  freeDeliveryAbove: number;
+  promotionalContributionPercent: number;
+  subscriptionMonthlyFee: number;
+  gstTdsPercent: number;
+  updatedAt: string;
+  updatedBy: string;
+  effectiveFrom: string;
+  description: string;
+}
+
 export type PharmacyApplicationStatus = 
   | 'Draft'
   | 'Submitted'

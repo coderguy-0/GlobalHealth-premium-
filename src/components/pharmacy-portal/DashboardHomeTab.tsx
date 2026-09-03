@@ -80,8 +80,15 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
   const lowStockMeds = medicines.filter(m => m.status === 'Low Stock');
   const outOfStockMeds = medicines.filter(m => m.status === 'Out of Stock' || m.stockQuantity === 0);
 
-  const todayRevenue = 48250;
-  const pendingPayouts = 11840;
+  const today = new Date().toISOString().slice(0, 10);
+  const todaysOrders = orders.filter(o => o.createdAt.slice(0, 10) === today);
+  const totalOrderValue = orders.reduce((sum, o) => sum + o.grandTotal, 0);
+  const pendingOrderCount = orders.filter(o => o.orderStatus === 'New' || o.orderStatus === 'Prescription Review').length;
+  const totalMedicinesCount = medicines.length;
+  const lowStockCount = lowStockMeds.length;
+  const outOfStockCount = outOfStockMeds.length;
+  const expiringMedicineCount = medicines.filter(m => m.expiryDate && m.expiryDate < today).length + medicines.filter(m => m.expiryDate && m.expiryDate >= today && m.expiryDate <= new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10)).length;
+  const pendingRefundCount = orders.filter(o => o.orderStatus === 'Refund Pending').length;
 
   return (
     <div className="space-y-6">
@@ -115,10 +122,10 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <span>Today's Orders</span>
             <ShoppingBag className="w-4 h-4 text-teal-400" />
           </div>
-          <div className="text-2xl font-black text-white">42</div>
+          <div className="text-2xl font-black text-white">{todaysOrders.length}</div>
           <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold">
             <TrendingUp className="w-3 h-3" />
-            <span>+14% vs yesterday</span>
+            <span>{todaysOrders.length > 0 ? 'Live order data' : 'No orders yet today'}</span>
           </div>
         </div>
 
@@ -132,10 +139,10 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <FileCheck2 className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-black text-amber-300">
-            {pendingPrescriptions.length || 8}
+            {pendingPrescriptions.length}
           </div>
           <div className="text-[11px] text-amber-400/90 font-medium">
-            SLA &lt; 15 mins
+            {pendingPrescriptions.length === 0 ? 'Prescription inbox clear' : 'SLA &lt; 15 mins'}
           </div>
         </div>
 
@@ -149,10 +156,10 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <Clock className="w-4 h-4 text-blue-400" />
           </div>
           <div className="text-2xl font-black text-white">
-            {awaitingFulfillment.length || 13}
+            {awaitingFulfillment.length}
           </div>
           <div className="text-[11px] text-blue-400 font-medium">
-            Ready for packing & dispatch
+            {awaitingFulfillment.length === 0 ? 'No orders awaiting dispatch' : 'Ready for packing & dispatch'}
           </div>
         </div>
 
@@ -166,10 +173,10 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <DollarSign className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-black text-emerald-400">
-            ₹{todayRevenue.toLocaleString()}
+            ₹{totalOrderValue.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-400">
-            Pending Payout: ₹{pendingPayouts.toLocaleString()}
+            {pendingOrderCount > 0 ? `${pendingOrderCount} new orders awaiting processing` : 'No new orders awaiting processing'}
           </div>
         </div>
 
@@ -187,7 +194,7 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <Package className="w-4 h-4 text-rose-400" />
           </div>
           <div className="text-xl font-bold text-rose-300">
-            {lowStockMeds.length || 17} Items
+            {lowStockCount} Items
           </div>
           <p className="text-[11px] text-slate-400">Below safety threshold. Re-order suggested.</p>
         </div>
@@ -201,7 +208,7 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <AlertTriangle className="w-4 h-4 text-slate-400" />
           </div>
           <div className="text-xl font-bold text-slate-300">
-            {outOfStockMeds.length || 6} Items
+            {outOfStockCount} Items
           </div>
           <p className="text-[11px] text-slate-400">Hidden from patient search until restocked.</p>
         </div>
@@ -212,12 +219,34 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
             <ShieldCheck className="w-4 h-4 text-teal-400" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xl font-black text-teal-300">94%</span>
-            <span className="text-xs text-slate-400 font-mono">Rating: 4.8 / 5.0 (1,420 Reviews)</span>
+            <span className="text-xl font-black text-teal-300">{profile?.performanceScore ?? 0}%</span>
+            <span className="text-xs text-slate-400 font-mono">Rating: {profile?.rating ? profile.rating.toFixed(1) : '—'} / 5.0 ({profile?.ratingCount ? profile.ratingCount.toLocaleString() : 0} Reviews)</span>
           </div>
-          <p className="text-[11px] text-emerald-400">99.4% on-time fulfillment compliance</p>
+          <p className="text-[11px] text-emerald-400">Compliance score: {profile?.complianceScore ?? 0}%</p>
         </div>
 
+      </div>
+
+      {/* Inventory alert center (§10) */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+        <div className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
+          <div>
+            <p className="text-slate-400">Catalog medicines</p>
+            <p className="mt-1 text-xl font-black text-white">{totalMedicinesCount}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">Expiring within 30 days</p>
+            <p className="mt-1 text-xl font-black text-amber-300">{expiringMedicineCount}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">Pending refunds</p>
+            <p className="mt-1 text-xl font-black text-rose-300">{pendingRefundCount}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">Low / out of stock</p>
+            <p className="mt-1 text-xl font-black text-rose-300">{lowStockCount + outOfStockCount}</p>
+          </div>
+        </div>
       </div>
 
       {/* Row 3: Quick Operational Actions */}
@@ -303,6 +332,13 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
         </div>
 
         <div className="overflow-x-auto">
+          {orders.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/40 p-8 text-center">
+              <p className="text-sm font-bold text-slate-200">No orders yet</p>
+              <p className="mt-1 text-xs text-slate-400">Orders from GlobalHealth customers will appear here.</p>
+            </div>
+          )}
+          {orders.length > 0 && (
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-800 text-slate-400">
@@ -356,6 +392,7 @@ export const DashboardHomeTab: React.FC<DashboardHomeTabProps> = ({
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
 

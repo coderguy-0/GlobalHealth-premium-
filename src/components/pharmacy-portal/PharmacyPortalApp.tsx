@@ -30,6 +30,9 @@ import {
   clearPartnerSession
 } from '../../services/pharmacyInventoryClient';
 import { ShoppingBag } from 'lucide-react';
+import { PortalRoleProvider, PermissionGate, AccessDenied } from '../portal/PermissionGate';
+import { Permission, hasPermission } from '../../core/portalRoles';
+import { pharmacyPortalRole } from '../../core/pharmacyAccess';
 
 // Tab Components
 import { DashboardHomeTab } from './DashboardHomeTab';
@@ -51,6 +54,26 @@ import { PharmacyProfileTab } from './PharmacyProfileTab';
 import { MarketplaceInventorySyncTab } from './MarketplaceInventorySyncTab';
 
 type PortalScreen = 'landing' | 'apply' | 'track' | 'login' | 'dashboard';
+
+const TAB_PERMISSION: Record<PharmacyPortalNavTab, Permission> = {
+  dashboard: 'pharmacy.dashboard.view',
+  orders: 'pharmacy.orders.manage',
+  prescriptions: 'pharmacy.prescriptions.manage',
+  inventory: 'pharmacy.inventory.manage',
+  'marketplace-sync': 'pharmacy.sync.manage',
+  batches: 'pharmacy.batch.manage',
+  catalog: 'pharmacy.catalog.manage',
+  pricing: 'pharmacy.pricing.manage',
+  branches: 'pharmacy.branches.manage',
+  staff: 'pharmacy.staff.manage',
+  delivery: 'pharmacy.delivery.manage',
+  payments: 'pharmacy.finance.view',
+  analytics: 'pharmacy.analytics.view',
+  compliance: 'pharmacy.compliance.manage',
+  support: 'pharmacy.notifications.manage',
+  'audit-logs': 'pharmacy.audit.read',
+  profile: 'pharmacy.profile.view',
+};
 
 // Pre-login account self-service screens for partner accounts.
 type PartnerAccountScreen = 'signup' | 'forgot';
@@ -346,7 +369,11 @@ export const PharmacyPortalApp: React.FC<PharmacyPortalAppProps> = ({
   }
 
   // 5. Authenticated Dashboard Screen
+  const portalRole = pharmacyPortalRole(currentUser?.role || staff[0]?.role);
+  const allowedTabs = (Object.keys(TAB_PERMISSION) as PharmacyPortalNavTab[]).filter((tab) => hasPermission(portalRole, TAB_PERMISSION[tab]));
+
   return (
+    <PortalRoleProvider role={portalRole}>
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-teal-500 selection:text-slate-950">
       
       {/* Top Header */}
@@ -385,12 +412,17 @@ export const PharmacyPortalApp: React.FC<PharmacyPortalAppProps> = ({
               newOrdersCount={orders.filter(o => o.orderStatus === 'New').length}
               pendingRxCount={prescriptions.filter(p => p.status === 'Awaiting Review').length}
               lowStockCount={medicines.filter(m => m.status === 'Low Stock').length}
+              allowedTabs={allowedTabs}
             />
           </div>
         </div>
 
         {/* Main Work Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl w-full mx-auto">
+          <PermissionGate
+            permission={TAB_PERMISSION[activeTab]}
+            fallback={<AccessDenied title="Pharmacy Portal restricted" message={`Your role (${currentUser?.role || staff[0]?.role}) does not permit access to this workspace. Contact your pharmacy owner or GlobalHealth support.`} />}
+          >
           {activeTab === 'dashboard' && (
             <DashboardHomeTab
               orders={orders}
@@ -512,10 +544,12 @@ export const PharmacyPortalApp: React.FC<PharmacyPortalAppProps> = ({
               onProfileUpdated={refreshData}
             />
           )}
+          </PermissionGate>
         </main>
 
       </div>
 
     </div>
+    </PortalRoleProvider>
   );
 };

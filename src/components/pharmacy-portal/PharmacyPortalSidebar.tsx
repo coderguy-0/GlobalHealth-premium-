@@ -37,6 +37,7 @@ interface PharmacyPortalSidebarProps {
   newOrdersCount?: number;
   pendingOrdersCount?: number;
   lowStockCount?: number;
+  allowedTabs?: PortalTabId[];
 }
 
 export const PharmacyPortalSidebar: React.FC<PharmacyPortalSidebarProps> = ({
@@ -48,7 +49,8 @@ export const PharmacyPortalSidebar: React.FC<PharmacyPortalSidebarProps> = ({
   pendingRxCount = 0,
   newOrdersCount,
   pendingOrdersCount = 0,
-  lowStockCount = 0
+  lowStockCount = 0,
+  allowedTabs
 }) => {
   const effectiveOrders = newOrdersCount ?? pendingOrdersCount ?? 0;
   
@@ -72,6 +74,10 @@ export const PharmacyPortalSidebar: React.FC<PharmacyPortalSidebarProps> = ({
     { id: 'profile', label: 'Pharmacy Profile', icon: Store }
   ];
 
+  const visibleNavItems = allowedTabs
+    ? navItems.filter((item) => allowedTabs.includes(item.id as PortalTabId))
+    : navItems;
+
   const handleTabClick = (tabId: PortalTabId) => {
     if (onTabChange) onTabChange(tabId);
     else if (onSelectTab) onSelectTab(tabId);
@@ -86,7 +92,7 @@ export const PharmacyPortalSidebar: React.FC<PharmacyPortalSidebarProps> = ({
       
       {/* Top Navigation Links */}
       <div className="py-3 px-2 space-y-1 overflow-y-auto max-h-[calc(100vh-110px)]">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
 

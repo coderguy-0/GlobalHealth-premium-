@@ -25,6 +25,14 @@ export type PortalRole =
   | 'HOSPITAL_VERIFICATION_MANAGER'
   | 'HOSPITAL_READ_ONLY'
   | 'PHARMACY_PARTNER'
+  | 'PHARMACY_OWNER'
+  | 'PHARMACY_ADMINISTRATOR'
+  | 'PHARMACY_PHARMACIST'
+  | 'PHARMACY_MANAGER'
+  | 'PHARMACY_INVENTORY_STAFF'
+  | 'PHARMACY_ACCOUNTANT'
+  | 'PHARMACY_SUPPORT'
+  | 'PHARMACY_DELIVERY'
   | 'LABORATORY'
   | 'IMAGING_PROVIDER'
   | 'ADMIN';
@@ -101,6 +109,39 @@ export type Permission =
   | 'hospital.publication.manage'
   | 'hospital.ai.use'
   | 'pharmacy.prescription.receive'
+  | 'pharmacy.dashboard.view'
+  | 'pharmacy.profile.view'
+  | 'pharmacy.profile.manage'
+  | 'pharmacy.verification.view'
+  | 'pharmacy.verification.manage'
+  | 'pharmacy.catalog.manage'
+  | 'pharmacy.pricing.manage'
+  | 'pharmacy.fees.manage'
+  | 'pharmacy.inventory.manage'
+  | 'pharmacy.batch.manage'
+  | 'pharmacy.orders.manage'
+  | 'pharmacy.prescriptions.manage'
+  | 'pharmacy.customers.view'
+  | 'pharmacy.customers.manage'
+  | 'pharmacy.delivery.manage'
+  | 'pharmacy.finance.view'
+  | 'pharmacy.finance.manage'
+  | 'pharmacy.billing.manage'
+  | 'pharmacy.suppliers.manage'
+  | 'pharmacy.purchaseOrders.manage'
+  | 'pharmacy.offers.manage'
+  | 'pharmacy.reports.view'
+  | 'pharmacy.analytics.view'
+  | 'pharmacy.staff.manage'
+  | 'pharmacy.audit.read'
+  | 'pharmacy.security.manage'
+  | 'pharmacy.settings.manage'
+  | 'pharmacy.integrations.manage'
+  | 'pharmacy.notifications.manage'
+  | 'pharmacy.compliance.manage'
+  | 'pharmacy.branches.manage'
+  | 'pharmacy.sync.manage'
+  | 'pharmacy.ai.use'
   | 'lab.order.receive'
   | 'lab.result.upload'
   | 'imaging.order.receive'
@@ -122,6 +163,14 @@ export const ROLE_LABEL: Record<PortalRole, string> = {
   HOSPITAL_VERIFICATION_MANAGER: 'Verification Manager',
   HOSPITAL_READ_ONLY: 'Read Only',
   PHARMACY_PARTNER: 'Pharmacy Partner',
+  PHARMACY_OWNER: 'Pharmacy Owner',
+  PHARMACY_ADMINISTRATOR: 'Pharmacy Administrator',
+  PHARMACY_PHARMACIST: 'Pharmacist',
+  PHARMACY_MANAGER: 'Pharmacist Manager',
+  PHARMACY_INVENTORY_STAFF: 'Inventory Staff',
+  PHARMACY_ACCOUNTANT: 'Accountant',
+  PHARMACY_SUPPORT: 'Support Staff',
+  PHARMACY_DELIVERY: 'Delivery Staff',
   LABORATORY: 'Laboratory',
   IMAGING_PROVIDER: 'Imaging Provider',
   ADMIN: 'Administrator',
@@ -255,6 +304,78 @@ export const HOSPITAL_READ_ONLY_PERMISSIONS: Permission[] = [
   'hospital.audit.read', 'hospital.patient.read',
 ];
 
+const PHARMACY_VIEW: Permission[] = ['portal.access', 'pharmacy.dashboard.view', 'pharmacy.profile.view'];
+
+export const PHARMACY_OWNER_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.profile.manage', 'pharmacy.verification.view', 'pharmacy.verification.manage',
+  'pharmacy.catalog.manage', 'pharmacy.pricing.manage', 'pharmacy.fees.manage',
+  'pharmacy.inventory.manage', 'pharmacy.batch.manage', 'pharmacy.orders.manage',
+  'pharmacy.prescriptions.manage', 'pharmacy.customers.view', 'pharmacy.customers.manage',
+  'pharmacy.delivery.manage', 'pharmacy.finance.view', 'pharmacy.finance.manage',
+  'pharmacy.billing.manage', 'pharmacy.suppliers.manage', 'pharmacy.purchaseOrders.manage',
+  'pharmacy.offers.manage', 'pharmacy.reports.view', 'pharmacy.analytics.view',
+  'pharmacy.staff.manage', 'pharmacy.audit.read', 'pharmacy.security.manage',
+  'pharmacy.settings.manage', 'pharmacy.integrations.manage', 'pharmacy.notifications.manage',
+  'pharmacy.compliance.manage', 'pharmacy.branches.manage', 'pharmacy.sync.manage', 'pharmacy.ai.use',
+];
+
+export const PHARMACY_ADMINISTRATOR_PERMISSIONS: Permission[] = [
+  ...PHARMACY_OWNER_PERMISSIONS,
+];
+
+export const PHARMACY_PHARMACIST_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.catalog.manage', 'pharmacy.inventory.manage', 'pharmacy.batch.manage',
+  'pharmacy.orders.manage', 'pharmacy.prescriptions.manage', 'pharmacy.customers.view',
+  'pharmacy.delivery.manage', 'pharmacy.offers.manage', 'pharmacy.ai.use',
+];
+
+export const PHARMACY_MANAGER_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.catalog.manage', 'pharmacy.pricing.manage', 'pharmacy.inventory.manage',
+  'pharmacy.batch.manage', 'pharmacy.orders.manage', 'pharmacy.prescriptions.manage',
+  'pharmacy.customers.view', 'pharmacy.delivery.manage', 'pharmacy.finance.view',
+  'pharmacy.suppliers.manage', 'pharmacy.purchaseOrders.manage', 'pharmacy.offers.manage',
+  'pharmacy.analytics.view', 'pharmacy.reports.view', 'pharmacy.branches.manage',
+  'pharmacy.notifications.manage', 'pharmacy.ai.use',
+];
+
+export const PHARMACY_INVENTORY_STAFF_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.catalog.manage', 'pharmacy.inventory.manage', 'pharmacy.batch.manage',
+  'pharmacy.customers.view', 'pharmacy.notifications.manage',
+];
+
+export const PHARMACY_ACCOUNTANT_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.finance.view', 'pharmacy.billing.manage', 'pharmacy.reports.view',
+  'pharmacy.analytics.view', 'pharmacy.audit.read', 'pharmacy.notifications.manage',
+];
+
+export const PHARMACY_SUPPORT_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.orders.manage', 'pharmacy.customers.view', 'pharmacy.notifications.manage',
+];
+
+export const PHARMACY_DELIVERY_PERMISSIONS: Permission[] = [
+  ...PHARMACY_VIEW,
+  'pharmacy.orders.manage', 'pharmacy.delivery.manage', 'pharmacy.customers.view',
+  'pharmacy.notifications.manage',
+];
+
+export const PHARMACY_ROLE_PERMISSIONS: Partial<Record<PortalRole, Permission[]>> = {
+  PHARMACY_PARTNER: PHARMACY_OWNER_PERMISSIONS,
+  PHARMACY_OWNER: PHARMACY_OWNER_PERMISSIONS,
+  PHARMACY_ADMINISTRATOR: PHARMACY_ADMINISTRATOR_PERMISSIONS,
+  PHARMACY_PHARMACIST: PHARMACY_PHARMACIST_PERMISSIONS,
+  PHARMACY_MANAGER: PHARMACY_MANAGER_PERMISSIONS,
+  PHARMACY_INVENTORY_STAFF: PHARMACY_INVENTORY_STAFF_PERMISSIONS,
+  PHARMACY_ACCOUNTANT: PHARMACY_ACCOUNTANT_PERMISSIONS,
+  PHARMACY_SUPPORT: PHARMACY_SUPPORT_PERMISSIONS,
+  PHARMACY_DELIVERY: PHARMACY_DELIVERY_PERMISSIONS,
+};
+
 export const HOSPITAL_ROLE_PERMISSIONS: Partial<Record<PortalRole, Permission[]>> = {
   HOSPITAL: HOSPITAL_OWNER_PERMISSIONS,
   HOSPITAL_OWNER: HOSPITAL_OWNER_PERMISSIONS,
@@ -277,7 +398,15 @@ export const ROLE_PERMISSIONS: Record<PortalRole, Permission[]> = {
   HOSPITAL_DOCTOR: HOSPITAL_DOCTOR_PERMISSIONS,
   HOSPITAL_VERIFICATION_MANAGER: HOSPITAL_VERIFICATION_MANAGER_PERMISSIONS,
   HOSPITAL_READ_ONLY: HOSPITAL_READ_ONLY_PERMISSIONS,
-  PHARMACY_PARTNER: PHARMACY_PERMISSIONS,
+  PHARMACY_PARTNER: PHARMACY_OWNER_PERMISSIONS,
+  PHARMACY_OWNER: PHARMACY_OWNER_PERMISSIONS,
+  PHARMACY_ADMINISTRATOR: PHARMACY_ADMINISTRATOR_PERMISSIONS,
+  PHARMACY_PHARMACIST: PHARMACY_PHARMACIST_PERMISSIONS,
+  PHARMACY_MANAGER: PHARMACY_MANAGER_PERMISSIONS,
+  PHARMACY_INVENTORY_STAFF: PHARMACY_INVENTORY_STAFF_PERMISSIONS,
+  PHARMACY_ACCOUNTANT: PHARMACY_ACCOUNTANT_PERMISSIONS,
+  PHARMACY_SUPPORT: PHARMACY_SUPPORT_PERMISSIONS,
+  PHARMACY_DELIVERY: PHARMACY_DELIVERY_PERMISSIONS,
   LABORATORY: LAB_PERMISSIONS,
   IMAGING_PROVIDER: IMAGING_PERMISSIONS,
   ADMIN: ADMIN_PERMISSIONS,

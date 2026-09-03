@@ -9,8 +9,30 @@ import {
   PortalNotificationItem, 
   SupportTicketItem, 
   AuditLogEntry, 
-  SettlementLedgerItem 
+  SettlementLedgerItem,
+  PharmacyFeeConfiguration 
 } from '../types/pharmacyPortal';
+
+export const DEFAULT_FEE_CONFIGURATION: PharmacyFeeConfiguration = {
+  id: 'fee-config-apex-01',
+  pharmacyId: 'pharma-apex-01',
+  currency: 'INR',
+  platformCommissionPercent: 5,
+  paymentProcessingPercent: 2,
+  paymentProcessingFixedFee: 5,
+  deliveryFeeMode: 'CUSTOMER_PAID',
+  deliveryContributionPercent: 0,
+  standardDeliveryFee: 39,
+  expressDeliveryFee: 79,
+  freeDeliveryAbove: 499,
+  promotionalContributionPercent: 0,
+  subscriptionMonthlyFee: 999,
+  gstTdsPercent: 1,
+  updatedAt: '2026-08-31 09:00',
+  updatedBy: 'Pharmacy Owner',
+  effectiveFrom: '2026-09-01',
+  description: 'Administrator-configurable platform fees. These are illustrative values for this partner and are not universal market rates.',
+};
 
 export const DEFAULT_PHARMACY_PROFILE: PharmacyProfileDetails = {
   id: 'pharma-apex-01',
