@@ -261,7 +261,9 @@ export default function App() {
   const [hasOpenedAssistant, setHasOpenedAssistant] = useState(false);
   // Which view the dedicated authentication page (#auth) opens on.
   const [authInitialView, setAuthInitialView] = useState<AuthSubView>('login');
-  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('login');
+  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('landing');
+  // Which section of Activity & Security History the account menu requested.
+  const [historyInitialTab, setHistoryInitialTab] = useState<string>('all');
   // Editorial staff unlock for the News Management workspace (validated via
   // newsAuthService — independent of the patient account gate).
   const [newsStaffUnlocked, setNewsStaffUnlocked] = useState(false);
@@ -391,10 +393,11 @@ export default function App() {
     if (isOverlayTab(tab)) {
       if (tab === 'pharmacy-portal') {
         // Deep links from the Medicines directory keep their destination;
-        // everywhere else the partner portal opens on its sign-in screen.
+        // everywhere else the partner portal opens on its public directory so
+        // the normal user experience never starts at a separate login.
         const deepLink = pharmacyDeepLinkRef.current;
         pharmacyDeepLinkRef.current = null;
-        setPharmacyPortalScreen(deepLink || 'login');
+        setPharmacyPortalScreen(deepLink || 'landing');
       }
       setOverlayTab(tab);
       writeHash(tab);
@@ -711,6 +714,7 @@ export default function App() {
         onOpenAuthModal={handleOpenAuthModal}
         onOpenAuthPage={handleOpenAuthPage}
         onOpenSecuritySettings={handleOpenSecuritySettings}
+        onOpenHistoryTab={setHistoryInitialTab}
         onLogout={async () => {
           await logout();
           setOverlayTab(null);
@@ -927,7 +931,7 @@ export default function App() {
         )}
         {currentTab === 'my-history' && currentUser && (
           <Suspense fallback={<RouteFallback />}>
-            <MyHistoryView />
+            <MyHistoryView initialTab={historyInitialTab as any} />
           </Suspense>
         )}
 

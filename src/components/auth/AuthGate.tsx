@@ -53,8 +53,10 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
 
   if (!gateOpen) return null;
 
-  const finish = (user: UserAccount, token: string) => {
-    authenticate(user, token);
+  const finish = (user: UserAccount, token: string, publicUser?: unknown) => {
+    // Store the full server account too so the unified session carries the
+    // complete identity (permissions, security flags) into every feature.
+    authenticate(user, token, publicUser as any);
     onAuthenticated?.(user);
   };
 
@@ -79,7 +81,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
         body: { identifier: identifier.trim(), password, rememberMe: true }
       });
       if (res?.success && res.user && res.token) {
-        finish(toUserAccount(res.user), res.token);
+        finish(toUserAccount(res.user), res.token, res.user);
       } else if (res?.verificationRequired) {
         setError('Please verify your email first. A new account needs email verification.');
       } else {
@@ -105,7 +107,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
         }
       );
       if (res?.success && res.user && res.token) {
-        finish(toUserAccount(res.user), res.token);
+        finish(toUserAccount(res.user), res.token, res.user);
       } else {
         setError(res?.error || 'Demo sign-in is unavailable.');
       }
