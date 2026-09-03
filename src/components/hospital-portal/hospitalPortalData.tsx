@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { createAuditEvent, AuditEvent as CoreAuditEvent, AuditAction } from '../../core/audit';
+import { createHospitalEntityId } from '../../core/hospitalIdentifiers';
 
 /* ============================================================================
    Hospital Portal — data model, seed data, mock service and workspace store.
@@ -12,7 +14,7 @@ export type VerificationStatus =
   | 'pending' | 'under_review' | 'verified' | 'additional_info_required'
   | 'rejected' | 'suspended' | 'archived';
 
-export type PublicStatus = 'draft' | 'pending_review' | 'published' | 'changes_requested' | 'suspended';
+export type PublicStatus = 'draft' | 'pending_review' | 'published' | 'changes_requested' | 'rejected' | 'suspended';
 export type AppointmentStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled' | 'no_show';
 export type ConsultationType = 'in_person' | 'video' | 'teleconsultation' | 'follow_up';
 export type StaffRole =
@@ -187,6 +189,66 @@ export interface ServiceItem {
   hours?: string;
   publicVisibility: boolean;
   status: 'active' | 'archived';
+}
+
+/* ---------------- Structured pricing (Phase 0 foundation) ----------------
+   Every billable item in the hospital has a structured price record instead
+   of a single hard-coded amount. Prices are configurable per hospital, with
+   currency, unit, fees, taxes, discounts, validity and availability.        */
+
+export type BillableCategory =
+  | 'Consultation' | 'OPD' | 'Emergency' | 'Admission' | 'Bed' | 'Room'
+  | 'ICU' | 'Surgery' | 'Anesthesia' | 'Laboratory' | 'Imaging' | 'Pharmacy'
+  | 'Nursing' | 'Ambulance' | 'Home Healthcare' | 'Physiotherapy' | 'Blood'
+  | 'Document' | 'Certificate' | 'Package' | 'Other';
+
+export interface StructuredPrice {
+  basePrice: number;
+  professionalFee: number;
+  facilityFee: number;
+  consumables: number;
+  equipmentFee: number;
+  taxRate: number;      // percent
+  discount: number;     // flat amount, always recorded with approver/reason
+  emergencyPrice?: number;
+  insurancePrice?: number;
+  packagePrice?: number;
+  cashPrice?: number;
+  currency: 'INR';
+  unit: string;
+  effectiveDate: string;
+  expiryDate?: string;
+  minimum?: number;
+  maximum?: number;
+}
+
+export interface HospitalPrice {
+  id: string;
+  hospitalId: string;
+  itemId: string;
+  itemType: BillableCategory;
+  name: string;
+  departmentId?: string;
+  description?: string;
+  availability: 'available' | 'limited' | 'unavailable' | 'coming_soon';
+  publicStatus: PublicStatus;
+  publicVisibility: boolean;
+  price: StructuredPrice;
+  updatedAt: string;
+  updatedBy: string;
+  approval?: { approvedBy: string; approvedAt: string; reason: string };
+}
+
+export interface PriceHistory {
+  id: string;
+  priceId: string;
+  hospitalId: string;
+  oldPrice: StructuredPrice;
+  newPrice: StructuredPrice;
+  changedBy: string;
+  changedAt: string;
+  reason: string;
+  approvalState: 'pending' | 'approved' | 'rejected';
 }
 
 export interface SpecialtyItem {
@@ -364,6 +426,7 @@ export const PUBLIC_STATUS_LABEL: Record<PublicStatus, string> = {
   pending_review: 'Pending Review',
   published: 'Published',
   changes_requested: 'Changes Requested',
+  rejected: 'Rejected',
   suspended: 'Suspended',
 };
 
@@ -632,6 +695,53 @@ export const seedServices: ServiceItem[] = [
   { id: 'svc-6', hospitalId: 'hosp-city', name: 'Outpatient Care', description: 'General outpatient consultations.', availability: 'available', hours: '09:00–17:00', publicVisibility: true, status: 'active' },
 ];
 
+const makePrice = (itemType: BillableCategory, itemId: string, name: string, base: number, opts?: Partial<StructuredPrice>): HospitalPrice => ({
+  id: `price-${itemId}`,
+  hospitalId: 'hosp-ghmc',
+  itemId,
+  itemType,
+  name,
+  departmentId: 'dep-1',
+  availability: 'available',
+  publicStatus: 'published',
+  publicVisibility: true,
+  price: {
+    basePrice: base, professionalFee: 0, facilityFee: 0, consumables: 0, equipmentFee: 0,
+    taxRate: 0, discount: 0, currency: 'INR', unit: 'per visit', effectiveDate: todayISO(), ...opts,
+  },
+  updatedAt: todayISO(),
+  updatedBy: 'Hospital Administrator',
+  approval: { approvedBy: 'Hospital Administrator', approvedAt: todayISO(), reason: 'Hospital tariff review' },
+});
+
+export const seedPrices: HospitalPrice[] = [
+  makePrice('Consultation', 'svc-1', 'Emergency Care', 800, { unit: 'per visit', professionalFee: 500, facilityFee: 200, taxRate: 5, emergencyPrice: 1500 }),
+  makePrice('OPD', 'svc-2', 'Outpatient Care', 500, { unit: 'per visit', professionalFee: 400, taxRate: 5 }),
+  makePrice('ICU', 'svc-3', 'ICU', 8000, { unit: 'per day', facilityFee: 2000, consumables: 500, taxRate: 5, minimum: 1 }),
+  makePrice('Imaging', 'img-1', 'X-ray', 450, { unit: 'per study', facilityFee: 150, taxRate: 5 }),
+  makePrice('Imaging', 'img-2', 'CT', 4200, { unit: 'per study', professionalFee: 600, facilityFee: 400, consumables: 200, taxRate: 5, emergencyPrice: 5000 }),
+  makePrice('Imaging', 'img-3', 'MRI', 8000, { unit: 'per study', professionalFee: 1000, facilityFee: 600, equipmentFee: 200, taxRate: 5 }),
+  makePrice('Laboratory', 'lab-1', 'Complete Blood Count', 350, { unit: 'per test', facilityFee: 100, taxRate: 5 }),
+  makePrice('Laboratory', 'lab-2', 'Lipid Profile', 700, { unit: 'per test', facilityFee: 150, taxRate: 5 }),
+  makePrice('Laboratory', 'lab-3', 'Troponin', 900, { unit: 'per test', facilityFee: 150, taxRate: 5, emergencyPrice: 1200 }),
+  makePrice('Laboratory', 'lab-4', 'HbA1c', 550, { unit: 'per test', facilityFee: 120, taxRate: 5 }),
+];
+
+export const seedPriceHistory: PriceHistory[] = [
+  {
+    id: 'ph-1', priceId: 'price-img-2', hospitalId: 'hosp-ghmc',
+    oldPrice: { basePrice: 3800, professionalFee: 550, facilityFee: 350, consumables: 180, equipmentFee: 0, taxRate: 5, discount: 0, currency: 'INR', unit: 'per study', effectiveDate: '2026-01-01' },
+    newPrice: { basePrice: 4200, professionalFee: 600, facilityFee: 400, consumables: 200, equipmentFee: 0, taxRate: 5, discount: 0, currency: 'INR', unit: 'per study', effectiveDate: todayISO() },
+    changedBy: 'Hospital Administrator', changedAt: todayISO(), reason: 'Updated hospital tariff after vendor contract renewal', approvalState: 'approved',
+  },
+  {
+    id: 'ph-2', priceId: 'price-svc-3', hospitalId: 'hosp-ghmc',
+    oldPrice: { basePrice: 7000, professionalFee: 1800, facilityFee: 1800, consumables: 450, equipmentFee: 0, taxRate: 5, discount: 0, currency: 'INR', unit: 'per day', effectiveDate: '2026-02-01' },
+    newPrice: { basePrice: 8000, professionalFee: 1800, facilityFee: 2000, consumables: 500, equipmentFee: 0, taxRate: 5, discount: 0, currency: 'INR', unit: 'per day', effectiveDate: todayISO() },
+    changedBy: 'Hospital Administrator', changedAt: todayISO(), reason: 'ICU facility charge updated', approvalState: 'approved',
+  },
+];
+
 export const seedSpecialties: SpecialtyItem[] = [
   { id: 'sp-cardiology', hospitalId: 'hosp-ghmc', name: 'Cardiology', departmentId: 'dep-1', status: 'active' },
   { id: 'sp-pediatrics', hospitalId: 'hosp-ghmc', name: 'Pediatrics', departmentId: 'dep-2', status: 'active' },
@@ -856,6 +966,7 @@ export type WorkspaceView =
   | 'hours' | 'location' | 'photos' | 'accreditations' | 'insurance'
   | 'appointments' | 'calendar' | 'schedules' | 'availability'
   | 'laboratory' | 'imaging' | 'pharmacy' | 'blood_bank'
+  | 'pricing' | 'sync' | 'preview'
   | 'verification' | 'documents' | 'action_required'
   | 'analytics' | 'activity' | 'audit'
   | 'security' | 'sessions' | 'permissions'
@@ -875,6 +986,8 @@ interface HospitalPortalState {
   imaging: ImagingService[];
   pharmacy: PharmacyService[];
   bloodBanks: BloodBank[];
+  prices: HospitalPrice[];
+  priceHistory: PriceHistory[];
   appointments: Appointment[];
   documents: HospitalDocument[];
   verification: HospitalVerification;
@@ -886,6 +999,12 @@ interface HospitalPortalState {
   security: SecurityState;
   notificationPrefs: Record<string, boolean>;
   activeStaffRole: StaffRole;
+  setActiveStaffRole: (role: StaffRole) => void;
+  addAuditEvent: (event: { action: string; resourceType: string; resourceId: string; detail?: string; outcome?: 'success' | 'denied' | 'blocked' }) => void;
+  updatePrice: (id: string, patch: Partial<HospitalPrice['price']>, reason: string) => void;
+  submitPriceForReview: (id: string) => void;
+  publishPrice: (id: string) => void;
+  setPricePublicVisibility: (id: string, visible: boolean) => void;
   setActiveHospital: (id: string) => void;
   setOrganizations: React.Dispatch<React.SetStateAction<HospitalOrganization[]>>;
   updateOrganization: (patch: Partial<HospitalOrganization>) => void;
@@ -948,6 +1067,8 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
     const [imaging, setImaging] = useState<ImagingService[]>(seedImaging);
     const [pharmacy, setPharmacy] = useState<PharmacyService[]>(seedPharmacy);
     const [bloodBanks, setBloodBanks] = useState<BloodBank[]>(seedBloodBank);
+    const [prices, setPrices] = useState<HospitalPrice[]>(seedPrices);
+    const [priceHistory, setPriceHistory] = useState<PriceHistory[]>(seedPriceHistory);
     const [appointments, setAppointments] = useState<Appointment[]>(seedAppointments);
     const [documents, setDocuments] = useState<HospitalDocument[]>(seedDocuments);
     const [verification, setVerification] = useState<HospitalVerification>(seedVerification);
@@ -958,13 +1079,39 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
     const [tickets, setTickets] = useState<SupportTicket[]>(seedTickets);
     const [security, setSecurity] = useState<SecurityState>(seedSecurity);
     const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean>>(seedNotificationPrefs);
-    const [activeStaffRole] = useState<StaffRole>(initialRole);
+    const [activeStaffRole, setActiveStaffRole] = useState<StaffRole>(initialRole);
 
     const organization = organizations.find((o) => o.id === activeHospitalId) ?? organizations[0];
 
     const setActiveHospital = useCallback((id: string) => setActiveHospitalId(id), []);
     // Pass through to the raw state setter so functional updaters keep working.
     const setOrganizations = setOrganizationsState;
+
+    const recordAudit = useCallback((input: { action: string; resourceType: string; resourceId: string; detail?: string; outcome?: 'success' | 'denied' | 'blocked' }) => {
+      const core = createAuditEvent({
+        actorId: 'hospital-staff',
+        actorRole: activeStaffRole,
+        action: input.action as AuditAction,
+        resourceType: input.resourceType,
+        resourceId: input.resourceId,
+        detail: input.detail,
+        outcome: input.outcome,
+      });
+      setAuditEvents((prev) => [{
+        id: core.id,
+        organizationId: activeHospitalId,
+        actor: `${activeStaffRole} (hospital staff)`,
+        action: core.action,
+        resourceType: core.resourceType || '',
+        resourceId: core.resourceId || '',
+        date: core.timestamp.slice(0, 10),
+        time: core.timestamp.slice(11, 19),
+        ip: core.ip || '10.0.0.2',
+        location: 'Hospital Portal',
+        outcome: core.outcome || 'success',
+      }, ...prev]);
+      return core;
+    }, [activeHospitalId, activeStaffRole]);
 
     const updateOrganization = useCallback((patch: Partial<HospitalOrganization>) => {
       setOrganizations((prev) => prev.map((o) => {
@@ -986,69 +1133,127 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
     }, [activeHospitalId]);
 
     const addDepartment = useCallback((d: Omit<Department, 'id' | 'hospitalId'>) => {
-      setDepartments((prev) => [{ ...d, id: `dep-${Date.now()}`, hospitalId: activeHospitalId }, ...prev]);
-    }, [activeHospitalId]);
+      const id = createHospitalEntityId('DEPARTMENT');
+      setDepartments((prev) => [{ ...d, id, hospitalId: activeHospitalId }, ...prev]);
+      recordAudit({ action: 'HOSPITAL_DEPARTMENT_CHANGED', resourceType: 'Department', resourceId: id, detail: `Created ${d.name}` });
+    }, [activeHospitalId, recordAudit]);
 
     const archiveDepartment = useCallback((id: string) => {
       setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, status: 'archived' as const } : d)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_DEPARTMENT_CHANGED', resourceType: 'Department', resourceId: id, detail: 'Archived department' });
+    }, [recordAudit]);
 
     const inviteDoctor = useCallback((d: Omit<HospitalDoctor, 'id' | 'hospitalId' | 'affiliationStatus' | 'verified'> & { affiliationStatus?: DoctorAffiliationStatus }) => {
+      const id = createHospitalEntityId('STAFF', d.name?.slice(0, 6) || 'DOC');
       setDoctors((prev) => [{
         ...d,
-        id: `doc-${Date.now()}`,
+        id,
         hospitalId: activeHospitalId,
         affiliationStatus: d.affiliationStatus || 'invited',
         verified: false,
       }, ...prev]);
-    }, [activeHospitalId]);
+      recordAudit({ action: 'HOSPITAL_DOCTOR_CHANGED', resourceType: 'Doctor', resourceId: id, detail: `Invited ${d.name}` });
+    }, [activeHospitalId, recordAudit]);
 
     const setDoctorAffiliation = useCallback((id: string, status: DoctorAffiliationStatus) => {
       setDoctors((prev) => prev.map((d) => (d.id === id ? { ...d, affiliationStatus: status, endDate: status === 'removed' || status === 'suspended' ? todayISO() : d.endDate } : d)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_DOCTOR_CHANGED', resourceType: 'Doctor', resourceId: id, detail: `Affiliation set to ${status}` });
+    }, [recordAudit]);
 
     const addStaff = useCallback((s: Omit<HospitalStaff, 'id' | 'hospitalId' | 'permissions' | 'status' | 'invitedAt'>) => {
+      const id = createHospitalEntityId('STAFF', s.name?.slice(0, 6) || 'STF');
       setStaff((prev) => [{
         ...s,
-        id: `st-${Date.now()}`,
+        id,
         hospitalId: activeHospitalId,
         permissions: [...ROLE_PERMISSIONS[s.role]],
         status: 'invited',
         invitedAt: todayISO(),
       }, ...prev]);
-    }, [activeHospitalId]);
+      recordAudit({ action: 'HOSPITAL_STAFF_CHANGED', resourceType: 'Staff', resourceId: id, detail: `Added ${s.name} as ${s.role}` });
+    }, [activeHospitalId, recordAudit]);
 
     const setStaffStatus = useCallback((id: string, status: HospitalStaff['status']) => {
       setStaff((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_STAFF_CHANGED', resourceType: 'Staff', resourceId: id, detail: `Status set to ${status}` });
+    }, [recordAudit]);
 
     const changeStaffRole = useCallback((id: string, role: StaffRole) => {
       setStaff((prev) => prev.map((s) => (s.id === id ? { ...s, role, permissions: [...ROLE_PERMISSIONS[role]] } : s)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_STAFF_CHANGED', resourceType: 'Staff', resourceId: id, detail: `Role changed to ${role}` });
+    }, [recordAudit]);
 
     const addService = useCallback((s: Omit<ServiceItem, 'id' | 'hospitalId'>) => {
-      setServices((prev) => [{ ...s, id: `svc-${Date.now()}`, hospitalId: activeHospitalId }, ...prev]);
-    }, [activeHospitalId]);
+      const id = createHospitalEntityId('PATIENT_RECORD', s.name?.slice(0, 6) || 'SVC');
+      setServices((prev) => [{ ...s, id, hospitalId: activeHospitalId }, ...prev]);
+      recordAudit({ action: 'HOSPITAL_SERVICE_CHANGED', resourceType: 'Service', resourceId: id, detail: `Added ${s.name}` });
+    }, [activeHospitalId, recordAudit]);
 
     const toggleServiceVisibility = useCallback((id: string) => {
       setServices((prev) => prev.map((s) => (s.id === id ? { ...s, publicVisibility: !s.publicVisibility } : s)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_SERVICE_CHANGED', resourceType: 'Service', resourceId: id, detail: 'Toggled public visibility' });
+    }, [recordAudit]);
 
     const setServiceAvailability = useCallback((id: string, availability: ServiceItem['availability']) => {
       setServices((prev) => prev.map((s) => (s.id === id ? { ...s, availability } : s)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_SERVICE_CHANGED', resourceType: 'Service', resourceId: id, detail: `Availability set to ${availability}` });
+    }, [recordAudit]);
 
     const archiveService = useCallback((id: string) => {
       setServices((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'archived' as const } : s)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_SERVICE_CHANGED', resourceType: 'Service', resourceId: id, detail: 'Archived service' });
+    }, [recordAudit]);
 
     const toggleSpecialty = useCallback((id: string) => {
       setSpecialties((prev) => prev.map((s) => (s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' as const : 'active' as const } : s)));
     }, []);
 
+    const updatePrice = useCallback((id: string, patch: Partial<StructuredPrice>, reason: string) => {
+      setPrices((prev) => {
+        const target = prev.find((p) => p.id === id);
+        if (!target) return prev;
+        const next = { ...target, price: { ...target.price, ...patch }, updatedAt: todayISO(), publicStatus: 'pending_review' as PublicStatus };
+        const historyId = createHospitalEntityId('PRICE_HISTORY');
+        setPriceHistory((h) => [{
+          id: historyId,
+          priceId: id,
+          hospitalId: target.hospitalId,
+          oldPrice: target.price,
+          newPrice: next.price,
+          changedBy: 'Hospital Administrator',
+          changedAt: todayISO(),
+          reason,
+          approvalState: 'pending',
+        }, ...h]);
+        recordAudit({ action: 'HOSPITAL_PRICE_CHANGED', resourceType: 'Price', resourceId: id, detail: reason });
+        return prev.map((p) => (p.id === id ? next : p));
+      });
+    }, [recordAudit]);
+
+    const submitPriceForReview = useCallback((id: string) => {
+      setPrices((prev) => prev.map((p) => (p.id === id ? { ...p, publicStatus: 'pending_review' as PublicStatus, updatedAt: todayISO() } : p)));
+      recordAudit({ action: 'HOSPITAL_PRICE_CHANGED', resourceType: 'Price', resourceId: id, detail: 'Submitted price for review' });
+    }, [recordAudit]);
+
+    const publishPrice = useCallback((id: string) => {
+      setPrices((prev) => prev.map((p) => (p.id === id ? {
+        ...p,
+        publicStatus: 'published' as PublicStatus,
+        updatedAt: todayISO(),
+        approval: { approvedBy: 'Hospital Administrator', approvedAt: todayISO(), reason: 'Price approved for GlobalHealth publication' },
+      } : p)));
+      recordAudit({ action: 'HOSPITAL_PRICE_PUBLISHED', resourceType: 'Price', resourceId: id, detail: 'Published price to public tariff' });
+    }, [recordAudit]);
+
+    const setPricePublicVisibility = useCallback((id: string, visible: boolean) => {
+      setPrices((prev) => prev.map((p) => (p.id === id ? { ...p, publicVisibility: visible, updatedAt: todayISO() } : p)));
+      recordAudit({ action: 'HOSPITAL_PRICE_CHANGED', resourceType: 'Price', resourceId: id, detail: `Public visibility ${visible ? 'enabled' : 'disabled'}` });
+    }, [recordAudit]);
+
     const setAppointmentStatus = useCallback((id: string, status: AppointmentStatus) => {
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_APPOINTMENT_CHANGED', resourceType: 'Appointment', resourceId: id, detail: `Status set to ${status}` });
+    }, [recordAudit]);
 
     const addScheduleRule = useCallback((r: ScheduleRule) => setScheduleRules((prev) => [...prev, r]), []);
     const removeScheduleRule = useCallback((id: string) => setScheduleRules((prev) => prev.filter((r) => r.id !== id)), []);
@@ -1080,20 +1285,23 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
     }, [activeHospitalId]);
 
     const addDocument = useCallback((d: Omit<HospitalDocument, 'id' | 'hospitalId' | 'status' | 'version' | 'uploadedBy' | 'uploadedAt'>) => {
+      const id = createHospitalEntityId('PATIENT_RECORD', d.name?.slice(0, 6) || 'DOC');
       setDocuments((prev) => [{
         ...d,
-        id: `doc-${Date.now()}`,
+        id,
         hospitalId: activeHospitalId,
         status: 'pending_verification',
         version: 1,
         uploadedBy: 'Hospital administrator',
         uploadedAt: todayISO(),
       }, ...prev]);
-    }, [activeHospitalId]);
+      recordAudit({ action: 'HOSPITAL_DOCUMENT_CHANGED', resourceType: 'Document', resourceId: id, detail: `Uploaded ${d.name}` });
+    }, [activeHospitalId, recordAudit]);
 
     const submitVerification = useCallback(() => {
       setVerification((prev) => ({ ...prev, status: 'under_review', submittedAt: todayISO(), nextAction: 'Document review in progress — the credential team verifies your facility registration and representative.' }));
-    }, []);
+      recordAudit({ action: 'HOSPITAL_VERIFICATION_CHANGED', resourceType: 'Verification', resourceId: verification.id || activeHospitalId, detail: 'Submitted verification for review' });
+    }, [activeHospitalId, recordAudit, verification.id]);
 
     const markNotificationRead = useCallback((id: string) => {
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
@@ -1125,9 +1333,9 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
 
     const value = useMemo<HospitalPortalState>(() => ({
       organization, organizations, staff, departments, doctors, scheduleRules, scheduleExceptions,
-      services, specialties, labTests, imaging, pharmacy, bloodBanks, appointments, documents,
+      services, specialties, labTests, imaging, pharmacy, bloodBanks, prices, priceHistory, appointments, documents,
       verification, notifications, activityEvents, auditEvents, sessions, tickets, security,
-      notificationPrefs, activeStaffRole,
+      notificationPrefs, activeStaffRole, setActiveStaffRole, addAuditEvent: recordAudit,
       setActiveHospital, setOrganizations, updateOrganization, submitProfileForReview, publishProfile,
       addDepartment, archiveDepartment, inviteDoctor, setDoctorAffiliation, addStaff,
       setStaffStatus, changeStaffRole, addService, toggleServiceVisibility, setServiceAvailability,
@@ -1135,11 +1343,11 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
       addScheduleException, removeScheduleException, setEmergency, setAccessibility, setHours,
       addPhoto, removePhoto, addAccreditation, addDocument, submitVerification, markNotificationRead,
       markAllNotificationsRead, toggleNotificationPref, setMfaEnabled, revokeSession,
-      signOutOtherSessions, addTicket,
+      signOutOtherSessions, addTicket, updatePrice, submitPriceForReview, publishPrice, setPricePublicVisibility,
     }), [organization, organizations, staff, departments, doctors, scheduleRules, scheduleExceptions,
-      services, specialties, labTests, imaging, pharmacy, bloodBanks, appointments, documents,
+      services, specialties, labTests, imaging, pharmacy, bloodBanks, prices, priceHistory, appointments, documents,
       verification, notifications, activityEvents, auditEvents, sessions, tickets, security,
-      notificationPrefs, activeStaffRole, activeHospitalId,
+      notificationPrefs, activeStaffRole, setActiveStaffRole, recordAudit, activeHospitalId,
       setActiveHospital, setOrganizations, updateOrganization, submitProfileForReview, publishProfile,
       addDepartment, archiveDepartment, inviteDoctor, setDoctorAffiliation, addStaff,
       setStaffStatus, changeStaffRole, addService, toggleServiceVisibility, setServiceAvailability,
@@ -1147,7 +1355,7 @@ export const HospitalPortalProvider: React.FC<{ children: React.ReactNode; initi
       addScheduleException, removeScheduleException, setEmergency, setAccessibility, setHours,
       addPhoto, removePhoto, addAccreditation, addDocument, submitVerification, markNotificationRead,
       markAllNotificationsRead, toggleNotificationPref, setMfaEnabled, revokeSession,
-      signOutOtherSessions, addTicket]);
+      signOutOtherSessions, addTicket, updatePrice, submitPriceForReview, publishPrice, setPricePublicVisibility]);
 
     return <HospitalPortalContext.Provider value={value}>{children}</HospitalPortalContext.Provider>;
   };

@@ -17,6 +17,13 @@ export type PortalRole =
   | 'DOCTOR'
   | 'PATIENT'
   | 'HOSPITAL'
+  | 'HOSPITAL_OWNER'
+  | 'HOSPITAL_ADMINISTRATOR'
+  | 'HOSPITAL_DEPARTMENT_MANAGER'
+  | 'HOSPITAL_RECEPTIONIST'
+  | 'HOSPITAL_DOCTOR'
+  | 'HOSPITAL_VERIFICATION_MANAGER'
+  | 'HOSPITAL_READ_ONLY'
   | 'PHARMACY_PARTNER'
   | 'LABORATORY'
   | 'IMAGING_PROVIDER'
@@ -59,6 +66,40 @@ export type Permission =
   | 'patient.profile.read'
   | 'patient.consent.grant'
   | 'hospital.patient.link'
+  | 'hospital.dashboard.view'
+  | 'hospital.profile.view'
+  | 'hospital.profile.manage'
+  | 'hospital.departments.manage'
+  | 'hospital.doctors.manage'
+  | 'hospital.staff.manage'
+  | 'hospital.services.manage'
+  | 'hospital.specialties.manage'
+  | 'hospital.appointments.manage'
+  | 'hospital.schedule.manage'
+  | 'hospital.patient.read'
+  | 'hospital.patient.manage'
+  | 'hospital.admissions.manage'
+  | 'hospital.beds.manage'
+  | 'hospital.emergency.manage'
+  | 'hospital.billing.manage'
+  | 'hospital.pricing.manage'
+  | 'hospital.insurance.manage'
+  | 'hospital.lab.manage'
+  | 'hospital.imaging.manage'
+  | 'hospital.pharmacy.manage'
+  | 'hospital.blood.manage'
+  | 'hospital.ambulance.manage'
+  | 'hospital.reports.view'
+  | 'hospital.audit.read'
+  | 'hospital.security.manage'
+  | 'hospital.settings.manage'
+  | 'hospital.documents.manage'
+  | 'hospital.verification.manage'
+  | 'hospital.notifications.manage'
+  | 'hospital.sync.manage'
+  | 'hospital.preview.manage'
+  | 'hospital.publication.manage'
+  | 'hospital.ai.use'
   | 'pharmacy.prescription.receive'
   | 'lab.order.receive'
   | 'lab.result.upload'
@@ -73,6 +114,13 @@ export const ROLE_LABEL: Record<PortalRole, string> = {
   DOCTOR: 'Doctor',
   PATIENT: 'Patient',
   HOSPITAL: 'Hospital',
+  HOSPITAL_OWNER: 'Hospital Owner',
+  HOSPITAL_ADMINISTRATOR: 'Hospital Administrator',
+  HOSPITAL_DEPARTMENT_MANAGER: 'Department Manager',
+  HOSPITAL_RECEPTIONIST: 'Receptionist',
+  HOSPITAL_DOCTOR: 'Hospital Doctor',
+  HOSPITAL_VERIFICATION_MANAGER: 'Verification Manager',
+  HOSPITAL_READ_ONLY: 'Read Only',
   PHARMACY_PARTNER: 'Pharmacy Partner',
   LABORATORY: 'Laboratory',
   IMAGING_PROVIDER: 'Imaging Provider',
@@ -158,10 +206,77 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   'doctor.notifications.read',
 ];
 
+const HOSPITAL_VIEW: Permission[] = ['portal.access', 'hospital.dashboard.view', 'hospital.profile.view', 'hospital.reports.view'];
+
+export const HOSPITAL_OWNER_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.profile.manage', 'hospital.departments.manage', 'hospital.doctors.manage', 'hospital.staff.manage',
+  'hospital.services.manage', 'hospital.specialties.manage', 'hospital.appointments.manage', 'hospital.schedule.manage',
+  'hospital.patient.read', 'hospital.patient.manage', 'hospital.admissions.manage', 'hospital.beds.manage',
+  'hospital.emergency.manage', 'hospital.billing.manage', 'hospital.pricing.manage', 'hospital.insurance.manage',
+  'hospital.lab.manage', 'hospital.imaging.manage', 'hospital.pharmacy.manage', 'hospital.blood.manage',
+  'hospital.ambulance.manage', 'hospital.audit.read', 'hospital.security.manage', 'hospital.settings.manage',
+  'hospital.documents.manage', 'hospital.verification.manage', 'hospital.notifications.manage',
+  'hospital.sync.manage', 'hospital.preview.manage', 'hospital.publication.manage', 'hospital.ai.use',
+];
+
+export const HOSPITAL_ADMINISTRATOR_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_OWNER_PERMISSIONS,
+];
+
+export const HOSPITAL_DEPARTMENT_MANAGER_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.departments.manage', 'hospital.services.manage', 'hospital.specialties.manage',
+  'hospital.appointments.manage', 'hospital.schedule.manage', 'hospital.patient.read',
+  'hospital.admissions.manage', 'hospital.beds.manage', 'hospital.lab.manage', 'hospital.imaging.manage',
+  'hospital.pharmacy.manage', 'hospital.blood.manage', 'hospital.emergency.manage',
+];
+
+export const HOSPITAL_RECEPTIONIST_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.appointments.manage', 'hospital.patient.read', 'hospital.patient.manage', 'hospital.billing.manage',
+  'hospital.admissions.manage', 'hospital.beds.manage', 'hospital.pharmacy.manage',
+];
+
+export const HOSPITAL_DOCTOR_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.patient.read', 'hospital.patient.manage', 'hospital.appointments.manage',
+  'hospital.schedule.manage', 'hospital.lab.manage', 'hospital.imaging.manage',
+  'hospital.pharmacy.manage', 'hospital.emergency.manage', 'hospital.ai.use',
+];
+
+export const HOSPITAL_VERIFICATION_MANAGER_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.verification.manage', 'hospital.documents.manage', 'hospital.reports.view', 'hospital.sync.manage',
+];
+
+export const HOSPITAL_READ_ONLY_PERMISSIONS: Permission[] = [
+  ...HOSPITAL_VIEW,
+  'hospital.audit.read', 'hospital.patient.read',
+];
+
+export const HOSPITAL_ROLE_PERMISSIONS: Partial<Record<PortalRole, Permission[]>> = {
+  HOSPITAL: HOSPITAL_OWNER_PERMISSIONS,
+  HOSPITAL_OWNER: HOSPITAL_OWNER_PERMISSIONS,
+  HOSPITAL_ADMINISTRATOR: HOSPITAL_ADMINISTRATOR_PERMISSIONS,
+  HOSPITAL_DEPARTMENT_MANAGER: HOSPITAL_DEPARTMENT_MANAGER_PERMISSIONS,
+  HOSPITAL_RECEPTIONIST: HOSPITAL_RECEPTIONIST_PERMISSIONS,
+  HOSPITAL_DOCTOR: HOSPITAL_DOCTOR_PERMISSIONS,
+  HOSPITAL_VERIFICATION_MANAGER: HOSPITAL_VERIFICATION_MANAGER_PERMISSIONS,
+  HOSPITAL_READ_ONLY: HOSPITAL_READ_ONLY_PERMISSIONS,
+};
+
 export const ROLE_PERMISSIONS: Record<PortalRole, Permission[]> = {
   DOCTOR: DOCTOR_PERMISSIONS,
   PATIENT: PATIENT_PERMISSIONS,
-  HOSPITAL: HOSPITAL_PERMISSIONS,
+  HOSPITAL: HOSPITAL_OWNER_PERMISSIONS,
+  HOSPITAL_OWNER: HOSPITAL_OWNER_PERMISSIONS,
+  HOSPITAL_ADMINISTRATOR: HOSPITAL_ADMINISTRATOR_PERMISSIONS,
+  HOSPITAL_DEPARTMENT_MANAGER: HOSPITAL_DEPARTMENT_MANAGER_PERMISSIONS,
+  HOSPITAL_RECEPTIONIST: HOSPITAL_RECEPTIONIST_PERMISSIONS,
+  HOSPITAL_DOCTOR: HOSPITAL_DOCTOR_PERMISSIONS,
+  HOSPITAL_VERIFICATION_MANAGER: HOSPITAL_VERIFICATION_MANAGER_PERMISSIONS,
+  HOSPITAL_READ_ONLY: HOSPITAL_READ_ONLY_PERMISSIONS,
   PHARMACY_PARTNER: PHARMACY_PERMISSIONS,
   LABORATORY: LAB_PERMISSIONS,
   IMAGING_PROVIDER: IMAGING_PERMISSIONS,
