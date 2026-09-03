@@ -16,6 +16,29 @@ import { retrieveVerifiedKnowledge } from './src/core/ai/aiKnowledge';
 async function startServer() {
   const app = express();
   const appDir = process.cwd();
+  const RUNTIME_DIR = path.join(appDir, 'data', 'runtime');
+  const readJsonFile = <T>(file: string, fallback: T): T => {
+    try {
+      if (!fs.existsSync(file)) return fallback;
+      const raw = fs.readFileSync(file, 'utf8').trim();
+      return raw ? (JSON.parse(raw) as T) : fallback;
+    } catch (err) {
+      // A corrupt runtime cache should never block startup; the next write
+      // repairs it. This is deliberately logged and not surfaced to users.
+      console.warn('[GlobalHealth] Runtime cache could not be read:', file, (err as Error)?.message);
+      return fallback;
+    }
+  };
+  const writeJsonFile = (file: string, data: unknown) => {
+    try {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      const tmp = `${file}.tmp`;
+      fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+      fs.renameSync(tmp, file); // atomic-ish replace, avoids partial writes
+    } catch (err) {
+      console.warn('[GlobalHealth] Runtime cache could not be written:', file, (err as Error)?.message);
+    }
+  };
 
   // Dynamic port binding for Cloud Run / Container deployment with 3000 default
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -7118,12 +7141,50 @@ Request ID: ${requestId}`,
     archivedAt?: number;
     deletedAt?: number;
   }
+  const AI_CONVERSATIONS_FILE = path.join(RUNTIME_DIR, 'ai-conversations.json');
+  const AI_SHARE_LINKS_FILE = path.join(RUNTIME_DIR, 'ai-share-links.json');
   const AI_CONVERSATIONS: Map<string, ServerAiConversation> = new Map();
   const AI_SHARE_LINKS = new Map<
     string,
     { token: string; conversationId: string; userId: string; createdAt: number; revokedAt?: number }
   >();
   const AI_TITLE = 'New conversation';
+
+  // Restore persisted user-owned chats on every server start. In-memory maps
+  // stay the source of truth for fast reads; writes are committed atomically
+  // to disk so restarts do not lose AI history.
+  try {
+    const persistedConversations = readJsonFile<ServerAiConversation[]>(AI_CONVERSATIONS_FILE, []);
+    for (const c of persistedConversations) {
+      if (
+        c &&
+        typeof c.id === 'string' &&
+        typeof c.userId === 'string' &&
+        Array.isArray(c.messages)
+      ) {
+        AI_CONVERSATIONS.set(c.id, {
+          ...c,
+          isSaved: Boolean(c.isSaved),
+          createdAt: Number(c.createdAt) || Date.now(),
+          updatedAt: Number(c.updatedAt) || Date.now(),
+        });
+      }
+    }
+    const persistedShares = readJsonFile<{ token: string; conversationId: string; userId: string; createdAt: number; revokedAt?: number }[]>(
+      AI_SHARE_LINKS_FILE,
+      []
+    );
+    for (const share of persistedShares) {
+      if (share && typeof share.token === 'string' && typeof share.conversationId === 'string') {
+        AI_SHARE_LINKS.set(share.token, share);
+      }
+    }
+  } catch (err) {
+    console.warn('[GlobalHealth] AI persistence could not be restored:', (err as Error)?.message);
+  }
+
+  const persistAiConversations = () => writeJsonFile(AI_CONVERSATIONS_FILE, [...AI_CONVERSATIONS.values()]);
+  const persistAiShareLinks = () => writeJsonFile(AI_SHARE_LINKS_FILE, [...AI_SHARE_LINKS.values()]);
 
   const aiConvId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -7217,6 +7278,7 @@ Request ID: ${requestId}`,
       }
     }
     AI_CONVERSATIONS.set(conv.id, conv);
+    persistAiConversations();
     return res.status(201).json({ success: true, conversation: aiPublicConversation(conv) });
   });
 
@@ -7230,6 +7292,7 @@ Request ID: ${requestId}`,
         count += 1;
       }
     }
+    persistAiConversations();
     return res.json({ success: true, deleted: true, count });
   });
 
@@ -7267,6 +7330,7 @@ Request ID: ${requestId}`,
       delete conv.archivedAt;
     }
     conv.updatedAt = Date.now();
+    persistAiConversations();
     return res.json({ success: true, conversation: aiSummary(conv) });
   });
 
@@ -7279,6 +7343,7 @@ Request ID: ${requestId}`,
     }
     conv.deletedAt = Date.now();
     conv.updatedAt = Date.now();
+    persistAiConversations();
     return res.json({ success: true, deleted: true, softDeleted: true });
   });
 
@@ -7289,6 +7354,7 @@ Request ID: ${requestId}`,
       return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
     }
     AI_CONVERSATIONS.delete(conv.id);
+    persistAiConversations();
     return res.json({ success: true, deleted: true, permanent: true });
   });
 
@@ -7327,6 +7393,7 @@ Request ID: ${requestId}`,
     if (conv.title === AI_TITLE && msg.role === 'user') {
       conv.title = msg.content.replace(/\s+/g, ' ').trim().slice(0, 48) || AI_TITLE;
     }
+    persistAiConversations();
     return res.status(201).json({ success: true, message: msg, deduplicated: false });
   });
 
@@ -7400,6 +7467,7 @@ Request ID: ${requestId}`,
     }
     const token = `ghshare-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}${Math.random().toString(36).slice(2, 12)}`;
     AI_SHARE_LINKS.set(token, { token, conversationId: conv.id, userId: req.authUser.id, createdAt: Date.now() });
+    persistAiShareLinks();
     return res.status(201).json({
       success: true,
       token,
@@ -7441,6 +7509,7 @@ Request ID: ${requestId}`,
       return res.status(403).json({ success: false, error: 'You do not have permission to revoke this share link.' });
     }
     share.revokedAt = Date.now();
+    persistAiShareLinks();
     return res.json({ success: true, revoked: true });
   });
 
