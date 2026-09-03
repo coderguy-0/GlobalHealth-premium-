@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DoctorPortalProvider, useDoctorPortal, DoctorProfile, seedDoctor } from './doctorPortalData';
+import { ClinicalWorkspaceProvider } from './doctorClinicalData';
 import { DoctorAuth } from './DoctorAuth';
 import { DoctorOnboarding } from './DoctorOnboarding';
 import { DoctorWorkspace } from './DoctorWorkspace';
@@ -38,7 +39,9 @@ const Inner: React.FC<DoctorPortalAppProps> = ({ onBackToGlobalHealth }) => {
         />
       )}
       {phase === 'workspace' && (
-        <DoctorWorkspace onBackToGlobalHealth={onBackToGlobalHealth} onLogout={() => setPhase('auth')} />
+        <ClinicalWorkspaceProvider>
+          <DoctorWorkspace onBackToGlobalHealth={onBackToGlobalHealth} onLogout={() => setPhase('auth')} />
+        </ClinicalWorkspaceProvider>
       )}
     </div>
   );

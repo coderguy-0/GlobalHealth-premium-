@@ -505,7 +505,8 @@ export const doctorPortalApi = {
 export type WorkspaceView =
   | 'dashboard' | 'calendar' | 'availability' | 'appointments'
   | 'profile' | 'credentials' | 'affiliations'
-  | 'patients' | 'messages' | 'notifications' | 'referrals' | 'documents'
+  | 'patients' | 'consultations' | 'prescriptions' | 'labs' | 'imaging' | 'billing'
+  | 'messages' | 'notifications' | 'referrals' | 'documents'
   | 'security' | 'sessions' | 'delegated' | 'audit'
   | 'insights' | 'help' | 'support';
 
