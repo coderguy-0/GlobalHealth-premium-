@@ -11,7 +11,8 @@ import { AIAuthPrompt } from './AIAuthPrompt';
 import type { AIErrorKind } from './AIErrorState';
 import * as aiApi from './aiApi';
 import { titleFromPrompt } from './aiUtils';
-import type { AIMessage, AIConversation, AIConversationSummary } from './types';
+import type { AIMessage, AIConversation, AIConversationSummary, AIHistoryFilter } from './types';
+import { buildAssistantContext } from '../../core/ai/aiAssistantContext';
 
 interface AIWorkspaceProps {
   currentLanguage: string;
@@ -80,6 +81,9 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
   const [activeUserConversation, setActiveUserConversation] = useState<AIConversation | null>(null);
   const [historyStatus, setHistoryStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [historyError, setHistoryError] = useState<{ kind: AIErrorKind; message: string } | null>(null);
+  const [historyFilter, setHistoryFilter] = useState<AIHistoryFilter>('recent');
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   // ---- Send pipeline ----
   const [loadingReply, setLoadingReply] = useState(false);
@@ -325,6 +329,19 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
     });
   }, []);
 
+  const refreshSummaries = useCallback(async (filter: AIHistoryFilter, q: string) => {
+    setHistoryStatus('loading');
+    setHistoryError(null);
+    try {
+      const list = await aiApi.listConversations(filter, q);
+      setSummaries(list);
+      setHistoryStatus('idle');
+    } catch (err) {
+      setHistoryStatus('error');
+      setHistoryError(toErrorKind(err));
+    }
+  }, []);
+
   /* ----------------------------------------------------------------
    * Send pipeline
    * -------------------------------------------------------------- */
@@ -382,6 +399,7 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
       let convId: string | null = null;
       if (isSignedIn) {
         let conv = activeUserConversation;
+        setSaveStatus('saving');
         try {
           if (!conv || conv.messages.length === 0) {
             conv = await aiApi.createConversation({ title: titleFromPrompt(text) });
@@ -395,13 +413,44 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
           const stored = await persistMessage(conv.id, userMsg);
           updateActiveLocal((c) => ({ ...c, messages: [...c.messages, stored], updatedAt: Date.now() }));
           bumpSummary(conv.id, conv.messages.length + 1);
+          setSaveStatus('saved');
         } catch (err) {
+          setSaveStatus('error');
           setSendError(toErrorKind(err));
           pendingSendRef.current = text;
           return;
         }
       } else {
         updateActiveLocal((c) => ({ ...c, messages: [...c.messages, userMsg], updatedAt: Date.now() }));
+      }
+
+      // Safety engine runs FIRST: urgent symptoms get emergency guidance and
+      // never continue into a normal knowledge answer.
+      const aiContext = buildAssistantContext(text, {
+        authenticated: isSignedIn,
+        displayName,
+        mrn: activePatient.mrn,
+        language: currentLanguage,
+        recentTopics: messages.slice(-6).map((m) => m.content),
+      });
+      if (aiContext.safety.risk === 'urgent' && aiContext.safety.emergencyMessage) {
+        const safetyBot: AIMessage = {
+          id: `bot-safety-${Date.now()}`,
+          role: 'assistant',
+          content: aiContext.safety.emergencyMessage,
+          createdAt: Date.now(),
+          sourceContext: 'GlobalHealth Safety Engine',
+        };
+        updateActiveLocal((c) => ({ ...c, messages: [...c.messages, safetyBot], updatedAt: Date.now() }));
+        if (convId) {
+          try {
+            await persistMessage(convId, safetyBot);
+            bumpSummary(convId, (activeUserConversation?.messages.length ?? 0) + 2);
+          } catch {
+            /* message still shown locally */
+          }
+        }
+        return;
       }
 
       // EHR-grounded local reply (own record for signed-in; invite for guests).
@@ -590,6 +639,52 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
     []
   );
 
+  const handleToggleSave = useCallback(
+    async (id: string) => {
+      const target = summaries.find((s) => s.id === id) || (activeUserConversation?.id === id ? activeUserConversation : null);
+      const nextSaved = !(target?.isSaved ?? false);
+      try {
+        const updated = await aiApi.setConversationSaved(id, nextSaved);
+        setSummaries((prev) => prev.map((s) => (s.id === id ? { ...s, ...updated } : s)));
+        setActiveUserConversation((prev) => (prev && prev.id === id ? { ...prev, isSaved: nextSaved } : prev));
+      } catch (err) {
+        setHistoryError(toErrorKind(err));
+      }
+    },
+    [summaries, activeUserConversation]
+  );
+
+  const handleToggleArchive = useCallback(
+    async (id: string, archived?: boolean) => {
+      const target = summaries.find((s) => s.id === id);
+      const nextArchived = archived ?? !(target?.isArchived ?? false);
+      try {
+        const updated = await aiApi.setConversationArchived(id, nextArchived);
+        setActiveUserConversation((prev) => (prev && prev.id === id ? { ...prev, isArchived: nextArchived } : prev));
+        await refreshSummaries(historyFilter, historyQuery);
+      } catch (err) {
+        setHistoryError(toErrorKind(err));
+      }
+    },
+    [summaries, historyFilter, historyQuery, refreshSummaries]
+  );
+
+  const handleRestore = useCallback(
+    async (id: string) => {
+      try {
+        await aiApi.restoreConversation(id);
+        if (activeId === id) {
+          const conv = await aiApi.getConversation(id);
+          setActiveUserConversation(conv);
+        }
+        await refreshSummaries(historyFilter, historyQuery);
+      } catch (err) {
+        setHistoryError(toErrorKind(err));
+      }
+    },
+    [activeId, historyFilter, historyQuery, refreshSummaries]
+  );
+
   const handleDelete = useCallback(
     async (id: string) => {
       try {
@@ -598,10 +693,25 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
         setHistoryError(toErrorKind(err));
         return;
       }
-      setSummaries((prev) => prev.filter((s) => s.id !== id));
+      await refreshSummaries(historyFilter, historyQuery);
       if (activeId === id) setActiveUserConversation(null);
     },
-    [activeId]
+    [activeId, historyFilter, historyQuery, refreshSummaries]
+  );
+
+  const handlePermanentDelete = useCallback(
+    async (id: string) => {
+      if (!window.confirm('Permanently delete this AI conversation? This cannot be undone.')) return;
+      try {
+        await aiApi.permanentlyDeleteConversation(id);
+      } catch (err) {
+        setHistoryError(toErrorKind(err));
+        return;
+      }
+      await refreshSummaries(historyFilter, historyQuery);
+      if (activeId === id) setActiveUserConversation(null);
+    },
+    [activeId, historyFilter, historyQuery, refreshSummaries]
   );
 
   const handleDeleteAll = useCallback(async () => {
@@ -611,24 +721,18 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
       setHistoryError(toErrorKind(err));
       return;
     }
-    setSummaries([]);
     setActiveUserConversation(null);
-  }, []);
+    await refreshSummaries(historyFilter, historyQuery);
+  }, [historyFilter, historyQuery, refreshSummaries]);
 
   const handleRetryHistory = useCallback(() => {
-    setHistoryStatus('loading');
-    setHistoryError(null);
-    aiApi
-      .listConversations()
-      .then((list) => {
-        setSummaries(list);
-        setHistoryStatus('idle');
-      })
-      .catch((err) => {
-        setHistoryStatus('error');
-        setHistoryError(toErrorKind(err));
-      });
-  }, []);
+    void refreshSummaries(historyFilter, historyQuery);
+  }, [historyFilter, historyQuery, refreshSummaries]);
+
+  const handleFilterChange = useCallback((filter: AIHistoryFilter) => {
+    setHistoryFilter(filter);
+    void refreshSummaries(filter, historyQuery);
+  }, [historyQuery, refreshSummaries]);
 
   /* ----------------------------------------------------------------
    * Auth gating
@@ -681,12 +785,18 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
               activeId={activeId}
               loading={historyStatus === 'loading'}
               historyError={historyError}
+              filter={historyFilter}
+              onFilterChange={handleFilterChange}
               onRetryHistory={handleRetryHistory}
               onSignIn={openAuthPrompt}
               onSelect={handleSelectConversation}
               onNewChat={handleNewChat}
               onRename={handleRename}
+              onToggleSave={handleToggleSave}
+              onToggleArchive={handleToggleArchive}
+              onRestore={handleRestore}
               onDelete={handleDelete}
+              onPermanentDelete={handlePermanentDelete}
               onDeleteAll={handleDeleteAll}
               onSaveSession={handleSaveSession}
             />
@@ -718,6 +828,11 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
                   </span>
                 </div>
                 <p className="truncate text-[11px] text-slate-500 sm:text-xs">Your personal health information assistant</p>
+                {isSignedIn && saveStatus !== 'idle' && (
+                  <p className={`mt-0.5 text-[10px] font-bold ${saveStatus === 'saved' ? 'text-emerald-600' : saveStatus === 'error' ? 'text-rose-600' : 'text-slate-400'}`} role="status">
+                    {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : 'Failed to save — retry on next message'}
+                  </p>
+                )}
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">
@@ -856,6 +971,10 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
                 onDelete={handleDelete}
                 onDeleteAll={handleDeleteAll}
                 onSaveSession={handleSaveSession}
+                onToggleSave={handleToggleSave}
+                onToggleArchive={handleToggleArchive}
+                onRestore={handleRestore}
+                onPermanentDelete={handlePermanentDelete}
               />
             </div>
           </div>

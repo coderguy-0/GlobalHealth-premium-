@@ -7086,6 +7086,9 @@ Request ID: ${requestId}`,
     messages: ServerAiMessage[];
     createdAt: number;
     updatedAt: number;
+    isSaved: boolean;
+    archivedAt?: number;
+    deletedAt?: number;
   }
   const AI_CONVERSATIONS: Map<string, ServerAiConversation> = new Map();
   const AI_TITLE = 'New conversation';
@@ -7098,6 +7101,9 @@ Request ID: ${requestId}`,
     messageCount: c.messages.length,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    isSaved: c.isSaved,
+    isArchived: typeof c.archivedAt === 'number',
+    isTrashed: typeof c.deletedAt === 'number',
   });
 
   const aiPublicConversation = (c: ServerAiConversation) => ({
@@ -7106,6 +7112,9 @@ Request ID: ${requestId}`,
     messages: c.messages,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    isSaved: c.isSaved,
+    isArchived: typeof c.archivedAt === 'number',
+    isTrashed: typeof c.deletedAt === 'number',
   });
 
   // Uniform 404 for missing OR foreign conversations.
@@ -7124,11 +7133,19 @@ Request ID: ${requestId}`,
   };
 
   // GET /api/ai/conversations — the signed-in user's own summaries.
+  // Supports ?filter=recent|saved|archived|trash and ?q=text search.
   app.get('/api/ai/conversations', requireAuth, (req: any, res) => {
-    const list = [...AI_CONVERSATIONS.values()]
-      .filter((c) => c.userId === req.authUser.id)
-      .sort((a, b) => b.updatedAt - a.updatedAt)
-      .map(aiSummary);
+    const filter = typeof req.query?.filter === 'string' ? req.query.filter : 'recent';
+    const q = typeof req.query?.q === 'string' ? req.query.q.trim().toLowerCase() : '';
+    let owned = [...AI_CONVERSATIONS.values()].filter((c) => c.userId === req.authUser.id);
+    if (filter === 'saved') owned = owned.filter((c) => c.isSaved && !c.deletedAt);
+    else if (filter === 'archived') owned = owned.filter((c) => Boolean(c.archivedAt) && !c.deletedAt);
+    else if (filter === 'trash') owned = owned.filter((c) => Boolean(c.deletedAt));
+    else owned = owned.filter((c) => !c.deletedAt && !c.archivedAt);
+    if (q) {
+      owned = owned.filter((c) => c.title.toLowerCase().includes(q) || c.messages.some((m) => m.content.toLowerCase().includes(q)));
+    }
+    const list = owned.sort((a, b) => b.updatedAt - a.updatedAt).map(aiSummary);
     return res.json({ success: true, conversations: list });
   });
 
@@ -7144,6 +7161,7 @@ Request ID: ${requestId}`,
       messages: [],
       createdAt: now,
       updatedAt: now,
+      isSaved: false,
     };
     if (Array.isArray(messages)) {
       for (const m of messages) {
@@ -7161,12 +7179,17 @@ Request ID: ${requestId}`,
     return res.status(201).json({ success: true, conversation: aiPublicConversation(conv) });
   });
 
-  // DELETE /api/ai/conversations — delete ALL of the user's conversations.
+  // DELETE /api/ai/conversations — soft-delete ALL of the user's conversations.
   app.delete('/api/ai/conversations', requireAuth, (req: any, res) => {
-    for (const [id, c] of AI_CONVERSATIONS.entries()) {
-      if (c.userId === req.authUser.id) AI_CONVERSATIONS.delete(id);
+    let count = 0;
+    for (const [, c] of AI_CONVERSATIONS.entries()) {
+      if (c.userId === req.authUser.id && !c.deletedAt) {
+        c.deletedAt = Date.now();
+        c.updatedAt = Date.now();
+        count += 1;
+      }
     }
-    return res.json({ success: true, deleted: true });
+    return res.json({ success: true, deleted: true, count });
   });
 
   // GET /api/ai/conversations/:id — full conversation (owner only).
@@ -7178,29 +7201,54 @@ Request ID: ${requestId}`,
     return res.json({ success: true, conversation: aiPublicConversation(conv) });
   });
 
-  // PUT /api/ai/conversations/:id — rename (owner only).
+  // PUT /api/ai/conversations/:id — rename, save/unsave, archive/restore (owner only).
   app.put('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
     const conv = aiFindOwned(req.authUser.id, req.params.id);
     if (!conv) {
       return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
     }
-    const title = typeof req.body?.title === 'string' ? req.body.title.trim() : '';
-    if (!title || title.length > 80) {
-      return res.status(400).json({ success: false, error: 'A title of up to 80 characters is required.' });
+    if (req.body?.title !== undefined) {
+      const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
+      if (!title || title.length > 80) {
+        return res.status(400).json({ success: false, error: 'A title of up to 80 characters is required.' });
+      }
+      conv.title = title;
     }
-    conv.title = title;
+    if (req.body?.isSaved !== undefined && typeof req.body.isSaved === 'boolean') {
+      conv.isSaved = req.body.isSaved;
+    }
+    if (req.body?.archive !== undefined && typeof req.body.archive === 'boolean') {
+      if (req.body.archive) conv.archivedAt = Date.now();
+      else delete conv.archivedAt;
+    }
+    if (req.body?.restore !== undefined && req.body.restore === true) {
+      delete conv.deletedAt;
+      delete conv.archivedAt;
+    }
     conv.updatedAt = Date.now();
     return res.json({ success: true, conversation: aiSummary(conv) });
   });
 
-  // DELETE /api/ai/conversations/:id — delete one (owner only).
+  // DELETE /api/ai/conversations/:id — soft-delete (owner only). Deleted chats
+  // move to Trash and can be restored. Use /permanent for true removal.
   app.delete('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
     const conv = aiFindOwned(req.authUser.id, req.params.id);
     if (!conv) {
       return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
     }
+    conv.deletedAt = Date.now();
+    conv.updatedAt = Date.now();
+    return res.json({ success: true, deleted: true, softDeleted: true });
+  });
+
+  // DELETE /api/ai/conversations/:id/permanent — permanent removal from Trash.
+  app.delete('/api/ai/conversations/:id/permanent', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
     AI_CONVERSATIONS.delete(conv.id);
-    return res.json({ success: true, deleted: true });
+    return res.json({ success: true, deleted: true, permanent: true });
   });
 
   // POST /api/ai/conversations/:id/messages — append a message (owner only).

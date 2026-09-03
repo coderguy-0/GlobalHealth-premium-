@@ -9,7 +9,7 @@
 //     sent to these endpoints unless the user explicitly chooses to save the
 //     conversation to their account after signing in.
 import { apiFetch, AuthError } from '../../services/authClient';
-import type { AIConversation, AIConversationSummary, AIMessage } from './types';
+import type { AIConversation, AIConversationSummary, AIMessage, AIHistoryFilter } from './types';
 
 export interface CreateConversationInput {
   title?: string;
@@ -37,9 +37,10 @@ function toError(err: unknown): AIConversationError {
   return new AIConversationError('Network connection failed. Please check your connection and try again.', 'NETWORK_ERROR');
 }
 
-export async function listConversations(): Promise<AIConversationSummary[]> {
+export async function listConversations(filter: AIHistoryFilter = 'recent', q = ''): Promise<AIConversationSummary[]> {
   try {
-    const data = await apiFetch<{ success: boolean; conversations: AIConversationSummary[] }>('/api/ai/conversations');
+    const params = new URLSearchParams({ filter, q });
+    const data = await apiFetch<{ success: boolean; conversations: AIConversationSummary[] }>(`/api/ai/conversations?${params.toString()}`);
     return data.conversations || [];
   } catch (err) {
     throw toError(err);
@@ -79,9 +80,53 @@ export async function renameConversation(id: string, title: string): Promise<AIC
   }
 }
 
+export async function setConversationSaved(id: string, isSaved: boolean): Promise<AIConversationSummary> {
+  try {
+    const data = await apiFetch<{ success: boolean; conversation: AIConversationSummary }>(`/api/ai/conversations/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: { isSaved },
+    });
+    return data.conversation;
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+export async function setConversationArchived(id: string, archived: boolean): Promise<AIConversationSummary> {
+  try {
+    const data = await apiFetch<{ success: boolean; conversation: AIConversationSummary }>(`/api/ai/conversations/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: { archive: archived },
+    });
+    return data.conversation;
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+export async function restoreConversation(id: string): Promise<AIConversationSummary> {
+  try {
+    const data = await apiFetch<{ success: boolean; conversation: AIConversationSummary }>(`/api/ai/conversations/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: { restore: true },
+    });
+    return data.conversation;
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
 export async function deleteConversation(id: string): Promise<void> {
   try {
     await apiFetch<{ success: boolean }>(`/api/ai/conversations/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+export async function permanentlyDeleteConversation(id: string): Promise<void> {
+  try {
+    await apiFetch<{ success: boolean }>(`/api/ai/conversations/${encodeURIComponent(id)}/permanent`, { method: 'DELETE' });
   } catch (err) {
     throw toError(err);
   }

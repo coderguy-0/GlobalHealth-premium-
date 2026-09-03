@@ -9,8 +9,13 @@ import {
   Trash2,
   UserCircle2,
   X,
+  Star,
+  Archive,
+  RotateCcw,
+  LayoutList,
+  Trash,
 } from 'lucide-react';
-import type { AIConversationSummary, AIHistoryGroupKey } from './types';
+import type { AIConversationSummary, AIHistoryGroupKey, AIHistoryFilter } from './types';
 import { AI_HISTORY_GROUP_LABELS } from './types';
 import { AIErrorState, type AIErrorKind } from './AIErrorState';
 
@@ -21,12 +26,18 @@ interface AIConversationSidebarProps {
   activeId: string | null;
   loading?: boolean;
   historyError?: { kind: AIErrorKind; message: string } | null;
+  filter?: AIHistoryFilter;
+  onFilterChange?: (filter: AIHistoryFilter) => void;
   onRetryHistory?: () => void;
   onSignIn?: () => void;
   onSelect: (id: string) => void;
   onNewChat: () => void;
   onRename: (id: string, title: string) => void;
+  onToggleSave: (id: string) => void;
+  onToggleArchive: (id: string, archived?: boolean) => void;
+  onRestore: (id: string) => void;
   onDelete: (id: string) => void;
+  onPermanentDelete: (id: string) => void;
   onDeleteAll: () => void;
   onSaveSession: () => void;
 }
@@ -63,12 +74,18 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
   activeId,
   loading,
   historyError,
+  filter = 'recent',
+  onFilterChange,
   onRetryHistory,
   onSignIn,
   onSelect,
   onNewChat,
   onRename,
+  onToggleSave,
+  onToggleArchive,
+  onRestore,
   onDelete,
+  onPermanentDelete,
   onDeleteAll,
   onSaveSession,
 }) => {
@@ -193,10 +210,36 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
             </div>
           </div>
 
+          {/* History filters */}
+          <div className="grid grid-cols-4 gap-1 px-3 pb-2" role="tablist" aria-label="Conversation filters">
+            {(
+              [
+                { id: 'recent', label: 'Recent', icon: LayoutList },
+                { id: 'saved', label: 'Saved', icon: Star },
+                { id: 'archived', label: 'Archive', icon: Archive },
+                { id: 'trash', label: 'Trash', icon: Trash },
+              ] as const
+            ).map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === f.id}
+                onClick={() => onFilterChange?.(f.id)}
+                className={`flex flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500 ${
+                  filter === f.id ? 'bg-medical-50 text-medical-700 ring-1 ring-medical-200' : 'text-slate-400 hover:bg-slate-50'
+                }`}
+              >
+                <f.icon className="h-3.5 w-3.5" aria-hidden="true" />
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           {/* History list */}
           <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
             <h3 className="px-1 pb-1.5 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              My AI Conversations
+              {filter === 'saved' ? 'Saved Conversations' : filter === 'archived' ? 'Archived Conversations' : filter === 'trash' ? 'Trash' : 'My AI Conversations'}
             </h3>
 
             {historyError ? (
@@ -209,7 +252,15 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
               </div>
             ) : visibleGroups.length === 0 ? (
               <p className="px-1 py-6 text-center text-xs leading-relaxed text-slate-400">
-                {query ? 'No conversations match your search.' : 'No saved conversations yet. Start a new chat and it will be saved to your account automatically.'}
+                {query
+                  ? 'No conversations match your search.'
+                  : filter === 'saved'
+                  ? 'No saved conversations yet. Open a recent chat and tap the star to save it.'
+                  : filter === 'archived'
+                  ? 'No archived conversations.'
+                  : filter === 'trash'
+                  ? 'No deleted conversations.'
+                  : 'No conversations yet. Start a new chat and it will be saved to your account automatically.'}
               </p>
             ) : (
               visibleGroups.map((g) => (
@@ -279,27 +330,74 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
                               </button>
 
                               <span className="flex shrink-0 items-center gap-0.5 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditingId(c.id);
-                                    setDraft(c.title);
-                                  }}
-                                  aria-label={`Rename conversation: ${c.title}`}
-                                  className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                                >
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => (armed ? onDelete(c.id) : arm(c.id))}
-                                  aria-label={armed ? `Confirm delete: ${c.title}` : `Delete conversation: ${c.title}`}
-                                  className={`grid h-8 w-8 place-items-center rounded-lg transition ${
-                                    armed ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-slate-400 hover:bg-rose-50 hover:text-rose-600'
-                                  }`}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onToggleSave(c.id)}
+                                    aria-label={c.isSaved ? `Unsave conversation: ${c.title}` : `Save conversation: ${c.title}`}
+                                    title={c.isSaved ? 'Unsave' : 'Save'}
+                                    className={`grid h-8 w-8 place-items-center rounded-lg transition ${c.isSaved ? 'text-amber-500 hover:bg-amber-50' : 'text-slate-400 hover:bg-amber-50 hover:text-amber-500'}`}
+                                  >
+                                    <Star className={`h-3.5 w-3.5 ${c.isSaved ? 'fill-current' : ''}`} />
+                                  </button>
+                                )}
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingId(c.id);
+                                      setDraft(c.title);
+                                    }}
+                                    aria-label={`Rename conversation: ${c.title}`}
+                                    className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                                  >
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onToggleArchive(c.id, !c.isArchived)}
+                                    aria-label={c.isArchived ? `Restore conversation from archive: ${c.title}` : `Archive conversation: ${c.title}`}
+                                    title={c.isArchived ? 'Restore from archive' : 'Archive'}
+                                    className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                                  >
+                                    <Archive className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                                {filter === 'trash' ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => onRestore(c.id)}
+                                      aria-label={`Restore conversation: ${c.title}`}
+                                      title="Restore"
+                                      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600"
+                                    >
+                                      <RotateCcw className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => onPermanentDelete(c.id)}
+                                      aria-label={`Permanently delete conversation: ${c.title}`}
+                                      title="Permanently delete"
+                                      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => (armed ? onDelete(c.id) : arm(c.id))}
+                                    aria-label={armed ? `Confirm delete: ${c.title}` : `Delete conversation: ${c.title}`}
+                                    className={`grid h-8 w-8 place-items-center rounded-lg transition ${
+                                      armed ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-slate-400 hover:bg-rose-50 hover:text-rose-600'
+                                    }`}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
                               </span>
                             </div>
                           )}
