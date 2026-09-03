@@ -288,6 +288,9 @@ export async function requestAssistantResponse(
         /* non-JSON error body */
       }
       const serverMsg = typeof body?.error === 'string' ? body.error : '';
+      if ((body as any)?.code === 'RATE_LIMITED') {
+        throw new AIConversationError(serverMsg || 'The AI assistant is busy. Please wait a moment and try again.', 'AI_RATE_LIMITED');
+      }
       const message = serverMsg && serverMsg.includes('GEMINI_API_KEY')
         ? 'The AI service is not configured on this server yet. Please try again later.'
         : 'The AI service is temporarily unavailable. Please try again shortly.';

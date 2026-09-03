@@ -446,6 +446,31 @@ async function startServer() {
     store.set(key, w);
   };
 
+  // Per-IP request buckets for sensitive endpoints. Unlike the brute-force
+  // window above, these count successful requests too, so a single caller
+  // cannot hammer signup, login recovery, AI, or OTP endpoints.
+  interface ApiRateWindow { count: number; firstAt: number }
+  const API_RATE_LIMITS: Map<string, ApiRateWindow> = new Map();
+  const hitRateLimit = (
+    bucket: string,
+    key: string,
+    maxRequests: number,
+    windowMs: number
+  ): { allowed: boolean; retryInMs: number } => {
+    const fullKey = `${bucket}:${key}`;
+    const now = Date.now();
+    let w = API_RATE_LIMITS.get(fullKey);
+    if (!w || now - w.firstAt > windowMs) {
+      w = { count: 0, firstAt: now };
+    }
+    if (w.count >= maxRequests) {
+      return { allowed: false, retryInMs: Math.max(1000, w.firstAt + windowMs - now) };
+    }
+    w.count += 1;
+    API_RATE_LIMITS.set(fullKey, w);
+    return { allowed: true, retryInMs: 0 };
+  };
+
   // In-memory persistent state during server runtime
   const PUBLIC_USERS: Map<string, ServerPublicUser> = new Map([
     [
@@ -580,6 +605,10 @@ async function startServer() {
 
   // 1. LOGIN ENDPOINT
   app.post('/api/auth/login', (req, res) => {
+    const entryRl = hitRateLimit('auth-login', String(req.ip || 'anonymous'), 30, 5 * 60 * 1000);
+    if (!entryRl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many attempts. Please try again in ${Math.ceil(entryRl.retryInMs / 60000)} minute(s).` });
+    }
     const { identifier, password, rememberMe } = req.body;
 
     if (!identifier || !password) {
@@ -718,6 +747,10 @@ async function startServer() {
 
   // 2. SIGN UP ENDPOINT
   app.post('/api/auth/signup', (req, res) => {
+    const rl = hitRateLimit('auth-signup', String(req.ip || 'anonymous'), 10, 60 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many account creations from this device. Please try again later.' });
+    }
     const {
       firstName,
       lastName,
@@ -858,6 +891,10 @@ async function startServer() {
 
   // 3. VERIFY CODE ENDPOINT (EMAIL OR PHONE)
   app.post('/api/auth/verify-code', (req, res) => {
+    const rl = hitRateLimit('auth-verify', String(req.ip || 'anonymous'), 15, 5 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many verification attempts. Please wait a moment and try again.' });
+    }
     const { userId, code, type } = req.body;
 
     if (!userId || !code) {
@@ -989,6 +1026,10 @@ async function startServer() {
 
   // 5. FORGOT PASSWORD (PRIVACY-PRESERVING)
   app.post('/api/auth/forgot-password', (req, res) => {
+    const rl = hitRateLimit('auth-recovery', String(req.ip || 'anonymous'), 8, 15 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many recovery requests. Please try again later.' });
+    }
     const { identifier } = req.body;
 
     if (!identifier) {
@@ -7558,6 +7599,10 @@ Request ID: ${requestId}`,
   // ----------------------------------------------------------------------
   app.post('/api/ai-assistant', async (req, res) => {
     try {
+      const rl = hitRateLimit('ai-assistant', String(req.ip || 'anonymous'), 20, 5 * 60 * 1000);
+      if (!rl.allowed) {
+        return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'The AI assistant is receiving a lot of requests. Please wait a moment and try again.' });
+      }
       const { prompt, language, userContext } = req.body;
 
       // Server-side safety backstop. This runs even if the generative model is
