@@ -10,6 +10,7 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { PHARMACY_PRODUCTS, VERIFIED_PHARMACY_PARTNERS } from './src/data/pharmacyProductsData';
 import { INITIAL_HOSPITALS, INITIAL_DEPARTMENTS, INITIAL_PORTAL_DOCTORS, INITIAL_BLOOD_BANK } from './src/data/hospitalInitialData';
+import { detectSafetyRisk } from './src/core/ai/aiSafety';
 
 async function startServer() {
   const app = express();
@@ -7448,8 +7449,20 @@ Request ID: ${requestId}`,
   app.post('/api/ai-assistant', async (req, res) => {
     try {
       const { prompt, language, userContext } = req.body;
-      const apiKey = process.env.GEMINI_API_KEY;
 
+      // Server-side safety backstop. This runs even if the generative model is
+      // not configured, so a direct API caller can never bypass urgent guidance
+      // with a normal knowledge answer.
+      const safety = detectSafetyRisk(String(prompt || ''), String((userContext as any)?.language || ''));
+      if (safety.risk === 'urgent' && safety.emergencyMessage) {
+        return res.json({
+          response: safety.emergencyMessage,
+          safety,
+          skipped: true,
+        });
+      }
+
+      const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         return res.status(503).json({
           error: 'GEMINI_API_KEY is not configured on the server.',
