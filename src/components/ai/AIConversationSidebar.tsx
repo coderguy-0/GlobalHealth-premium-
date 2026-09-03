@@ -14,9 +14,13 @@ import {
   RotateCcw,
   LayoutList,
   Trash,
+  Download,
+  Share2,
+  Link2,
 } from 'lucide-react';
 import type { AIConversationSummary, AIHistoryGroupKey, AIHistoryFilter } from './types';
 import { AI_HISTORY_GROUP_LABELS } from './types';
+import type { AIExportFormat } from './aiApi';
 import { AIErrorState, type AIErrorKind } from './AIErrorState';
 
 interface AIConversationSidebarProps {
@@ -40,6 +44,10 @@ interface AIConversationSidebarProps {
   onPermanentDelete: (id: string) => void;
   onDeleteAll: () => void;
   onSaveSession: () => void;
+  onExportChat?: (format: AIExportFormat) => void;
+  onShareChat?: () => void;
+  shareUrl?: string | null;
+  onRevokeShare?: () => void;
 }
 
 function dayKey(ts: number): string {
@@ -88,12 +96,17 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
   onPermanentDelete,
   onDeleteAll,
   onSaveSession,
+  onExportChat,
+  onShareChat,
+  shareUrl,
+  onRevokeShare,
 }) => {
   const [query, setQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [armedDelete, setArmedDelete] = useState<string | null>(null);
   const [armedDeleteAll, setArmedDeleteAll] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
   const editRef = useRef<HTMLInputElement>(null);
   const timers = useRef<number[]>([]);
 
@@ -192,6 +205,67 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
           <Plus className="h-4 w-4" aria-hidden="true" /> New Chat
         </button>
       </div>
+
+      {signedIn && activeId && (
+        <div className="px-3 pb-2">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onExportChat?.('text')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden="true" /> Export
+            </button>
+            <button
+              type="button"
+              onClick={onShareChat}
+              disabled={!onShareChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <Share2 className="h-3.5 w-3.5" aria-hidden="true" /> Share
+            </button>
+          </div>
+          {shareUrl && (
+            <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+                <Link2 className="h-3 w-3" aria-hidden="true" /> Revocable share link
+              </div>
+              <input
+                readOnly
+                value={shareUrl}
+                onFocus={(e) => e.currentTarget.select()}
+                aria-label="Shared conversation link"
+                className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-700 focus:outline-none"
+              />
+              <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(shareUrl);
+                      setCopiedShare(true);
+                      window.setTimeout(() => setCopiedShare(false), 1800);
+                    } catch {
+                      /* clipboard unavailable; URL is selectable in the input */
+                    }
+                  }}
+                  className="rounded-lg bg-medical-600 px-2 py-1.5 text-[10px] font-bold text-white transition hover:bg-medical-700"
+                >
+                  {copiedShare ? 'Copied' : 'Copy'}
+                </button>
+                <button
+                  type="button"
+                  onClick={onRevokeShare}
+                  className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-600 transition hover:bg-rose-50"
+                >
+                  Revoke
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {signedIn && (
         <>

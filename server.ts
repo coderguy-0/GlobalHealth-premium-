@@ -7078,6 +7078,10 @@ Request ID: ${requestId}`,
     role: 'user' | 'assistant';
     content: string;
     createdAt: number;
+    /** Client-supplied idempotency key. Repeated sends (retry, double-tap,
+     * concurrent tabs) return the previously stored message instead of
+     * creating duplicates. */
+    clientMessageId?: string;
   }
   interface ServerAiConversation {
     id: string;
@@ -7091,6 +7095,10 @@ Request ID: ${requestId}`,
     deletedAt?: number;
   }
   const AI_CONVERSATIONS: Map<string, ServerAiConversation> = new Map();
+  const AI_SHARE_LINKS = new Map<
+    string,
+    { token: string; conversationId: string; userId: string; createdAt: number; revokedAt?: number }
+  >();
   const AI_TITLE = 'New conversation';
 
   const aiConvId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -7124,7 +7132,10 @@ Request ID: ${requestId}`,
     return conv;
   };
 
-  const aiValidMessage = (role: unknown, content: unknown): { role: 'user' | 'assistant'; content: string } | null => {
+  const aiValidMessage = (
+    role: unknown,
+    content: unknown
+  ): { role: 'user' | 'assistant'; content: string; clientMessageId?: string } | null => {
     if (role !== 'user' && role !== 'assistant') return null;
     if (typeof content !== 'string') return null;
     const trimmed = content.trim();
@@ -7167,7 +7178,13 @@ Request ID: ${requestId}`,
       for (const m of messages) {
         const valid = aiValidMessage(m?.role, m?.content);
         if (!valid) continue;
-        conv.messages.push({ id: aiConvId('ai-msg'), ...valid, createdAt: now });
+        const clientMessageId =
+          typeof m?.clientMessageId === 'string' && m.clientMessageId.trim()
+            ? m.clientMessageId.trim().slice(0, 100)
+            : typeof m?.id === 'string'
+              ? m.id.trim().slice(0, 100)
+              : undefined;
+        conv.messages.push({ id: aiConvId('ai-msg'), ...valid, createdAt: now, clientMessageId });
       }
       if (conv.messages.length > 0) conv.updatedAt = now;
       const firstUser = conv.messages.find((m) => m.role === 'user');
@@ -7261,14 +7278,146 @@ Request ID: ${requestId}`,
     if (!valid) {
       return res.status(400).json({ success: false, error: 'A message with role "user" or "assistant" and content up to 10,000 characters is required.' });
     }
-    const msg: ServerAiMessage = { id: aiConvId('ai-msg'), ...valid, createdAt: Date.now() };
+    const clientMessageId =
+      typeof req.body?.clientMessageId === 'string' && req.body.clientMessageId.trim()
+        ? req.body.clientMessageId.trim().slice(0, 100)
+        : typeof req.body?.id === 'string'
+          ? req.body.id.trim().slice(0, 100)
+          : undefined;
+
+    // Idempotency: if this client message was already successfully stored
+    // (retry after a dropped response, double-tap, or a concurrent tab), return
+    // the stored record instead of creating a duplicate. This is the
+    // duplicate-message safety net required by the unified chat contract.
+    if (clientMessageId) {
+      const existing = conv.messages.find((m) => m.clientMessageId === clientMessageId && m.role === valid.role);
+      if (existing) {
+        return res.status(200).json({ success: true, message: existing, deduplicated: true });
+      }
+    }
+
+    const msg: ServerAiMessage = { id: aiConvId('ai-msg'), ...valid, createdAt: Date.now(), clientMessageId };
     conv.messages.push(msg);
     conv.updatedAt = msg.createdAt;
     // Auto-title from the first user message when still untitled.
     if (conv.title === AI_TITLE && msg.role === 'user') {
       conv.title = msg.content.replace(/\s+/g, ' ').trim().slice(0, 48) || AI_TITLE;
     }
-    return res.status(201).json({ success: true, message: msg });
+    return res.status(201).json({ success: true, message: msg, deduplicated: false });
+  });
+
+  // GET /api/ai/conversations/:id/export — download this user's OWN chat in
+  // plain-text or JSON form. The caller must be the conversation owner.
+  app.get('/api/ai/conversations/:id/export', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    const format = typeof req.query?.format === 'string' ? req.query.format.toLowerCase() : 'text';
+    if (format !== 'text' && format !== 'json') {
+      return res.status(400).json({ success: false, error: 'Export format must be "text" or "json".' });
+    }
+    const safeTitle = conv.title.replace(/[^\w\-. ]+/g, '_').replace(/\s+/g, '-').slice(0, 48) || 'ai-conversation';
+    if (format === 'json') {
+      return res.json({
+        success: true,
+        format: 'json',
+        filename: `${safeTitle}.json`,
+        contentType: 'application/json; charset=utf-8',
+        content: JSON.stringify(
+          {
+            conversation: {
+              id: conv.id,
+              title: conv.title,
+              createdAt: conv.createdAt,
+              updatedAt: conv.updatedAt,
+              isSaved: conv.isSaved,
+              isArchived: typeof conv.archivedAt === 'number',
+              isTrashed: typeof conv.deletedAt === 'number',
+            },
+            messages: conv.messages,
+          },
+          null,
+          2
+        ),
+      });
+    }
+    const lines = [
+      `GlobalHealth AI Conversation — ${conv.title}`,
+      `Exported: ${new Date().toISOString()}`,
+      `Messages: ${conv.messages.length}`,
+      '',
+    ];
+    for (const m of conv.messages) {
+      lines.push(`${m.role === 'user' ? 'You' : 'GlobalHealth AI'} (${new Date(m.createdAt).toISOString()}):`);
+      lines.push(m.content);
+      lines.push('');
+    }
+    lines.push('AI-generated information for educational use only. It is not a substitute for professional medical advice.');
+    return res.json({
+      success: true,
+      format: 'text',
+      filename: `${safeTitle}.txt`,
+      contentType: 'text/plain; charset=utf-8',
+      content: lines.join('\n'),
+    });
+  });
+
+  // POST /api/ai/conversations/:id/share — create a revocable share link for
+  // the owner's own conversation. A share token is a capability: possession of
+  // the URL grants read-only access until the owner revokes it.
+  app.post('/api/ai/conversations/:id/share', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    if (conv.deletedAt) {
+      return res.status(400).json({ success: false, error: 'A deleted conversation cannot be shared. Restore it first.' });
+    }
+    const token = `ghshare-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}${Math.random().toString(36).slice(2, 12)}`;
+    AI_SHARE_LINKS.set(token, { token, conversationId: conv.id, userId: req.authUser.id, createdAt: Date.now() });
+    return res.status(201).json({
+      success: true,
+      token,
+      shareId: token.slice(9, 17),
+      url: `/api/ai/conversations/shared/${token}`,
+      expiresAt: null,
+    });
+  });
+
+  // GET /api/ai/conversations/shared/:token — read-only public share view.
+  // Only explicitly shared, non-revoked chats are visible.
+  app.get('/api/ai/conversations/shared/:token', (req, res) => {
+    const share = AI_SHARE_LINKS.get(req.params.token);
+    if (!share || share.revokedAt) {
+      return res.status(404).json({ success: false, error: 'This shared AI conversation is no longer available.' });
+    }
+    const conv = AI_CONVERSATIONS.get(share.conversationId);
+    if (!conv || conv.deletedAt || conv.userId !== share.userId) {
+      return res.status(404).json({ success: false, error: 'This shared AI conversation is no longer available.' });
+    }
+    return res.json({
+      success: true,
+      title: conv.title,
+      createdAt: conv.createdAt,
+      updatedAt: conv.updatedAt,
+      messageCount: conv.messages.length,
+      messages: conv.messages.map((m) => ({ id: m.id, role: m.role, content: m.content, createdAt: m.createdAt })),
+      disclaimer: 'This conversation is shared by the account owner. AI-generated information is educational only and does not replace professional medical advice.',
+    });
+  });
+
+  // DELETE /api/ai/conversations/shared/:token — revoke a share link.
+  app.delete('/api/ai/conversations/shared/:token', requireAuth, (req: any, res) => {
+    const share = AI_SHARE_LINKS.get(req.params.token);
+    if (!share) {
+      return res.status(404).json({ success: false, error: 'This share link could not be found.' });
+    }
+    if (share.userId !== req.authUser.id) {
+      return res.status(403).json({ success: false, error: 'You do not have permission to revoke this share link.' });
+    }
+    share.revokedAt = Date.now();
+    return res.json({ success: true, revoked: true });
   });
 
   // ----------------------------------------------------------------------

@@ -142,14 +142,78 @@ export async function deleteAllConversations(): Promise<void> {
 
 export async function appendMessage(conversationId: string, message: AIMessage): Promise<AIMessage> {
   try {
-    const data = await apiFetch<{ success: boolean; message: AIMessage }>(
+    const data = await apiFetch<{ success: boolean; message: AIMessage; deduplicated?: boolean }>(
       `/api/ai/conversations/${encodeURIComponent(conversationId)}/messages`,
-      { method: 'POST', body: { role: message.role, content: message.content } }
+      {
+        method: 'POST',
+        body: {
+          role: message.role,
+          content: message.content,
+          // Idempotency key: the server returns an existing message if this
+          // client message was already stored (retry / double-tap / another tab).
+          clientMessageId: message.id,
+        },
+      }
     );
     return data.message;
   } catch (err) {
     throw toError(err);
   }
+}
+
+export type AIExportFormat = 'text' | 'json';
+
+export interface AIExportResult {
+  format: AIExportFormat;
+  filename: string;
+  contentType: string;
+  content: string;
+}
+
+export async function exportConversation(id: string, format: AIExportFormat = 'text'): Promise<AIExportResult> {
+  try {
+    return await apiFetch<AIExportResult>(`/api/ai/conversations/${encodeURIComponent(id)}/export?format=${format}`);
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+export interface AIShareLink {
+  token: string;
+  shareId: string;
+  url: string;
+  expiresAt: number | null;
+}
+
+export async function createConversationShare(id: string): Promise<AIShareLink> {
+  try {
+    return await apiFetch<AIShareLink>(`/api/ai/conversations/${encodeURIComponent(id)}/share`, { method: 'POST' });
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+export async function revokeConversationShare(token: string): Promise<void> {
+  try {
+    await apiFetch<{ success: boolean }>(`/api/ai/conversations/shared/${encodeURIComponent(token)}`, { method: 'DELETE' });
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+/** Downloads an exported chat to the local device using the server-produced
+ * file content. The server never leaks private content to a browser that is
+ * not the conversation owner. */
+export function downloadChatExport(result: AIExportResult): void {
+  const blob = new Blob([result.content], { type: result.contentType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = result.filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 2500);
 }
 
 export interface AssistantRequestContext {
