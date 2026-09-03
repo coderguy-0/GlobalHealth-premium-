@@ -11,6 +11,7 @@ import { GoogleGenAI } from '@google/genai';
 import { PHARMACY_PRODUCTS, VERIFIED_PHARMACY_PARTNERS } from './src/data/pharmacyProductsData';
 import { INITIAL_HOSPITALS, INITIAL_DEPARTMENTS, INITIAL_PORTAL_DOCTORS, INITIAL_BLOOD_BANK } from './src/data/hospitalInitialData';
 import { detectSafetyRisk } from './src/core/ai/aiSafety';
+import { retrieveVerifiedKnowledge } from './src/core/ai/aiKnowledge';
 
 async function startServer() {
   const app = express();
@@ -7469,6 +7470,12 @@ Request ID: ${requestId}`,
         });
       }
 
+      // RAG-style local verified knowledge retrieval. The model receives the
+      // source label + only matched facts so it never needs to invent facts
+      // about a medicine/condition/lab test the platform already has content
+      // for.
+      const knowledge = retrieveVerifiedKnowledge(String(prompt || ''), 3);
+
       const ai = new GoogleGenAI({
         apiKey,
         httpOptions: {
@@ -7512,7 +7519,7 @@ SAFETY RULES (never violate):
 - Always end with a short note that this is educational information and not a substitute for professional medical advice.
 Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}${
         ctxSystem ? `\nPLATFORM CONTEXT GUIDANCE (non-authoritative, from GlobalHealth's understanding layer): ${ctxSystem}` : ''
-      }${ctxHistory ? `\nCURRENT CONVERSATION HISTORY (recent, for continuity and reference resolution):\n${ctxHistory}\nUse this only to understand the user's current thread. Never repeat earlier answers verbatim.` : ''}`;
+      }${knowledge.context}${ctxHistory ? `\nCURRENT CONVERSATION HISTORY (recent, for continuity and reference resolution):\n${ctxHistory}\nUse this only to understand the user's current thread. Never repeat earlier answers verbatim.` : ''}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
