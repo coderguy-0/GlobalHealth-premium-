@@ -62,9 +62,23 @@ async function startServer() {
     next();
   });
 
-  // Native CORS middleware
+  // Native CORS middleware. Production deployments should set CORS_ORIGIN to an
+  // explicit allowlist. When unset, fall back to permissive local development
+  // so the SPA/dev server never calls an authenticated API from a different host.
+  const configuredCorsOrigins = (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
   app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    if (configuredCorsOrigins.length > 0) {
+      if (origin && configuredCorsOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+      }
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') {
