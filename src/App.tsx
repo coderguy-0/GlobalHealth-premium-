@@ -467,7 +467,7 @@ export default function App() {
 
   // Explicit "Log In" / "Sign Up" CTAs open the dedicated full-page
   // authentication experience (#auth) instead of the inline gate.
-  const handleOpenAuthPage = (mode: 'login' | 'signup' = 'login') => {
+  const handleOpenAuthPage = (mode: AuthSubView = 'login') => {
     setAuthInitialView(mode);
     setCurrentTab('auth');
   };
@@ -944,7 +944,11 @@ export default function App() {
         )}
         {currentTab === 'appointments' && currentUser && (
           <Suspense fallback={<RouteFallback />}>
-            <AppointmentsView onTabChange={setCurrentTab} />
+            <AppointmentsView
+              onTabChange={setCurrentTab}
+              isAuthenticated={!!currentUser}
+              onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+            />
           </Suspense>
         )}
           </>
@@ -958,8 +962,13 @@ export default function App() {
       {/* Global 100-Language Selector Modal */}
       <LanguageModal />
 
-      {/* Global Authentication Gate (login / create account / access control) */}
-      <AuthGate onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }} />
+      {/* Global Authentication Gate (login / create account / access control).
+          Sign-up and password recovery intentionally stay inside the same
+          unified GlobalHealth auth flow. */}
+      <AuthGate
+        onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }}
+        onOpenForgotPassword={() => { closeGate(); handleOpenAuthPage('forgot-password'); }}
+      />
 
       {/* Session-expired overlay */}
       <SessionExpiredModal />

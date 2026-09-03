@@ -23,12 +23,14 @@ interface AuthGateProps {
   // Registration happens on the dedicated full-page Create Account flow
   // (stepped, with explicit narrow consent) — never an inline blanket consent.
   onOpenFullSignup?: () => void;
+  // Password recovery uses the same unified auth flow (full page).
+  onOpenForgotPassword?: () => void;
 }
 
 // A single, consistent authentication gate used across the entire app.
 // Used both as the global "this feature requires an account" modal and as the
 // full-page protected-route experience.
-export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullSignup }) => {
+export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullSignup, onOpenForgotPassword }) => {
   const { gateOpen, closeGate, gateMode, setGateMode, gateIntent, authenticate } = useAuth();
   const [mode, setLocalMode] = useState<'login' | 'signup'>('login');
   const [busy, setBusy] = useState(false);
@@ -229,6 +231,15 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                   </button>
                 </div>
               </label>
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={onOpenForgotPassword}
+                  className="text-xs font-semibold text-medical-700 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
               <button
                 type="submit"
                 disabled={busy}

@@ -41,6 +41,14 @@ interface AuthContextValue {
   publicUser: PublicUserAccount | null;
   /** The validated server-issued session token shared by every feature. */
   sessionId: string | null;
+  /** Explicit session lifecycle state for every module reading auth. */
+  sessionStatus: 'idle' | 'initializing' | 'active' | 'expired';
+  /** Convenience accessors — every module reads the SAME account. */
+  userId: string | null;
+  userProfile: UserAccount | null;
+  userName: string | null;
+  userEmail: string | null;
+  userRole: string | null;
   /** One unified permission set for the authenticated User Portal account. */
   permissions: UserPortalPermission[];
   /** True when exactly one valid GlobalHealth session is active. */
@@ -137,11 +145,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const requireAuth = useCallback((intent?: AuthIntent, mode: 'login' | 'signup' = 'login') => {
+    // ONE GLOBAL SESSION RULE: once the User Portal session is authenticated,
+    // protected-feature requests never open the login again. The feature code
+    // proceeds on the existing currentUser / isAuthenticated state.
+    if (user) return;
     setGateIntent(intent || null);
     pendingIntentRef.current = intent || null;
     setGateMode(mode);
     setGateOpen(true);
-  }, []);
+  }, [user]);
 
   const closeGate = useCallback(() => {
     setGateOpen(false);
@@ -232,6 +244,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     publicUser,
     sessionId,
+    sessionStatus: initializing
+      ? 'initializing'
+      : sessionExpired
+        ? 'expired'
+        : user && sessionId
+          ? 'active'
+          : 'idle',
+    userId: user?.id ?? null,
+    userProfile: user,
+    userName: user?.fullName?.trim() || user?.username?.trim() || null,
+    userEmail: user?.email?.trim() || null,
+    userRole: (publicUser as any)?.role || (user ? 'USER' : null),
     permissions: user ? ([...USER_PORTAL_PERMISSIONS] as UserPortalPermission[]) : [],
     isAuthenticated: !!user && !!sessionId,
     initializing,

@@ -20,8 +20,13 @@ export const GLOBAL_SESSION_KEYS = [
   'gh_hospital_session_token',
   // Doctor / MedAuth portal
   'globalhealth_doctor_session',
+  'globalhealth_doctor_token',
   'gh_doctor_session_token',
   'globalhealth_medauth_session',
+  'doctor_portal_session_token_v1',
+  'doctor_portal_session_expiry_v1',
+  'doctor_portal_active_account_v2',
+  'medauth_active_doctor_v1',
   // News / editorial
   'globalhealth_news_session',
   'gh_news_session_token',
@@ -68,7 +73,7 @@ export function clearAllGlobalSessions() {
     // Defensive: also drop any older/unknown namespace keys a feature may have
     // used in a previous build. These keys are session-scoped, never public.
     Object.keys(localStorage)
-      .filter((k) => /globalhealth_.*(session|token|auth)/i.test(k))
+      .filter((k) => /globalhealth_.*(session|token|auth)|doctor_portal_.*(session|token|active)|medauth_active_doctor|gh_.*(session|token)/i.test(k))
       .forEach((k) => localStorage.removeItem(k));
   } catch {
     // storage unavailable — nothing to clear
