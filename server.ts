@@ -5,7 +5,7 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { createHash, randomBytes } from 'crypto';
+import { createHash, pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { PHARMACY_PRODUCTS, VERIFIED_PHARMACY_PARTNERS } from './src/data/pharmacyProductsData';
@@ -329,9 +329,31 @@ async function startServer() {
     details: string;
   }
 
-  // Passwords/secrets are never stored in plain text: salted SHA-256 digest.
-  const hashSecret = (salt: string, value: string) =>
-    createHash('sha256').update(`${salt}::${value}::globalhealth`).digest('hex');
+  // Passwords/secrets are never stored in plain text. GlobalHealth uses
+  // PBKDF2-SHA256 with 120,000 iterations and a per-account derived salt. The
+  // encoded value self-describes the salt/iterations so a future migration can
+  // upgrade it without losing existing accounts.
+  const PASSWORD_PBKDF2_ITERATIONS = 120000;
+  const hashSecret = (salt: string, value: string) => {
+    const derivedSalt = createHash('sha256').update(`globalhealth::${salt}`).digest('hex').slice(0, 32);
+    const derived = pbkdf2Sync(value, derivedSalt, PASSWORD_PBKDF2_ITERATIONS, 32, 'sha256').toString('hex');
+    return `pbkdf2-sha256$${PASSWORD_PBKDF2_ITERATIONS}$${derivedSalt}$${derived}`;
+  };
+  const verifySecret = (salt: string, value: string, stored: string) => {
+    if (!stored || !stored.includes('$')) {
+      return hashSecret(salt, value) === stored;
+    }
+    const parts = stored.split('$');
+    const iterations = Number(parts[1]) || PASSWORD_PBKDF2_ITERATIONS;
+    const saltHex = parts[2] || derivedSaltFor(salt);
+    const expectedHex = parts[3] || '';
+    if (!expectedHex || saltHex.length !== 32 || !/^[0-9a-f]+$/i.test(expectedHex) || expectedHex.length !== 64) return false;
+    const actual = pbkdf2Sync(value, saltHex, iterations, 32, 'sha256').toString('hex');
+    const a = Buffer.from(actual, 'hex');
+    const b = Buffer.from(expectedHex, 'hex');
+    return a.length === b.length && timingSafeEqual(a, b);
+  };
+  const derivedSaltFor = (salt: string) => createHash('sha256').update(`globalhealth::${salt}`).digest('hex').slice(0, 32);
 
   // Brute-force protection for credential checks (per identifier, 15 min window).
   interface AttemptWindow { count: number; firstAt: number; lockedUntil: number }
@@ -530,7 +552,7 @@ async function startServer() {
     }
 
     // Generic incorrect credential error to prevent account enumeration
-    if (!foundUser || hashSecret(foundUser.id, password) !== foundUser.passwordHash) {
+    if (!foundUser || !verifySecret(foundUser.id, password, foundUser.passwordHash)) {
       registerFailedAttempt(LOGIN_ATTEMPTS, cleanIdentifier, 15 * 60 * 1000);
       AUDIT_LOGS.push({
         id: `aud-${Date.now()}`,
@@ -995,8 +1017,8 @@ async function startServer() {
       });
     }
 
-    // Update password
-    targetUser.passwordHash = newPassword;
+    // Update password — never store the raw secret; derive the PBKDF2 hash.
+    targetUser.passwordHash = hashSecret(targetUser.id, newPassword);
     targetUser.resetToken = undefined;
     PUBLIC_USERS.set(targetUser.id, targetUser);
 
@@ -1103,7 +1125,7 @@ async function startServer() {
     }
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    if (hashSecret(user.id, currentPassword || '') !== user.passwordHash) {
+    if (!verifySecret(user.id, currentPassword || '', user.passwordHash)) {
       registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
       return res.status(400).json({ success: false, error: 'The current password you entered is incorrect.' });
     }
@@ -3296,7 +3318,7 @@ async function startServer() {
     if (!rl.allowed) {
       return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many verification attempts. Try again in ${Math.ceil(rl.retryInMs / 60000)} minutes.` });
     }
-    if (!password || hashSecret(user.id, password) !== user.passwordHash) {
+    if (!password || !verifySecret(user.id, password, user.passwordHash)) {
       registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
       audit(req, {
         patientUserId: user.id,
@@ -3417,7 +3439,7 @@ async function startServer() {
       if (!rl.allowed) {
         return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many verification attempts. Try again in ${Math.ceil(rl.retryInMs / 60000)} minutes.` });
       }
-      if (!password || hashSecret(user.id, String(password)) !== user.passwordHash) {
+      if (!password || !verifySecret(user.id, String(password), user.passwordHash)) {
         registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
         audit(req, {
           patientUserId: user.id,
