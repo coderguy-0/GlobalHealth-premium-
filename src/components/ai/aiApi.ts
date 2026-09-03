@@ -220,6 +220,9 @@ export interface AssistantRequestContext {
   displayName?: string;
   mrn?: string;
   authenticated: boolean;
+  /** Client-computed transparency/intent/answer-mode guidance. The server
+   * treats this as non-authoritative enhancement, not as a privileged claim. */
+  systemContext?: string;
 }
 
 /** Calls the Gemini-backed assistant endpoint with the signed-in caller's own

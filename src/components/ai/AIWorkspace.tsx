@@ -362,7 +362,11 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
   );
 
   const runAssistantReply = useCallback(
-    async (prompt: string, onDone: (content: string) => void): Promise<{ ok: true; err?: undefined; stopped?: boolean } | { ok: false; err: SendError; stopped: boolean }> => {
+    async (
+      prompt: string,
+      systemContext: string,
+      onDone: (content: string) => void
+    ): Promise<{ ok: true; err?: undefined; stopped?: boolean } | { ok: false; err: SendError; stopped: boolean }> => {
       const controller = new AbortController();
       abortRef.current = controller;
       try {
@@ -370,8 +374,8 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
           prompt,
           currentLanguage,
           isSignedIn
-            ? { displayName: user!.fullName, mrn: activePatient.mrn, authenticated: true }
-            : { authenticated: false },
+            ? { displayName: user!.fullName, mrn: activePatient.mrn, authenticated: true, systemContext }
+            : { authenticated: false, systemContext },
           controller.signal
         );
         onDone(response);
@@ -488,7 +492,7 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
 
       // General AI reply.
       setLoadingReply(true);
-      const result = await runAssistantReply(text, (content) => {
+      const result = await runAssistantReply(text, aiContext.systemContext, (content) => {
         const bot: AIMessage = {
           id: createAiMessageId('assistant'),
           role: 'assistant',
@@ -532,7 +536,14 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
     retryRef.current = null;
     setLoadingReply(true);
     const retryBotId = createAiMessageId('assistant');
-    const result = await runAssistantReply(prompt, (content) => {
+    const retryContext = buildAssistantContext(prompt, {
+      authenticated: isSignedIn,
+      displayName,
+      mrn: activePatient.mrn,
+      language: currentLanguage,
+      recentTopics: messages.slice(-6).map((m) => m.content),
+    });
+    const result = await runAssistantReply(prompt, retryContext.systemContext, (content) => {
       // Replace the failed placeholder with the real reply.
       if (isSignedIn) {
         setActiveUserConversation((prev) => {

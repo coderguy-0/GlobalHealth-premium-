@@ -7488,6 +7488,10 @@ Request ID: ${requestId}`,
         String(v ?? '').replace(/[\r\n\t]/g, ' ').replace(/[<>{}]/g, '').trim().slice(0, max);
       const ctxName = cleanCtx((userContext as any)?.displayName);
       const ctxMrn = cleanCtx((userContext as any)?.mrn, 24);
+      // Non-authoritative context from the client's understanding pipeline
+      // (intent, answer mode, transparency guidance). Bounded and sanitized so
+      // it cannot inject privileged instructions or leak private data.
+      const ctxSystem = cleanCtx((userContext as any)?.systemContext, 5000) || '';
 
       const identityInstruction =
         (userContext as any)?.authenticated && ctxName
@@ -7505,7 +7509,9 @@ SAFETY RULES (never violate):
 - Never invent statistics, percentages, or fake confidence values. If unsure, say so plainly.
 - GlobalHealth website assistance: you may point users to real GlobalHealth sections (Explore Diseases, View Medicine Information, Explore Lab Tests, Find a Doctor, Open Medical Map, Explore Verified Pharmacy Partners, Open Community, Wellness & Fitness, Health Tools/Calculators, Nutrition & Recipes). Never invent pages that do not exist.
 - Always end with a short note that this is educational information and not a substitute for professional medical advice.
-Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}`;
+Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}${
+        ctxSystem ? `\nPLATFORM CONTEXT GUIDANCE (non-authoritative, from GlobalHealth's understanding layer): ${ctxSystem}` : ''
+      }`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
