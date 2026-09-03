@@ -14,13 +14,15 @@ import {
   RotateCcw,
   LayoutList,
   Trash,
-  Download,
+  FileText,
+  FileJson,
+  Printer,
   Share2,
   Link2,
 } from 'lucide-react';
 import type { AIConversationSummary, AIHistoryGroupKey, AIHistoryFilter } from './types';
 import { AI_HISTORY_GROUP_LABELS } from './types';
-import type { AIExportFormat } from './aiApi';
+import type { AIChatExportAction } from './aiApi';
 import { AIErrorState, type AIErrorKind } from './AIErrorState';
 
 interface AIConversationSidebarProps {
@@ -44,7 +46,7 @@ interface AIConversationSidebarProps {
   onPermanentDelete: (id: string) => void;
   onDeleteAll: () => void;
   onSaveSession: () => void;
-  onExportChat?: (format: AIExportFormat) => void;
+  onExportChat?: (format: AIChatExportAction) => void;
   onShareChat?: () => void;
   shareUrl?: string | null;
   onRevokeShare?: () => void;
@@ -215,7 +217,7 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
               disabled={!onExportChat}
               className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
             >
-              <Download className="h-3.5 w-3.5" aria-hidden="true" /> Export
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" /> TXT
             </button>
             <button
               type="button"
@@ -224,6 +226,22 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
               className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
             >
               <Share2 className="h-3.5 w-3.5" aria-hidden="true" /> Share
+            </button>
+            <button
+              type="button"
+              onClick={() => onExportChat?.('json')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <FileJson className="h-3.5 w-3.5" aria-hidden="true" /> JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => onExportChat?.('pdf')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <Printer className="h-3.5 w-3.5" aria-hidden="true" /> PDF
             </button>
           </div>
           {shareUrl && (

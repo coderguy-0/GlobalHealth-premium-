@@ -162,6 +162,9 @@ export async function appendMessage(conversationId: string, message: AIMessage):
 }
 
 export type AIExportFormat = 'text' | 'json';
+/** UI export choices. `pdf` uses a print-ready browser view from the text
+ * export and lets the user save/print it as PDF. */
+export type AIChatExportAction = AIExportFormat | 'pdf';
 
 export interface AIExportResult {
   format: AIExportFormat;
@@ -214,6 +217,29 @@ export function downloadChatExport(result: AIExportResult): void {
   link.click();
   link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 2500);
+}
+
+/** Opens a print-ready view of the user's own chat so they can save it as PDF
+ * from the browser print dialog. Content is kept local to this tab. */
+export function openChatPdf(result: AIExportResult): void {
+  const safe = result.content
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br/>');
+  const win = window.open('', '_blank', 'noopener,noreferrer');
+  if (!win) return;
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"/><title>${result.filename}</title><style>
+    body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#17212b;margin:32px;line-height:1.5}
+    h1{font-size:20px} .meta{color:#5f6b76;font-size:12px;margin-bottom:20px}
+    .msg{margin-bottom:16px;white-space:normal} .you{font-weight:700;color:#123b5d}
+    @media print{body{margin:12mm}}</style></head><body>`);
+  win.document.write(`<h1>${result.filename}</h1><div class="meta">GlobalHealth AI conversation export</div>`);
+  win.document.write(`<div class="msg">${safe}</div>`);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  window.setTimeout(() => win.print(), 350);
 }
 
 export interface AssistantRequestContext {

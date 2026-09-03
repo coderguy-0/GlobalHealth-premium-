@@ -19,6 +19,7 @@ import {
   exportConversation,
   getConversation,
   listConversations,
+  openChatPdf,
   permanentlyDeleteConversation,
   renameConversation,
   requestAssistantResponse,
@@ -26,6 +27,7 @@ import {
   revokeConversationShare,
   setConversationArchived,
   setConversationSaved,
+  type AIChatExportAction,
   type AIExportFormat,
   type AIExportResult,
   type AIShareLink,
@@ -34,6 +36,7 @@ import {
 } from '../components/ai/aiApi';
 
 export type {
+  AIChatExportAction,
   AIExportFormat,
   AIExportResult,
   AIShareLink,
@@ -51,6 +54,7 @@ export const aiChat = {
   exportConversation,
   getConversation,
   listConversations,
+  openChatPdf,
   permanentlyDeleteConversation,
   renameConversation,
   requestAssistantResponse,

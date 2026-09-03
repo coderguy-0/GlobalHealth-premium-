@@ -762,11 +762,16 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({ currentLanguage, initi
   }, [historyFilter, historyQuery, refreshSummaries]);
 
   const handleExportChat = useCallback(
-    async (format: 'text' | 'json') => {
+    async (format: 'text' | 'json' | 'pdf') => {
       if (!activeId) return;
       try {
-        const result = await aiChat.exportConversation(activeId, format);
-        aiChat.downloadChatExport(result);
+        if (format === 'pdf') {
+          const result = await aiChat.exportConversation(activeId, 'text');
+          aiChat.openChatPdf(result);
+        } else {
+          const result = await aiChat.exportConversation(activeId, format);
+          aiChat.downloadChatExport(result);
+        }
       } catch (err) {
         setHistoryError(toErrorKind(err));
       }
