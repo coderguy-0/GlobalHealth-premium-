@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useDoctorPortal } from './doctorPortalData';
 
 /* ============================================================================
    Doctor Portal — clinical workspace data, seed data and actions.
@@ -356,10 +357,15 @@ export const useClinicalWorkspace = (): ClinicalWorkspaceState => {
 };
 
 export const ClinicalWorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { doctor, addAuditEvent } = useDoctorPortal();
   const [patients, setPatients] = useState<PatientClinical[]>(seedPatients);
   const [consultations, setConsultations] = useState<Consultation[]>(seedConsultations);
   const [billing, setBilling] = useState<BillingTransaction[]>(seedBilling);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  const audit = useCallback((action: Parameters<typeof addAuditEvent>[0]['action'], resourceId: string, patientId: string | null, detail?: string, outcome: 'success' | 'denied' | 'blocked' = 'success') => {
+    addAuditEvent({ actorId: doctor.id, actorRole: 'DOCTOR', action, resourceId, resourceType: 'CLINICAL', patientId, detail, outcome });
+  }, [addAuditEvent, doctor.id]);
 
   const patchPatient = useCallback((id: string, patch: Partial<PatientClinical> | ((p: PatientClinical) => Partial<PatientClinical>)) => {
     setPatients((prev) => prev.map((p) => (p.id === id ? { ...p, ...(typeof patch === 'function' ? patch(p) : patch) } : p)));
@@ -373,7 +379,8 @@ export const ClinicalWorkspaceProvider: React.FC<{ children: React.ReactNode }> 
       consentReason: reason,
       consentHistory: [{ date: today(), doctor: 'Dr. Priya Nair', action: `Requested ${scopes.join(', ')}`, result: 'Pending patient decision' }, ...p.consentHistory],
     }));
-  }, [patchPatient]);
+    audit('CONSENT_REQUEST', patientId, patientId, reason);
+  }, [patchPatient, audit]);
 
   const respondConsent = useCallback((patientId: string, result: 'granted' | 'denied') => {
     patchPatient(patientId, (p) => ({
@@ -381,47 +388,59 @@ export const ClinicalWorkspaceProvider: React.FC<{ children: React.ReactNode }> 
       consentedScopes: result === 'granted' ? ['basic', 'appointments', 'history', 'labs', 'imaging', 'prescriptions', 'documents'] : [],
       consentHistory: [{ date: today(), doctor: 'Dr. Priya Nair', action: result === 'granted' ? 'Granted record access' : 'Denied record access', result: result === 'granted' ? 'Approved by patient' : 'Denied by patient' }, ...p.consentHistory],
     }));
-  }, [patchPatient]);
+    audit(result === 'granted' ? 'CONSENT_APPROVED' : 'CONSENT_DENIED', patientId, patientId);
+  }, [patchPatient, audit]);
 
   const addVitals = useCallback((patientId: string, v: Omit<VitalsRecord, 'id'>) => {
     patchPatient(patientId, (p) => ({ vitals: [{ ...v, id: `v-${Date.now()}` }, ...p.vitals] }));
-  }, [patchPatient]);
+    audit('VITALS_RECORDED', patientId, patientId, `${v.bp} · HR ${v.hr}`);
+  }, [patchPatient, audit]);
 
   const addNote = useCallback((patientId: string, n: Omit<ClinicalNote, 'id' | 'date'>) => {
     patchPatient(patientId, (p) => ({ notes: [{ ...n, id: `n-${Date.now()}`, date: today() }, ...p.notes] }));
-  }, [patchPatient]);
+    audit('CLINICAL_NOTE_CREATED', patientId, patientId, n.title);
+  }, [patchPatient, audit]);
 
   const addPrescription = useCallback((patientId: string, p: Omit<Prescription, 'id' | 'patientId'>) => {
     patchPatient(patientId, (p2) => ({ prescriptions: [{ ...p, id: `rx-${Date.now()}`, patientId }, ...p2.prescriptions] }));
-  }, [patchPatient]);
+    audit('PRESCRIPTION_CREATED', p.rxId, patientId, p.status);
+  }, [patchPatient, audit]);
 
   const updatePrescriptionStatus = useCallback((id: string, status: PrescriptionStatus) => {
     setPatients((prev) => prev.map((p) => ({ ...p, prescriptions: p.prescriptions.map((rx) => (rx.id === id ? { ...rx, status } : rx)) })));
-  }, []);
+    audit(status === 'signed' ? 'PRESCRIPTION_SIGNED' : 'PRESCRIPTION_SENT_PHARMACY', id, null);
+  }, [audit]);
 
   const addLabOrder = useCallback((patientId: string, l: Omit<LabOrder, 'id' | 'patientId' | 'status'>) => {
     patchPatient(patientId, (p) => ({ labs: [{ ...l, id: `lab-${Date.now()}`, patientId, status: 'ordered' }, ...p.labs] }));
-  }, [patchPatient]);
+    audit('LAB_ORDER_CREATED', l.test, patientId, `${l.category} · ${l.priority}`);
+  }, [patchPatient, audit]);
 
   const reviewLab = useCallback((id: string, clinicalNote: string) => {
     setPatients((prev) => prev.map((p) => ({ ...p, labs: p.labs.map((l) => (l.id === id ? { ...l, status: 'reviewed', clinicalNote } : l)) })));
-  }, []);
+    audit('LAB_REVIEWED', id, null, clinicalNote);
+  }, [audit]);
 
   const addImaging = useCallback((patientId: string, i: Omit<ImagingStudy, 'id' | 'patientId' | 'status' | 'reviewed'>) => {
     patchPatient(patientId, (p) => ({ imaging: [{ ...i, id: `img-${Date.now()}`, patientId, status: 'ordered', reviewed: false }, ...p.imaging] }));
-  }, [patchPatient]);
+    audit('IMAGING_ORDER_CREATED', i.title, patientId, `${i.modality}`);
+  }, [patchPatient, audit]);
 
   const reviewImaging = useCallback((id: string, clinicalNote: string) => {
     setPatients((prev) => prev.map((p) => ({ ...p, imaging: p.imaging.map((i) => (i.id === id ? { ...i, status: 'reviewed', reviewed: true, clinicalNote } : i)) })));
-  }, []);
+    audit('IMAGING_REVIEWED', id, null, clinicalNote);
+  }, [audit]);
 
   const saveConsultation = useCallback((c: Omit<Consultation, 'id'>) => {
     setConsultations((prev) => [{ ...c, id: `con-${Date.now()}` }, ...prev]);
-  }, []);
+    audit(c.status === 'completed' ? 'CONSULTATION_COMPLETED' : 'CONSULTATION_CREATED', c.patientId, c.patientId, c.complaint || c.type);
+  }, [audit]);
 
   const addBilling = useCallback((b: Omit<BillingTransaction, 'id'>) => {
-    setBilling((prev) => [{ ...b, id: `bill-${Date.now()}` }, ...prev]);
-  }, []);
+    const id = `bill-${Date.now()}`;
+    setBilling((prev) => [{ ...b, id }, ...prev]);
+    audit('BILLING_CHANGED', id, b.patientId, `${b.service} ₹${b.amount}`);
+  }, [audit]);
 
   const value = useMemo<ClinicalWorkspaceState>(() => ({
     patients, consultations, billing, selectedPatientId,

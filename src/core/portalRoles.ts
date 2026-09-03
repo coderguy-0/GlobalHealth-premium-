@@ -1,0 +1,207 @@
+/* ============================================================================
+   GlobalHealth portal RBAC foundation.
+
+   Phase 0 contract:
+   - Access is controlled by role + permission grants, never by hard-coding
+     which page a user can open.
+   - Every protected resource is also checked against patient authorization
+     (consent / clinical relationship) at the point of access.
+   - The same permission catalog is used by Doctor, Hospital, Pharmacy,
+     Laboratory, Imaging, Patient and Admin portals.
+
+   Replace the in-memory grants with a backend permission service later without
+   changing consuming components.
+   ========================================================================== */
+
+export type PortalRole =
+  | 'DOCTOR'
+  | 'PATIENT'
+  | 'HOSPITAL'
+  | 'PHARMACY_PARTNER'
+  | 'LABORATORY'
+  | 'IMAGING_PROVIDER'
+  | 'ADMIN';
+
+export type Permission =
+  | 'portal.access'
+  | 'portal.audit.read'
+  | 'doctor.dashboard.view'
+  | 'doctor.patient.search'
+  | 'doctor.patient.read'
+  | 'doctor.patient.manage'
+  | 'doctor.patient.consent_request'
+  | 'doctor.patient.consent_revoke'
+  | 'doctor.ehr.read'
+  | 'doctor.ehr.write'
+  | 'doctor.appointment.manage'
+  | 'doctor.schedule.manage'
+  | 'doctor.consultation.create'
+  | 'doctor.consultation.complete'
+  | 'doctor.prescription.create'
+  | 'doctor.prescription.sign'
+  | 'doctor.prescription.send_pharmacy'
+  | 'doctor.lab.order'
+  | 'doctor.lab.review'
+  | 'doctor.imaging.order'
+  | 'doctor.imaging.review'
+  | 'doctor.referral.create'
+  | 'doctor.referral.update'
+  | 'doctor.messaging.send'
+  | 'doctor.document.read'
+  | 'doctor.document.upload'
+  | 'doctor.notifications.read'
+  | 'doctor.billing.read'
+  | 'doctor.profile.manage'
+  | 'doctor.security.manage'
+  | 'doctor.audit.read'
+  | 'doctor.analytics.view'
+  | 'doctor.ai.use'
+  | 'patient.profile.read'
+  | 'patient.consent.grant'
+  | 'hospital.patient.link'
+  | 'pharmacy.prescription.receive'
+  | 'lab.order.receive'
+  | 'lab.result.upload'
+  | 'imaging.order.receive'
+  | 'imaging.result.upload'
+  | 'admin.doctor.verify'
+  | 'admin.doctor.suspend'
+  | 'admin.audit.read'
+  | 'admin.support.review';
+
+export const ROLE_LABEL: Record<PortalRole, string> = {
+  DOCTOR: 'Doctor',
+  PATIENT: 'Patient',
+  HOSPITAL: 'Hospital',
+  PHARMACY_PARTNER: 'Pharmacy Partner',
+  LABORATORY: 'Laboratory',
+  IMAGING_PROVIDER: 'Imaging Provider',
+  ADMIN: 'Administrator',
+};
+
+export const DOCTOR_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'doctor.dashboard.view',
+  'doctor.patient.search',
+  'doctor.patient.read',
+  'doctor.patient.manage',
+  'doctor.patient.consent_request',
+  'doctor.patient.consent_revoke',
+  'doctor.ehr.read',
+  'doctor.ehr.write',
+  'doctor.appointment.manage',
+  'doctor.schedule.manage',
+  'doctor.consultation.create',
+  'doctor.consultation.complete',
+  'doctor.prescription.create',
+  'doctor.prescription.sign',
+  'doctor.prescription.send_pharmacy',
+  'doctor.lab.order',
+  'doctor.lab.review',
+  'doctor.imaging.order',
+  'doctor.imaging.review',
+  'doctor.referral.create',
+  'doctor.referral.update',
+  'doctor.messaging.send',
+  'doctor.document.read',
+  'doctor.document.upload',
+  'doctor.notifications.read',
+  'doctor.billing.read',
+  'doctor.profile.manage',
+  'doctor.security.manage',
+  'doctor.audit.read',
+  'doctor.analytics.view',
+  'doctor.ai.use',
+];
+
+export const PATIENT_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'patient.profile.read',
+  'patient.consent.grant',
+];
+
+export const HOSPITAL_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'hospital.patient.link',
+  'doctor.appointment.manage',
+  'doctor.notifications.read',
+  'doctor.analytics.view',
+];
+
+export const PHARMACY_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'pharmacy.prescription.receive',
+  'doctor.notifications.read',
+];
+
+export const LAB_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'lab.order.receive',
+  'lab.result.upload',
+  'doctor.notifications.read',
+];
+
+export const IMAGING_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'imaging.order.receive',
+  'imaging.result.upload',
+  'doctor.notifications.read',
+];
+
+export const ADMIN_PERMISSIONS: Permission[] = [
+  'portal.access',
+  'portal.audit.read',
+  'admin.doctor.verify',
+  'admin.doctor.suspend',
+  'admin.audit.read',
+  'admin.support.review',
+  'doctor.notifications.read',
+];
+
+export const ROLE_PERMISSIONS: Record<PortalRole, Permission[]> = {
+  DOCTOR: DOCTOR_PERMISSIONS,
+  PATIENT: PATIENT_PERMISSIONS,
+  HOSPITAL: HOSPITAL_PERMISSIONS,
+  PHARMACY_PARTNER: PHARMACY_PERMISSIONS,
+  LABORATORY: LAB_PERMISSIONS,
+  IMAGING_PROVIDER: IMAGING_PERMISSIONS,
+  ADMIN: ADMIN_PERMISSIONS,
+};
+
+export function hasPermission(role: PortalRole | null | undefined, permission: Permission): boolean {
+  if (!role) return false;
+  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
+}
+
+export function hasAnyPermission(role: PortalRole | null | undefined, permissions: Permission[]): boolean {
+  if (!role) return false;
+  return permissions.some((p) => hasPermission(role, p));
+}
+
+export function assertPermission(role: PortalRole | null | undefined, permission: Permission): boolean {
+  return hasPermission(role, permission);
+}
+
+/**
+ * Patient-level authorization gate. A physician can access a patient record
+ * only when a clinical relationship exists AND consent is granted for the
+ * requested scope — or an explicit urgent/critical safety path is required.
+ */
+export interface PatientAuthorization {
+  role: PortalRole | null;
+  relationship: 'none' | 'own_patient' | 'consulting' | 'emergency';
+  consentStatus: 'not_requested' | 'pending' | 'granted' | 'denied' | 'expired';
+  scope: 'basic' | 'history' | 'labs' | 'imaging' | 'prescriptions' | 'documents';
+}
+
+export function canAccessPatientData(auth: PatientAuthorization): boolean {
+  if (!auth.role) return false;
+  if (auth.role === 'ADMIN') return hasPermission('ADMIN', 'admin.audit.read');
+  if (auth.role !== 'DOCTOR') return false;
+  if (auth.relationship === 'emergency') return true; // limited safety-only access, audited separately
+  if (auth.relationship === 'none') return false;
+  if (auth.consentStatus === 'denied' || auth.consentStatus === 'expired') return false;
+  if (auth.consentStatus === 'not_requested' && auth.scope !== 'basic') return false;
+  if (auth.consentStatus === 'pending' && auth.scope !== 'basic') return false;
+  return true;
+}

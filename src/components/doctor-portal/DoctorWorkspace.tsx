@@ -22,6 +22,7 @@ import { DoctorLabs } from './DoctorLabs';
 import { DoctorImaging } from './DoctorImaging';
 import { DoctorBilling } from './DoctorBilling';
 import { DoctorAIAssistant } from './DoctorAIAssistant';
+import { PermissionGate, AccessDenied } from '../portal/PermissionGate';
 
 interface DoctorWorkspaceProps {
   onBackToGlobalHealth: () => void;
@@ -273,31 +274,33 @@ export const DoctorWorkspace: React.FC<DoctorWorkspaceProps> = ({ onBackToGlobal
         {/* Main content */}
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
-            <DoctorProfileBanner />
-            {view === 'dashboard' && <DoctorDashboard onNavigate={go} />}
-            {view === 'patients' && <DoctorPatients onNavigate={go} />}
-            {view === 'consultations' && <DoctorConsultations onNavigate={go} />}
-            {view === 'prescriptions' && <DoctorPrescriptions onNavigate={go} />}
-            {view === 'labs' && <DoctorLabs />}
-            {view === 'imaging' && <DoctorImaging />}
-            {view === 'billing' && <DoctorBilling />}
-            {view === 'appointments' && <DoctorAppointments />}
-            {view === 'calendar' && <DoctorAppointments calendarMode />}
-            {view === 'availability' && <DoctorAvailability />}
-            {view === 'profile' && <DoctorProfileView />}
-            {view === 'credentials' && <DoctorCredentials />}
-            {view === 'affiliations' && <DoctorAffiliations />}
-            {view === 'referrals' && <DoctorCommunication section="referrals" />}
-            {view === 'documents' && <DoctorCommunication section="documents" />}
-            {view === 'messages' && <DoctorCommunication section="messages" />}
-            {view === 'notifications' && <DoctorCommunication section="notifications" />}
-            {view === 'insights' && <DoctorCommunication section="insights" />}
-            {view === 'security' && <DoctorSecurity section="security" />}
-            {view === 'sessions' && <DoctorSecurity section="sessions" />}
-            {view === 'delegated' && <DoctorSecurity section="delegated" />}
-            {view === 'audit' && <DoctorSecurity section="audit" />}
-            {view === 'help' && <DoctorHelp section="help" />}
-            {view === 'support' && <DoctorHelp section="support" />}
+            <PermissionGate permission="doctor.dashboard.view" fallback={<AccessDenied title="Doctor Workspace restricted" message="Your current role does not permit access to the Doctor Workspace. Contact your organization administrator." />}>
+              <DoctorProfileBanner />
+              {view === 'dashboard' && <DoctorDashboard onNavigate={go} />}
+              {view === 'patients' && <PermissionGate permission="doctor.patient.read"><DoctorPatients onNavigate={go} /></PermissionGate>}
+              {view === 'consultations' && <PermissionGate permission="doctor.consultation.create"><DoctorConsultations onNavigate={go} /></PermissionGate>}
+              {view === 'prescriptions' && <PermissionGate permission="doctor.prescription.create"><DoctorPrescriptions onNavigate={go} /></PermissionGate>}
+              {view === 'labs' && <PermissionGate permission="doctor.lab.order"><DoctorLabs /></PermissionGate>}
+              {view === 'imaging' && <PermissionGate permission="doctor.imaging.order"><DoctorImaging /></PermissionGate>}
+              {view === 'billing' && <PermissionGate permission="doctor.billing.read"><DoctorBilling /></PermissionGate>}
+              {view === 'appointments' && <PermissionGate permission="doctor.appointment.manage"><DoctorAppointments /></PermissionGate>}
+              {view === 'calendar' && <PermissionGate permission="doctor.schedule.manage"><DoctorAppointments calendarMode /></PermissionGate>}
+              {view === 'availability' && <PermissionGate permission="doctor.schedule.manage"><DoctorAvailability /></PermissionGate>}
+              {view === 'profile' && <PermissionGate permission="doctor.profile.manage"><DoctorProfileView /></PermissionGate>}
+              {view === 'credentials' && <PermissionGate permission="doctor.profile.manage"><DoctorCredentials /></PermissionGate>}
+              {view === 'affiliations' && <PermissionGate permission="doctor.profile.manage"><DoctorAffiliations /></PermissionGate>}
+              {view === 'referrals' && <PermissionGate permission="doctor.referral.create"><DoctorCommunication section="referrals" /></PermissionGate>}
+              {view === 'documents' && <PermissionGate permission="doctor.document.read"><DoctorCommunication section="documents" /></PermissionGate>}
+              {view === 'messages' && <PermissionGate permission="doctor.messaging.send"><DoctorCommunication section="messages" /></PermissionGate>}
+              {view === 'notifications' && <PermissionGate permission="doctor.notifications.read"><DoctorCommunication section="notifications" /></PermissionGate>}
+              {view === 'insights' && <PermissionGate permission="doctor.analytics.view"><DoctorCommunication section="insights" /></PermissionGate>}
+              {view === 'security' && <PermissionGate permission="doctor.security.manage"><DoctorSecurity section="security" /></PermissionGate>}
+              {view === 'sessions' && <PermissionGate permission="doctor.security.manage"><DoctorSecurity section="sessions" /></PermissionGate>}
+              {view === 'delegated' && <PermissionGate permission="doctor.security.manage"><DoctorSecurity section="delegated" /></PermissionGate>}
+              {view === 'audit' && <PermissionGate permission="doctor.audit.read"><DoctorSecurity section="audit" /></PermissionGate>}
+              {view === 'help' && <DoctorHelp section="help" />}
+              {view === 'support' && <DoctorHelp section="support" />}
+            </PermissionGate>
           </div>
         </main>
       </div>
