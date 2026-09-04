@@ -33,7 +33,7 @@ interface AuthPageProps {
 
 interface AvatarState {
   expression: AvatarExpression;
-  message: string | null;
+  message: string | null | undefined;
 }
 
 /** The avatar's default mood for each authentication sub-view. */
@@ -76,7 +76,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     userId: string;
     contactTarget?: string;
     type: 'email' | 'phone';
-    devCode?: string;
   } | null>(null);
 
   // Reset password token handover
@@ -334,8 +333,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       setVerificationData({
                         userId: data.userId,
                         contactTarget: data.email,
-                        type: data.type,
-                        devCode: data.devCode
+                        type: data.type
                       });
                       setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
                     }}
@@ -371,10 +369,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
                 {(activeSubView === 'verify-email' || activeSubView === 'verify-phone') && (
                   <VerifyEmailPhoneForm
-                    userId={verificationData?.userId || 'usr-sarah-jenkins'}
+                    userId={verificationData?.userId || ''}
                     contactTarget={verificationData?.contactTarget || 'your registered email/number'}
                     type={activeSubView === 'verify-phone' ? 'phone' : 'email'}
-                    devCode={verificationData?.devCode}
                     onSuccess={(user, token) => {
                       onLoginSuccess(user, token);
                       onNavigateToDashboard();

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { createAuditEvent, AuditEventInput } from '../../core/audit';
+import { DOCTOR_PERMISSIONS, Permission } from '../../core/portalRoles';
 
 /* ============================================================================
    Doctor Portal — data model, seed data, mock service and workspace store.
@@ -478,13 +480,15 @@ export const doctorPortalApi = {
 
   async signup() {
     await wait();
-    return { success: true as const, doctor: null as null, verificationRequired: true, devCode: '482913' };
+    return { success: true as const, doctor: null as null, verificationRequired: true };
   },
 
-  async verify(code: string) {
+  async verify(_code: string) {
     await wait();
-    if (code === '482913' || code === '123456') return { success: true as const };
-    return { success: false as const, error: 'The verification code is invalid or has expired.' };
+    // Local verification is intentionally non-authoritative. The server-side
+    // verification flow must confirm any real activation; this guard prevents
+    // a universal/demo code from ever completing a client-side sign-up.
+    return { success: false as const, error: 'This sign-up must be completed through the server-verified activation flow.' };
   },
 
   async forgot() {
@@ -505,12 +509,17 @@ export const doctorPortalApi = {
 export type WorkspaceView =
   | 'dashboard' | 'calendar' | 'availability' | 'appointments'
   | 'profile' | 'credentials' | 'affiliations'
-  | 'patients' | 'messages' | 'notifications' | 'referrals' | 'documents'
+  | 'patients' | 'consultations' | 'prescriptions' | 'labs' | 'imaging' | 'billing'
+  | 'messages' | 'notifications' | 'referrals' | 'documents'
   | 'security' | 'sessions' | 'delegated' | 'audit'
   | 'insights' | 'help' | 'support';
 
 interface DoctorPortalState {
   doctor: DoctorProfile;
+  /** Phase 0 RBAC — the Doctor Portal always acts as the DOCTOR role. */
+  actorRole: 'DOCTOR';
+  /** The permission set granted to the current role. */
+  permissions: Permission[];
   activeFacilityId: string;
   credentials: Credential[];
   affiliations: Affiliation[];
@@ -550,6 +559,7 @@ interface DoctorPortalState {
   addDelegatedAccess: (d: Omit<DelegatedAccess, 'id' | 'createdAt' | 'status'>) => void;
   revokeDelegatedAccess: (id: string) => void;
   addTicket: (t: Omit<SupportTicket, 'id' | 'createdAt' | 'status'>) => void;
+  addAuditEvent: (event: AuditEventInput) => void;
 }
 
 const DoctorPortalContext = createContext<DoctorPortalState | null>(null);
@@ -572,7 +582,7 @@ export const DoctorPortalProvider: React.FC<{ children: React.ReactNode; initial
   const [notifications, setNotifications] = useState<NotificationItem[]>(seedNotifications);
   const [referrals, setReferrals] = useState<Referral[]>(seedReferrals);
   const [documents, setDocuments] = useState<PortalDocument[]>(seedDocuments);
-  const [auditEvents] = useState<AuditEvent[]>(seedAudit);
+  const [auditEvents, setAuditEvents] = useState<AuditEvent[]>(seedAudit);
   const [sessions, setSessions] = useState<Session[]>(seedSessions);
   const [delegated, setDelegated] = useState<DelegatedAccess[]>(seedDelegatedAccess);
   const [tickets, setTickets] = useState<SupportTicket[]>(seedTickets);
@@ -694,8 +704,29 @@ export const DoctorPortalProvider: React.FC<{ children: React.ReactNode; initial
     setTickets((prev) => [{ ...t, id: `tkt-${Date.now()}`, createdAt: new Date().toISOString().slice(0, 10), status: 'open' }, ...prev]);
   }, []);
 
+  const addAuditEvent = useCallback((event: AuditEventInput) => {
+    const ev = createAuditEvent(event);
+    setAuditEvents((prev) => [
+      {
+        id: ev.id,
+        actor: ev.actorRole || ev.actorId,
+        action: ev.action,
+        resource: ev.resourceId || '',
+        ip: ev.ip || '—',
+        location: ev.location || 'GlobalHealth platform',
+        date: ev.timestamp.slice(0, 10),
+        time: ev.timestamp.slice(11, 16),
+        outcome: ev.outcome || 'success',
+      },
+      ...prev,
+    ]);
+  }, []);
+
   const value = useMemo<DoctorPortalState>(() => ({
-    doctor, activeFacilityId, credentials, affiliations, availability, exceptions,
+    doctor,
+    actorRole: 'DOCTOR',
+    permissions: DOCTOR_PERMISSIONS,
+    activeFacilityId, credentials, affiliations, availability, exceptions,
     appointments, messages, notifications, referrals, documents, auditEvents, sessions,
     delegated, tickets, security, notificationPrefs,
     setDoctor, setActiveFacility, updateProfile, updateVerificationStatus, addCredential,
@@ -703,7 +734,7 @@ export const DoctorPortalProvider: React.FC<{ children: React.ReactNode; initial
     markAllNotificationsRead, toggleNotificationPref, sendMessage, markMessageRead,
     addDocument, addAvailabilityRule, removeAvailabilityRule, addAvailabilityException,
     removeAvailabilityException, setMfaEnabled, revokeSession, addDelegatedAccess,
-    revokeDelegatedAccess, addTicket,
+    revokeDelegatedAccess, addTicket, addAuditEvent,
   }), [doctor, activeFacilityId, credentials, affiliations, availability, exceptions,
     appointments, messages, notifications, referrals, documents, auditEvents, sessions,
     delegated, tickets, security, notificationPrefs,
@@ -711,7 +742,7 @@ export const DoctorPortalProvider: React.FC<{ children: React.ReactNode; initial
     addReferral, requestAffiliation, markNotificationRead, markAllNotificationsRead,
     toggleNotificationPref, sendMessage, markMessageRead, addDocument, addAvailabilityRule,
     removeAvailabilityRule, addAvailabilityException, removeAvailabilityException,
-    setMfaEnabled, revokeSession, addDelegatedAccess, revokeDelegatedAccess, addTicket]);
+    setMfaEnabled, revokeSession, addDelegatedAccess, revokeDelegatedAccess, addTicket, addAuditEvent]);
 
   return <DoctorPortalContext.Provider value={value}>{children}</DoctorPortalContext.Provider>;
 };

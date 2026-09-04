@@ -20,6 +20,9 @@ export interface AIConversation {
   messages: AIMessage[];
   createdAt: number;
   updatedAt: number;
+  isSaved?: boolean;
+  isArchived?: boolean;
+  isTrashed?: boolean;
 }
 
 /** Lightweight list item used by the history sidebar. */
@@ -29,7 +32,12 @@ export interface AIConversationSummary {
   messageCount: number;
   createdAt: number;
   updatedAt: number;
+  isSaved?: boolean;
+  isArchived?: boolean;
+  isTrashed?: boolean;
 }
+
+export type AIHistoryFilter = 'recent' | 'saved' | 'archived' | 'trash';
 
 export type AIHistoryGroupKey = 'today' | 'yesterday' | 'previous';
 

@@ -179,7 +179,7 @@ interface PatientEhrContextType {
 
   // Consent & Sharing
   consents: AccessConsentItem[];
-  grantConsent: (consent: Omit<AccessConsentItem, 'id' | 'status' | 'grantedDate'>) => void;
+  grantConsent: (consent: Omit<AccessConsentItem, 'id' | 'status' | 'grantedDate' | 'token'>, token?: string) => void;
   revokeConsent: (id: string) => void;
 
   // Audit Logs & Notifications
@@ -1088,14 +1088,14 @@ export const PatientEhrProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   // 11. Consents & Sharing
-  const grantConsent = (consent: Omit<AccessConsentItem, 'id' | 'status' | 'grantedDate'>) => {
+  const grantConsent = (consent: Omit<AccessConsentItem, 'id' | 'status' | 'grantedDate' | 'token'>, token?: string) => {
     const today = new Date().toISOString().split('T')[0];
     const newConsent: AccessConsentItem = {
       ...consent,
       id: `cst-${Date.now()}`,
       status: 'Active',
       grantedDate: today,
-      token: `GH-TOKEN-${Math.random().toString(36).substr(2, 8).toUpperCase()}`
+      token: token || undefined
     };
     setConsents((prev) => [newConsent, ...prev]);
     addAuditLog(activePatient.name, 'Patient', 'Granted EHR Access Consent', `Shared health record with ${consent.granteeName} (${consent.scope.join(', ')}).`, 'Share');

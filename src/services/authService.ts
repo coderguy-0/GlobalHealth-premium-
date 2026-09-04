@@ -80,6 +80,22 @@ export async function loginUser(identifier: string, password: string, rememberMe
   }
 }
 
+export async function verifyTwoFactorLogin(challengeId: string, code: string) {
+  try {
+    const res = await fetch('/api/auth/2fa/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId, code })
+    });
+    return await res.json();
+  } catch (err: any) {
+    return {
+      success: false,
+      error: 'Unable to verify the two-factor code. Please try again.'
+    };
+  }
+}
+
 export async function signupUser(formData: {
   firstName: string;
   lastName: string;

@@ -160,7 +160,7 @@ export const DiseaseDirectoryPage: React.FC<DiseaseDirectoryPageProps> = ({
                   setView('all');
                 } else if (kind === 'symptom') {
                   // Symptom → specialty navigation aid (never a diagnosis).
-                  setFilters((f) => ({ ...f, specialty: specialtyForSymptom(label) }));
+                  setFilters((f) => ({ ...f, specialty: specialtyForSymptom(label) || null }));
                   setView('all');
                 } else {
                   setSearch(label);

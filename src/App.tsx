@@ -261,7 +261,9 @@ export default function App() {
   const [hasOpenedAssistant, setHasOpenedAssistant] = useState(false);
   // Which view the dedicated authentication page (#auth) opens on.
   const [authInitialView, setAuthInitialView] = useState<AuthSubView>('login');
-  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('login');
+  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('landing');
+  // Which section of Activity & Security History the account menu requested.
+  const [historyInitialTab, setHistoryInitialTab] = useState<string>('all');
   // Editorial staff unlock for the News Management workspace (validated via
   // newsAuthService — independent of the patient account gate).
   const [newsStaffUnlocked, setNewsStaffUnlocked] = useState(false);
@@ -391,10 +393,11 @@ export default function App() {
     if (isOverlayTab(tab)) {
       if (tab === 'pharmacy-portal') {
         // Deep links from the Medicines directory keep their destination;
-        // everywhere else the partner portal opens on its sign-in screen.
+        // everywhere else the partner portal opens on its public directory so
+        // the normal user experience never starts at a separate login.
         const deepLink = pharmacyDeepLinkRef.current;
         pharmacyDeepLinkRef.current = null;
-        setPharmacyPortalScreen(deepLink || 'login');
+        setPharmacyPortalScreen(deepLink || 'landing');
       }
       setOverlayTab(tab);
       writeHash(tab);
@@ -464,7 +467,7 @@ export default function App() {
 
   // Explicit "Log In" / "Sign Up" CTAs open the dedicated full-page
   // authentication experience (#auth) instead of the inline gate.
-  const handleOpenAuthPage = (mode: 'login' | 'signup' = 'login') => {
+  const handleOpenAuthPage = (mode: AuthSubView = 'login') => {
     setAuthInitialView(mode);
     setCurrentTab('auth');
   };
@@ -711,6 +714,7 @@ export default function App() {
         onOpenAuthModal={handleOpenAuthModal}
         onOpenAuthPage={handleOpenAuthPage}
         onOpenSecuritySettings={handleOpenSecuritySettings}
+        onOpenHistoryTab={setHistoryInitialTab}
         onLogout={async () => {
           await logout();
           setOverlayTab(null);
@@ -763,7 +767,7 @@ export default function App() {
         {(currentTab === 'nutrition' || currentTab === 'recipes') && (
           <NutritionLibraryView
             key={currentTab}
-            initialSection={currentTab === 'recipes' ? 'recipes' : 'foods'}
+            initialSection="recipes"
             savedIds={savedIds}
             onToggleSave={handleToggleSave}
             onRequestAuth={() => handleOpenAuthModal('login')}
@@ -871,7 +875,7 @@ export default function App() {
               initialPrompt={aiInitialPrompt}
               active={currentTab === 'ai-assistant'}
               onBack={() => setCurrentTab('home')}
-              onNavigate={handleNavTabChange}
+              onNavigate={(tab) => handleNavTabChange(tab as Parameters<typeof handleNavTabChange>[0])}
               onLogout={async () => {
                 await logout();
                 setCurrentTabState('home');
@@ -927,7 +931,7 @@ export default function App() {
         )}
         {currentTab === 'my-history' && currentUser && (
           <Suspense fallback={<RouteFallback />}>
-            <MyHistoryView />
+            <MyHistoryView initialTab={historyInitialTab as any} />
           </Suspense>
         )}
 
@@ -940,7 +944,11 @@ export default function App() {
         )}
         {currentTab === 'appointments' && currentUser && (
           <Suspense fallback={<RouteFallback />}>
-            <AppointmentsView onTabChange={setCurrentTab} />
+            <AppointmentsView
+              onTabChange={setCurrentTab}
+              isAuthenticated={!!currentUser}
+              onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
+            />
           </Suspense>
         )}
           </>
@@ -954,8 +962,13 @@ export default function App() {
       {/* Global 100-Language Selector Modal */}
       <LanguageModal />
 
-      {/* Global Authentication Gate (login / create account / access control) */}
-      <AuthGate onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }} />
+      {/* Global Authentication Gate (login / create account / access control).
+          Sign-up and password recovery intentionally stay inside the same
+          unified GlobalHealth auth flow. */}
+      <AuthGate
+        onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }}
+        onOpenForgotPassword={() => { closeGate(); handleOpenAuthPage('forgot-password'); }}
+      />
 
       {/* Session-expired overlay */}
       <SessionExpiredModal />

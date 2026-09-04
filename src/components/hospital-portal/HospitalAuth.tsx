@@ -35,7 +35,7 @@ export const HospitalAuth: React.FC<HospitalAuthProps> = ({ onBackToGlobalHealth
 
   const handleSignup = async () => {
     const res = await hospitalPortalApi.signup();
-    if (res.success) { go('verify'); setInfo(`A 6-digit verification code was sent to your email. Demo code: ${res.devCode}`); }
+    if (res.success) { go('verify'); setInfo('A 6-digit verification code was sent to your registered email.'); }
   };
 
   const handleVerify = async (code: string) => {

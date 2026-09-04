@@ -19,6 +19,7 @@ interface SessionRow {
 }
 interface AuditRow {
   auditId: string;
+  actorId?: string;
   timestamp: string;
   action: string;
   targetTitle?: string;

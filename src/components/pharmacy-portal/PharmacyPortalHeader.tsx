@@ -217,7 +217,7 @@ export const PharmacyPortalHeader: React.FC<PharmacyPortalHeaderProps> = ({
                   <button
                     onClick={() => {
                       setIsBadgeOpen(false);
-                      onNavigateTab('documents');
+                      onNavigateTab?.('documents');
                     }}
                     className="w-full py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 font-bold text-center transition text-[11px]"
                   >

@@ -140,13 +140,14 @@ export const NewsManagementLogin: React.FC<NewsManagementLoginProps> = ({ onAuth
     setBusy(true);
     setError('');
     try {
-      const r = await newsFetch<{ message: string; demoDelivery: { code: string; resetToken: string } }>('/api/news/forgot-password', {
+      const r = await newsFetch<{ message: string }>('/api/news/forgot-password', {
         method: 'POST',
         body: { email: forgotEmail.trim() },
         token: null
       });
-      setResetCode(r.demoDelivery.code);
-      setResetToken(r.demoDelivery.resetToken);
+      setNotice(r.message || 'If that account exists, a reset link has been sent.');
+      setResetCode('');
+      setResetToken('');
       setForgotSent(true);
     } catch (err: any) {
       setError(err.message || 'Could not process the reset request.');
@@ -389,11 +390,25 @@ export const NewsManagementLogin: React.FC<NewsManagementLoginProps> = ({ onAuth
                 </>
               ) : (
                 <>
-                  <div className={`rounded-xl border border-dashed px-3 py-2.5 text-[11px] ${isStandalone ? 'border-amber-500/40 bg-amber-500/10 text-amber-200' : 'border-amber-300 bg-amber-50 text-amber-800'}`}>
+                  <div className={`rounded-xl border border-dashed px-3 py-2.5 text-[11px] ${isStandalone ? 'border-slate-700 bg-slate-800/70 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
                     <Mail className="mr-1 inline h-3 w-3" />
-                    <strong>Simulated email delivery</strong> (demo): reset code{' '}
-                    <span className="font-mono font-bold">{resetCode}</span> — valid for 15 minutes.
+                    Enter the reset token and security code from the email delivered to the account address.
+                    The link is valid for 15 minutes.
                   </div>
+                  <input
+                    type="text"
+                    value={resetToken}
+                    onChange={(e) => setResetToken(e.target.value)}
+                    placeholder="Reset token from email"
+                    className={isStandalone ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-teal-500' : 'inp'}
+                  />
+                  <input
+                    type="text"
+                    value={resetCode}
+                    onChange={(e) => setResetCode(e.target.value.replace(/[^\d]/g, '').slice(0, 6))}
+                    placeholder="6-digit security code from email"
+                    className={isStandalone ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-teal-500' : 'inp'}
+                  />
                   <input
                     type="password"
                     value={newPassword}

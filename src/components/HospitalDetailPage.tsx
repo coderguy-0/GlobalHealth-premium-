@@ -49,14 +49,14 @@ export const HospitalDetailPage: React.FC<HospitalDetailPageProps> = ({ hospital
             <section className="grid gap-3 sm:grid-cols-3">
               <InfoCard icon={<Building2 className="h-4 w-4" />} label="Total beds" value={String(hospital.totalBeds)} />
               <InfoCard icon={<ShieldCheck className="h-4 w-4" />} label="ICU beds" value={String(hospital.icuBeds)} />
-              <InfoCard icon={<Award className="h-4 w-4" />} label="Accreditation" value={hospital.accreditations[0] || 'Verified'} />
+              <InfoCard icon={<Award className="h-4 w-4" />} label="Accreditation" value={(hospital.accreditations || [])[0] || 'Verified'} />
             </section>
           </div>
 
           <aside className="h-fit rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <h2 className="text-sm font-extrabold text-slate-900">Plan your visit</h2>
             <div className="mt-4 space-y-3 text-xs text-slate-600">
-              <p className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /> Emergency services: {hospital.operatingHours.hospitalEmergency}</p>
+              <p className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /> Emergency services: {hospital.operatingHours?.hospitalEmergency || 'Contact hospital'}</p>
               <p className="flex items-start gap-2"><PhoneCall className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /> Main line: {hospital.contact}</p>
               <p className="flex items-start gap-2"><Truck className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /> Emergency transport available</p>
             </div>

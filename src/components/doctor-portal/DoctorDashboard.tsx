@@ -1,12 +1,18 @@
 import React from 'react';
 import {
   AlertTriangle, ShieldCheck, Clock3, CalendarClock, BadgeCheck, ArrowRight, FileText,
-  Building2, CalendarDays, UserRound, CheckCircle2, Info
+  Building2, CalendarDays, UserRound, CheckCircle2, Info, Users, ClipboardList, FlaskConical, Activity
 } from 'lucide-react';
 import { useDoctorPortal, WorkspaceView, CONSULTATION_LABEL, STATUS_LABEL, FACILITIES } from './doctorPortalData';
+import { useClinicalWorkspace } from './doctorClinicalData';
 
 export const DoctorDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => void }> = ({ onNavigate }) => {
   const { doctor, activeFacilityId, appointments, availability, credentials, affiliations } = useDoctorPortal();
+  const { patients } = useClinicalWorkspace();
+  const pendingLabs = patients.flatMap((p) => p.labs).filter((l) => l.status === 'available').length;
+  const pendingRx = patients.flatMap((p) => p.prescriptions).filter((r) => r.status === 'draft').length;
+  const followUps = patients.filter((p) => p.status === 'follow_up').length;
+  const waiting = patients.filter((p) => p.status === 'critical' || p.status === 'pending_review').length;
   const today = new Date().toISOString().slice(0, 10);
   const facility = FACILITIES.find((f) => f.id === activeFacilityId);
 
@@ -57,6 +63,16 @@ export const DoctorDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => void 
           <button type="button" onClick={() => onNavigate('profile')} className="cursor-pointer rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-700">Review Profile</button>
         </div>
       )}
+
+      {/* Compact clinical KPIs */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <Kpi label="Today's Appointments" value={String(todays.length)} sub="scheduled" icon={<CalendarClock className="h-4 w-4" />} onClick={() => onNavigate('appointments')} />
+        <Kpi label="Waiting / Attention" value={String(waiting)} sub="needs attention" icon={<Users className="h-4 w-4" />} onClick={() => onNavigate('patients')} />
+        <Kpi label="Completed" value={String(todays.filter((a) => a.status === 'completed').length)} sub="today" icon={<CheckCircle2 className="h-4 w-4" />} onClick={() => onNavigate('consultations')} />
+        <Kpi label="Pending Labs" value={String(pendingLabs)} sub="review required" icon={<FlaskConical className="h-4 w-4" />} onClick={() => onNavigate('labs')} />
+        <Kpi label="Rx Requests" value={String(pendingRx)} sub="pending" icon={<ClipboardList className="h-4 w-4" />} onClick={() => onNavigate('prescriptions')} />
+        <Kpi label="Follow-ups Due" value={String(followUps)} sub="this week" icon={<Activity className="h-4 w-4" />} onClick={() => onNavigate('patients')} />
+      </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         {/* Today */}
@@ -214,3 +230,18 @@ export const DoctorDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => void 
     </div>
   );
 };
+
+const Kpi: React.FC<{ label: string; value: string; sub: string; icon: React.ReactNode; onClick: () => void }> = ({ label, value, sub, icon, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="rounded-2xl border border-[#E3E8EF] bg-white p-4 text-left shadow-soft transition hover:border-[#1769E0]/40 hover:bg-[#1769E0]/5"
+  >
+    <div className="flex items-center justify-between">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-[#8A97A8]">{label}</p>
+      <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#0B1F3A] text-white">{icon}</span>
+    </div>
+    <p className="mt-2 text-2xl font-extrabold tracking-tight text-[#162235]">{value}</p>
+    <p className="text-[10px] font-semibold text-[#607086]">{sub}</p>
+  </button>
+);

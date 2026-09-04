@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Runtime disk-backed persistence (never commit user data)
+data/runtime/

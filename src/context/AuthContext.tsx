@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { PublicUserAccount } from '../types/auth';
 import { UserAccount } from '../types';
-import { apiFetch, clearStoredSession, getStoredToken, storeSession } from '../services/authClient';
+import { apiFetch, clearAllGlobalSessions, getStoredToken, storeSession } from '../services/authClient';
 
 // Where the user was trying to go / do when they were asked to sign in.
 export interface AuthIntent {
@@ -13,6 +13,24 @@ export interface AuthIntent {
   context?: Record<string, unknown>;
 }
 
+// Unified User Portal permissions. Every authorized feature checks this same
+// identity; feature-specific role checks may narrow access, but they never ask
+// for a second login.
+const USER_PORTAL_PERMISSIONS = [
+  'user-portal:read',
+  'health-records:read',
+  'appointments:read',
+  'appointments:write',
+  'pharmacy:order',
+  'community:read',
+  'community:write',
+  'ai:assistant',
+  'saved:write',
+  'notifications:read',
+] as const;
+
+export type UserPortalPermission = (typeof USER_PORTAL_PERMISSIONS)[number];
+
 interface AuthContextValue {
   user: UserAccount | null;
   /**
@@ -21,6 +39,20 @@ interface AuthContextValue {
    * account-security screen needs.
    */
   publicUser: PublicUserAccount | null;
+  /** The validated server-issued session token shared by every feature. */
+  sessionId: string | null;
+  /** Explicit session lifecycle state for every module reading auth. */
+  sessionStatus: 'idle' | 'initializing' | 'active' | 'expired';
+  /** Convenience accessors — every module reads the SAME account. */
+  userId: string | null;
+  userProfile: UserAccount | null;
+  userName: string | null;
+  userEmail: string | null;
+  userRole: string | null;
+  /** One unified permission set for the authenticated User Portal account. */
+  permissions: UserPortalPermission[];
+  /** True when exactly one valid GlobalHealth session is active. */
+  isAuthenticated: boolean;
   // True until the initial session check against the server completes.
   initializing: boolean;
   // True when the active session has expired server-side.
@@ -73,6 +105,7 @@ function toUserAccount(serverUser: any): UserAccount {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserAccount | null>(null);
   const [publicUser, setPublicUser] = useState<PublicUserAccount | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
@@ -96,10 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!cancelled && res?.user) {
           setUser(toUserAccount(res.user));
           setPublicUser(res.user as PublicUserAccount);
+          setSessionId(token);
         }
       } catch {
-        // Token invalid or expired — clear it and stay logged out.
-        clearStoredSession();
+        // Token invalid or expired — clear this and every dependent session.
+        clearAllGlobalSessions();
         if (!cancelled) setUser(null);
       } finally {
         if (!cancelled) setInitializing(false);
@@ -111,19 +145,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const requireAuth = useCallback((intent?: AuthIntent, mode: 'login' | 'signup' = 'login') => {
+    // ONE GLOBAL SESSION RULE: once the User Portal session is authenticated,
+    // protected-feature requests never open the login again. The feature code
+    // proceeds on the existing currentUser / isAuthenticated state.
+    if (user) return;
     setGateIntent(intent || null);
     pendingIntentRef.current = intent || null;
     setGateMode(mode);
     setGateOpen(true);
-  }, []);
+  }, [user]);
 
   const closeGate = useCallback(() => {
     setGateOpen(false);
   }, []);
 
   const authenticate = useCallback((u: UserAccount, token: string, pu?: PublicUserAccount | null) => {
+    // One session token is the single source of truth for every user feature.
     storeSession(token, u);
     setUser(u);
+    setSessionId(token);
     if (pu !== undefined) setPublicUser(pu);
     setGateOpen(false);
     setSessionExpired(false);
@@ -142,9 +182,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // continue local cleanup regardless
     }
-    clearStoredSession();
+    // One global Logout destroys the GlobalHealth session and every dependent
+    // workspace session, while public pages stay available.
+    clearAllGlobalSessions();
     setUser(null);
     setPublicUser(null);
+    setSessionId(null);
     pendingIntentRef.current = null;
     setGateOpen(false);
   }, []);
@@ -155,35 +198,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail || {};
-      clearStoredSession();
+      clearAllGlobalSessions();
       setUser(null);
-    setPublicUser(null);
+      setPublicUser(null);
+      setSessionId(null);
       if (detail.reason === 'expired') setSessionExpired(true);
     };
     window.addEventListener('globalhealth:unauthorized', handler);
     return () => window.removeEventListener('globalhealth:unauthorized', handler);
   }, []);
 
-  // Multi-tab session safety: react when another tab logs in or out.
+  // Multi-tab session safety: react when another tab logs in or out. The same
+  // token is validated against the server so identity is never trusted from
+  // storage alone.
   useEffect(() => {
     const onStorage = async (e: StorageEvent) => {
       if (e.key !== 'globalhealth_auth_token') return;
       const token = getStoredToken();
       if (!token) {
         // Logout happened in another tab.
-        clearStoredSession();
+        clearAllGlobalSessions();
         setUser(null);
-    setPublicUser(null);
+        setPublicUser(null);
+        setSessionId(null);
       } else if (token !== e.oldValue) {
         // Login / session changed in another tab — validate before trusting.
         try {
           const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
           setUser(res?.user ? toUserAccount(res.user) : null);
           setPublicUser((res?.user as PublicUserAccount) ?? null);
+          setSessionId(res?.user ? token : null);
         } catch {
-          clearStoredSession();
+          clearAllGlobalSessions();
           setUser(null);
-    setPublicUser(null);
+          setPublicUser(null);
+          setSessionId(null);
         }
       }
     };
@@ -193,6 +242,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value: AuthContextValue = {
     user,
+    publicUser,
+    sessionId,
+    sessionStatus: initializing
+      ? 'initializing'
+      : sessionExpired
+        ? 'expired'
+        : user && sessionId
+          ? 'active'
+          : 'idle',
+    userId: user?.id ?? null,
+    userProfile: user,
+    userName: user?.fullName?.trim() || user?.username?.trim() || null,
+    userEmail: user?.email?.trim() || null,
+    userRole: (publicUser as any)?.role || (user ? 'USER' : null),
+    permissions: user ? ([...USER_PORTAL_PERMISSIONS] as UserPortalPermission[]) : [],
+    isAuthenticated: !!user && !!sessionId,
     initializing,
     sessionExpired,
     gateOpen,
@@ -201,7 +266,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     requireAuth,
     closeGate,
     setGateMode,
-    publicUser,
     setPublicUser,
     authenticate,
     logout,

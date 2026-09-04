@@ -6,6 +6,8 @@ import {
   Search, Bell, LogOut, FlaskConical, ScanLine, Pill, Droplets, UserRound, ClipboardList,
 } from 'lucide-react';
 import { useHospitalPortal, WorkspaceView, VERIFICATION_LABEL, PUBLIC_STATUS_LABEL } from './hospitalPortalData';
+import { PermissionGate, AccessDenied, usePortalRole } from '../portal/PermissionGate';
+import { Permission } from '../../core/portalRoles';
 import { HospitalDashboard } from './HospitalDashboard';
 import { HospitalProfile } from './HospitalProfile';
 import { HospitalDepartments } from './HospitalDepartments';
@@ -18,6 +20,7 @@ import { HospitalVerification } from './HospitalVerification';
 import { HospitalInsights } from './HospitalInsights';
 import { HospitalSecurity } from './HospitalSecurity';
 import { HospitalSupport } from './HospitalSupport';
+import { HospitalPricingCenter } from './HospitalPricingCenter';
 
 interface HospitalWorkspaceProps {
   onBackToGlobalHealth: () => void;
@@ -51,6 +54,7 @@ const NAV: NavItem[] = [
   { view: 'imaging', label: 'Imaging', icon: <ScanLine className="h-4 w-4" />, group: 'Healthcare Services' },
   { view: 'pharmacy', label: 'Pharmacy', icon: <Pill className="h-4 w-4" />, group: 'Healthcare Services' },
   { view: 'blood_bank', label: 'Blood Bank', icon: <Droplets className="h-4 w-4" />, group: 'Healthcare Services' },
+  { view: 'pricing', label: 'Pricing Center', icon: <ClipboardList className="h-4 w-4" />, group: 'Finance' },
   { view: 'verification', label: 'Verification', icon: <ShieldCheck className="h-4 w-4" />, group: 'Verification' },
   { view: 'documents', label: 'Documents', icon: <FileText className="h-4 w-4" />, group: 'Verification' },
   { view: 'action_required', label: 'Action Required', icon: <ClipboardList className="h-4 w-4" />, group: 'Verification' },
@@ -63,9 +67,49 @@ const NAV: NavItem[] = [
   { view: 'help', label: 'Help Center', icon: <CircleHelp className="h-4 w-4" />, group: 'Support' },
   { view: 'support', label: 'Contact Support', icon: <LifeBuoy className="h-4 w-4" />, group: 'Support' },
   { view: 'system_status', label: 'System Status', icon: <ShieldCheck className="h-4 w-4" />, group: 'Support' },
+  { view: 'sync', label: 'Synchronization', icon: <Activity className="h-4 w-4" />, group: 'System' },
+  { view: 'preview', label: 'Public Preview', icon: <Activity className="h-4 w-4" />, group: 'System' },
 ];
 
-const GROUPS = ['Overview', 'Hospital', 'Operations', 'Healthcare Services', 'Verification', 'Insights', 'Security', 'Support'];
+const NAV_PERMISSION: Record<WorkspaceView, Permission> = {
+  dashboard: 'hospital.dashboard.view',
+  profile: 'hospital.profile.view',
+  departments: 'hospital.departments.manage',
+  services: 'hospital.services.manage',
+  specialties: 'hospital.specialties.manage',
+  doctors: 'hospital.doctors.manage',
+  staff: 'hospital.staff.manage',
+  hours: 'hospital.profile.manage',
+  location: 'hospital.profile.manage',
+  photos: 'hospital.profile.manage',
+  accreditations: 'hospital.profile.manage',
+  insurance: 'hospital.insurance.manage',
+  appointments: 'hospital.appointments.manage',
+  calendar: 'hospital.appointments.manage',
+  schedules: 'hospital.schedule.manage',
+  availability: 'hospital.schedule.manage',
+  laboratory: 'hospital.lab.manage',
+  imaging: 'hospital.imaging.manage',
+  pharmacy: 'hospital.pharmacy.manage',
+  blood_bank: 'hospital.blood.manage',
+  pricing: 'hospital.pricing.manage',
+  sync: 'hospital.sync.manage',
+  preview: 'hospital.preview.manage',
+  verification: 'hospital.verification.manage',
+  documents: 'hospital.documents.manage',
+  action_required: 'hospital.verification.manage',
+  analytics: 'hospital.reports.view',
+  activity: 'hospital.reports.view',
+  audit: 'hospital.audit.read',
+  security: 'hospital.security.manage',
+  sessions: 'hospital.security.manage',
+  permissions: 'hospital.security.manage',
+  help: 'hospital.profile.view',
+  support: 'hospital.profile.view',
+  system_status: 'hospital.profile.view',
+};
+
+const GROUPS = ['Overview', 'Hospital', 'Operations', 'Healthcare Services', 'Finance', 'Verification', 'Insights', 'Security', 'Support', 'System'];
 
 const MOBILE_NAV: { view: WorkspaceView; label: string; icon: React.ReactNode }[] = [
   { view: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -76,7 +120,8 @@ const MOBILE_NAV: { view: WorkspaceView; label: string; icon: React.ReactNode }[
 ];
 
 export const HospitalWorkspace: React.FC<HospitalWorkspaceProps> = ({ onBackToGlobalHealth, onLogout }) => {
-  const { organization, organizations, setActiveHospital, notifications } = useHospitalPortal();
+  const { organization, organizations, setActiveHospital, notifications, activeStaffRole } = useHospitalPortal();
+  const { can } = usePortalRole();
   const [view, setView] = useState<WorkspaceView>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [facilityOpen, setFacilityOpen] = useState(false);
@@ -206,7 +251,7 @@ export const HospitalWorkspace: React.FC<HospitalWorkspaceProps> = ({ onBackToGl
         <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white lg:block">
           <nav className="sticky top-[110px] max-h-[calc(100vh-118px)] overflow-y-auto p-3" aria-label="Hospital portal navigation">
             {GROUPS.map((group) => {
-              const items = NAV.filter((n) => n.group === group);
+              const items = NAV.filter((n) => n.group === group && can(NAV_PERMISSION[n.view]));
               if (!items.length) return null;
               return (
                 <div key={group} className="mb-3">
@@ -247,7 +292,7 @@ export const HospitalWorkspace: React.FC<HospitalWorkspaceProps> = ({ onBackToGl
                 <button type="button" onClick={() => setSidebarOpen(false)} className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-100" aria-label="Close navigation">✕</button>
               </div>
               {GROUPS.map((group) => {
-                const items = NAV.filter((n) => n.group === group);
+                const items = NAV.filter((n) => n.group === group && can(NAV_PERMISSION[n.view]));
                 if (!items.length) return null;
                 return (
                   <div key={group} className="mb-3">
@@ -270,37 +315,54 @@ export const HospitalWorkspace: React.FC<HospitalWorkspaceProps> = ({ onBackToGl
         {/* Main content */}
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
-            {view === 'dashboard' && <HospitalDashboard onNavigate={go} />}
-            {view === 'profile' && <HospitalProfile />}
-            {view === 'departments' && <HospitalDepartments />}
-            {view === 'services' && <HospitalServices section="services" />}
-            {view === 'specialties' && <HospitalServices section="specialties" />}
-            {view === 'doctors' && <HospitalDoctors />}
-            {view === 'staff' && <HospitalStaff />}
-            {view === 'hours' && <HospitalProfile section="hours" />}
-            {view === 'location' && <HospitalProfile section="location" />}
-            {view === 'photos' && <HospitalProfile section="photos" />}
-            {view === 'accreditations' && <HospitalProfile section="accreditations" />}
-            {view === 'appointments' && <HospitalAppointments />}
-            {view === 'calendar' && <HospitalAppointments calendarMode />}
-            {view === 'schedules' && <HospitalSchedules section="schedules" />}
-            {view === 'availability' && <HospitalSchedules section="availability" />}
-            {view === 'laboratory' && <HospitalServices section="laboratory" />}
-            {view === 'imaging' && <HospitalServices section="imaging" />}
-            {view === 'pharmacy' && <HospitalServices section="pharmacy" />}
-            {view === 'blood_bank' && <HospitalServices section="blood_bank" />}
-            {view === 'verification' && <HospitalVerification section="verification" />}
-            {view === 'documents' && <HospitalVerification section="documents" />}
-            {view === 'action_required' && <HospitalVerification section="action_required" />}
-            {view === 'analytics' && <HospitalInsights section="analytics" />}
-            {view === 'activity' && <HospitalInsights section="activity" />}
-            {view === 'audit' && <HospitalInsights section="audit" />}
-            {view === 'security' && <HospitalSecurity section="security" />}
-            {view === 'sessions' && <HospitalSecurity section="sessions" />}
-            {view === 'permissions' && <HospitalSecurity section="permissions" />}
-            {view === 'help' && <HospitalSupport section="help" />}
-            {view === 'support' && <HospitalSupport section="support" />}
-            {view === 'system_status' && <HospitalSupport section="system_status" />}
+            <PermissionGate permission="hospital.dashboard.view" fallback={<AccessDenied title="Hospital Portal restricted" message={`Your hospital role (${activeStaffRole}) does not permit access to this area. Contact your hospital administrator.`} />}>
+              {view === 'dashboard' && <HospitalDashboard onNavigate={go} />}
+              <PermissionGate permission="hospital.profile.view">
+                {view === 'profile' && <HospitalProfile />}
+                {view === 'hours' && <HospitalProfile section="hours" />}
+                {view === 'location' && <HospitalProfile section="location" />}
+                {view === 'photos' && <HospitalProfile section="photos" />}
+                {view === 'accreditations' && <HospitalProfile section="accreditations" />}
+                {view === 'help' && <HospitalSupport section="help" />}
+                {view === 'support' && <HospitalSupport section="support" />}
+                {view === 'system_status' && <HospitalSupport section="system_status" />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.departments.manage">{view === 'departments' && <HospitalDepartments />}</PermissionGate>
+              <PermissionGate permission="hospital.services.manage">{view === 'services' && <HospitalServices section="services" />}</PermissionGate>
+              <PermissionGate permission="hospital.specialties.manage">{view === 'specialties' && <HospitalServices section="specialties" />}</PermissionGate>
+              <PermissionGate permission="hospital.doctors.manage">{view === 'doctors' && <HospitalDoctors />}</PermissionGate>
+              <PermissionGate permission="hospital.staff.manage">{view === 'staff' && <HospitalStaff />}</PermissionGate>
+              <PermissionGate permission="hospital.appointments.manage">
+                {view === 'appointments' && <HospitalAppointments />}
+                {view === 'calendar' && <HospitalAppointments calendarMode />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.schedule.manage">
+                {view === 'schedules' && <HospitalSchedules section="schedules" />}
+                {view === 'availability' && <HospitalSchedules section="availability" />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.lab.manage">{view === 'laboratory' && <HospitalServices section="laboratory" />}</PermissionGate>
+              <PermissionGate permission="hospital.imaging.manage">{view === 'imaging' && <HospitalServices section="imaging" />}</PermissionGate>
+              <PermissionGate permission="hospital.pharmacy.manage">{view === 'pharmacy' && <HospitalServices section="pharmacy" />}</PermissionGate>
+              <PermissionGate permission="hospital.blood.manage">{view === 'blood_bank' && <HospitalServices section="blood_bank" />}</PermissionGate>
+              <PermissionGate permission="hospital.verification.manage">
+                {view === 'verification' && <HospitalVerification section="verification" />}
+                {view === 'documents' && <HospitalVerification section="documents" />}
+                {view === 'action_required' && <HospitalVerification section="action_required" />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.reports.view">
+                {view === 'analytics' && <HospitalInsights section="analytics" />}
+                {view === 'activity' && <HospitalInsights section="activity" />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.audit.read">{view === 'audit' && <HospitalInsights section="audit" />}</PermissionGate>
+              <PermissionGate permission="hospital.security.manage">
+                {view === 'security' && <HospitalSecurity section="security" />}
+                {view === 'sessions' && <HospitalSecurity section="sessions" />}
+                {view === 'permissions' && <HospitalSecurity section="permissions" />}
+              </PermissionGate>
+              <PermissionGate permission="hospital.pricing.manage">{view === 'pricing' && <HospitalPricingCenter />}</PermissionGate>
+              {view === 'sync' && <AccessDenied title="Synchronization in foundation build" message="Hospital-controlled synchronization ships in the next phase." />}
+              {view === 'preview' && <AccessDenied title="Public preview in foundation build" message="The public preview mode ships in the next phase." />}
+            </PermissionGate>
           </div>
         </main>
       </div>

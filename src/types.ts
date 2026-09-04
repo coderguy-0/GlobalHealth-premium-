@@ -848,7 +848,7 @@ export interface AuditLogEntry {
   actorRole: string;
   actorEmail?: string;
   action: string;
-  targetType: 'article' | 'staff' | 'permission' | 'system' | 'breaking_news' | 'category' | 'auth' | 'settings';
+  targetType: 'article' | 'staff' | 'permission' | 'system' | 'breaking_news' | 'category' | 'auth' | 'settings' | 'security';
   targetId?: string;
   targetTitle?: string;
   details: string;

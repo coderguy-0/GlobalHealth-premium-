@@ -628,7 +628,7 @@ export const PrivacyConsentView: React.FC = () => {
               {detail.status === 'pending' ? (
                 <Row label="Expires" value={`This request expires on ${fmt(detail.expiresAt)}`} />
               ) : (
-                <Row label="Decided" value={fmt(detail.reviewedAt)} />
+                <Row label="Decided" value={fmt(detail.reviewedAt || '')} />
               )}
               {detail.versionNumber && <Row label="Record version" value={`Version ${detail.versionNumber}`} />}
               <Row label="Request ID" value={detail.requestId} mono />
