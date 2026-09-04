@@ -6,7 +6,7 @@ import { TERMS_VERSION, PRIVACY_VERSION } from '../../lib/policyVersions';
 import { AvatarExpression } from './DoctorAvatar';
 
 interface SignUpFormProps {
-  onSuccess: (data: { userId: string; email: string; type: 'email' | 'phone'; devCode?: string }) => void;
+  onSuccess: (data: { userId: string; email: string; type: 'email' | 'phone' }) => void;
   onNavigate: (view: 'login' | 'forgot-password') => void;
   onRequestHelp?: () => void;
   onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
@@ -145,8 +145,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       onSuccess({
         userId: result.userId,
         email: result.email || email,
-        type: result.verificationType || 'email',
-        devCode: result.devCode
+        type: result.verificationType || 'email'
       });
     } else {
       setErrorMessage(result.error || 'Failed to create account. Please check your information.');

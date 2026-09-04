@@ -27,6 +27,7 @@ import {
   Salad,
   Activity,
   User,
+    Bell,
     MapPin,
   Droplets,
   BookOpen,
@@ -47,6 +48,8 @@ interface NavbarProps {
   onOpenAuthPage: (mode?: 'login' | 'signup') => void;
   /** Open Security & Privacy settings for the signed-in user. */
   onOpenSecuritySettings: () => void;
+  /** Open a specific section of the user's Activity & Security history. */
+  onOpenHistoryTab?: (tab: string) => void;
   onLogout: () => void;
 }
 
@@ -65,6 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuthModal,
   onOpenAuthPage,
   onOpenSecuritySettings,
+  onOpenHistoryTab,
   onLogout}) => {
   const { t, setIsLanguageModalOpen } = useLocalization();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -282,34 +286,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <p className="font-mono text-[11px] text-slate-500">@{currentUser.username}</p>
                     </div>
                     <div className="mt-1 space-y-0.5">
-                      <button onClick={() => go('dashboard', 'details')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <User className="h-4 w-4 text-slate-600" /> Personal Details
-                      </button>
                       <button onClick={() => go('dashboard', 'dashboard')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <LayoutDashboard className="h-4 w-4 text-medical-600" /> Health Dashboard
+                        <LayoutDashboard className="h-4 w-4 text-medical-600" /> My Dashboard
                       </button>
                       <button onClick={() => go('dashboard', 'ehr')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <FileSpreadsheet className="h-4 w-4 text-blue-600" /> Clinical Record (EHR)
+                        <FileSpreadsheet className="h-4 w-4 text-blue-600" /> My Health Records
+                      </button>
+                      <button onClick={() => go('appointments')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <Calendar className="h-4 w-4 text-indigo-600" /> Appointments
                       </button>
                       <button onClick={() => go('dashboard', 'saved')} className="flex w-full items-center justify-between rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
                         <span className="flex items-center gap-2">
-                          <Bookmark className="h-4 w-4 text-amber-600" /> Saved Library
+                          <Bookmark className="h-4 w-4 text-amber-600" /> Saved Items
                         </span>
                         {savedCount > 0 && (
                           <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">{savedCount}</span>
                         )}
                       </button>
-                      <button onClick={() => go('doctor-consent')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-emerald-800 transition hover:bg-emerald-50">
-                        <ShieldCheck className="h-4 w-4 text-emerald-600" /> Doctor Access &amp; Consent
-                      </button>
-                      <button onClick={() => go('appointments')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <Calendar className="h-4 w-4 text-indigo-600" /> My Appointments
+                      <button onClick={() => { onOpenHistoryTab?.('notifications'); go('my-history'); }} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <Bell className="h-4 w-4 text-sky-600" /> Notifications
                       </button>
                       <button onClick={() => go('my-history')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
                         <History className="h-4 w-4 text-slate-600" /> Activity &amp; Security History
                       </button>
+                      <button onClick={() => go('doctor-consent')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-emerald-800 transition hover:bg-emerald-50">
+                        <ShieldCheck className="h-4 w-4 text-emerald-600" /> Doctor Access &amp; Consent
+                      </button>
                       <button onClick={() => { setUserDropdownOpen(false); onOpenSecuritySettings(); }} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <ShieldCheck className="h-4 w-4 text-emerald-600" /> Security &amp; Privacy Settings
+                        <ShieldCheck className="h-4 w-4 text-emerald-600" /> Account Settings
                       </button>
                     </div>
                     <div className="mt-1 border-t border-slate-100 pt-1">

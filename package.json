@@ -8,7 +8,10 @@
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "NODE_ENV=production node dist/server.cjs",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
+    "test": "node --import tsx --test 'src/**/*.test.ts'",
+    "test:unit": "node --import tsx --test 'src/server/*.test.ts'",
+    "accept:ai": "node scripts/acceptance/globalhealth-ai-auth-chat.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -35,5 +38,8 @@
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
   }
 }

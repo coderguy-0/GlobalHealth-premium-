@@ -8,7 +8,6 @@ interface VerifyEmailPhoneFormProps {
   userId: string;
   contactTarget?: string;
   type?: 'email' | 'phone';
-  devCode?: string;
   onSuccess: (user: PublicUserAccount, token?: string) => void;
   onNavigate: (view: 'login' | 'signup') => void;
   onRequestHelp?: () => void;
@@ -19,7 +18,6 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   userId,
   contactTarget = 'your registered address',
   type = 'email',
-  devCode,
   onSuccess,
   onNavigate,
   onRequestHelp,
@@ -31,7 +29,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [infoMessage, setInfoMessage] = useState(devCode ? `Development Code: ${devCode} (or use universal code: 123456)` : '');
+  const [infoMessage, setInfoMessage] = useState('');
   const [verifiedUser, setVerifiedUser] = useState<PublicUserAccount | null>(null);
   const [verifiedToken, setVerifiedToken] = useState<string | undefined>(undefined);
   // Limited attempts (spec): 5 tries before the code is locked and a resend is required.
@@ -130,9 +128,6 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
       setAttemptsLeft(5);
       setAttemptsLocked(false);
       setInfoMessage(result.message || 'A new 6-digit code has been dispatched.');
-      if (result.devCode) {
-        setInfoMessage(`New Code: ${result.devCode}`);
-      }
     } else {
       setErrorMessage(result.error || 'Failed to resend verification code.');
     }

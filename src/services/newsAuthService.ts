@@ -139,7 +139,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-admin-1',
     name: 'Dr. Evelyn Carter',
     email: 'admin@globalhealth.org',
-    password: 'Password123!',
     role: 'SUPER_ADMIN',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.SUPER_ADMIN,
@@ -153,7 +152,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-newsadmin-1',
     name: 'Marcus Sterling',
     email: 'newsadmin@globalhealth.org',
-    password: 'Password123!',
     role: 'NEWS_ADMIN',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.NEWS_ADMIN,
@@ -167,7 +165,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-editor-1',
     name: 'Sarah Chen, MD',
     email: 'editor@globalhealth.org',
-    password: 'Password123!',
     role: 'EDITOR',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.EDITOR,
@@ -182,7 +179,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-reviewer-1',
     name: 'Dr. James Thorne',
     email: 'reviewer@globalhealth.org',
-    password: 'Password123!',
     role: 'REVIEWER',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.REVIEWER,
@@ -196,7 +192,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-publisher-1',
     name: 'Elena Rostova',
     email: 'publisher@globalhealth.org',
-    password: 'Password123!',
     role: 'PUBLISHER',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.PUBLISHER,
@@ -210,7 +205,6 @@ const INITIAL_STAFF_MEMBERS: StaffMember[] = [
     id: 'staff-author-1',
     name: 'David Kim, MSc',
     email: 'author@globalhealth.org',
-    password: 'Password123!',
     role: 'AUTHOR',
     status: 'active',
     permissions: DEFAULT_ROLE_PERMISSIONS.AUTHOR,
@@ -289,8 +283,15 @@ function setStored<T>(key: string, data: T): void {
 
 export const newsAuthService = {
   // Staff Directory Management
+  // Client-side copies are identity/profile mirrors only. Passwords are never
+  // stored in browser storage; any legacy records are stripped on read.
   getStaffMembers(): StaffMember[] {
-    return getStored<StaffMember[]>(STORAGE_KEYS.STAFF_MEMBERS, INITIAL_STAFF_MEMBERS);
+    const members = getStored<StaffMember[]>(STORAGE_KEYS.STAFF_MEMBERS, INITIAL_STAFF_MEMBERS);
+    return members.map((member) => {
+      const safe = { ...member };
+      delete (safe as { password?: string }).password;
+      return safe;
+    });
   },
 
   saveStaffMembers(members: StaffMember[]): void {
@@ -381,21 +382,9 @@ export const newsAuthService = {
       clearAdminSession();
     }
 
-    // FALLBACK: legacy local staff session (kept for back-compat only).
-    const session = this.getCurrentSession();
-    if (!session) return null;
-
-    const staff = this.getStaffById(session.staffId);
-    if (!staff || staff.status !== 'active') {
-      return null;
-    }
-
-    // Check if account has an expiry date
-    if (staff.accessExpiry && new Date(staff.accessExpiry).getTime() < Date.now()) {
-      return null;
-    }
-
-    return staff;
+    // Legacy local staff sessions are no longer credible: they could be
+    // written by browser code and do not prove server authorization.
+    return null;
   },
 
   isAuthenticated(): boolean {
@@ -699,36 +688,15 @@ export const newsAuthService = {
       };
     }
 
-    // Verify Password if provided
-    if (staff.password && password && staff.password !== password) {
-      const lockRes = this.recordFailedLoginAttempt(cleanEmail);
-      this.logAudit('LOGIN_FAILED_PASSWORD', 'auth', cleanEmail, `Invalid password supplied. Attempts remaining: ${lockRes.remainingAttempts}`, 'warning', 'failed');
-      if (lockRes.lockedOut) {
-        return {
-          success: false,
-          error: 'Security Lockout: Account locked for 15 minutes due to 5 consecutive failed login attempts.',
-        };
-      }
-      return {
-        success: false,
-        error: `Invalid credentials. (${lockRes.remainingAttempts} attempt${lockRes.remainingAttempts === 1 ? '' : 's'} remaining before lockout)`,
-      };
-    }
+    // Client-side password verification is deliberately disabled. Credentials
+    // are checked only by the server session endpoints. Browser storage must
+    // never become an authentication authority.
+    this.logAudit('CLIENT_AUTH_REJECTED', 'auth', staff.name, 'Attempted client-side staff login; blocked because only server authentication is allowed.', 'warning', 'denied', staff.id);
+    return {
+      success: false,
+      error: 'Invalid administrative credentials or unauthorized account.',
+    };
 
-    // Two-Factor Authentication via Staff Email Address
-    if (!mfaCode) {
-      // Credentials verified! Dispatch email MFA code
-      const mfaDispatch = this.sendEmailMfaCode(cleanEmail);
-      return {
-        success: false,
-        requiresMfa: true,
-        mfaDispatch,
-        error: undefined,
-      };
-    }
-
-    // Verify submitted MFA code
-    return this.verifyEmailMfa(cleanEmail, mfaCode);
   },
 
   logout(): void {
@@ -795,11 +763,13 @@ export const newsAuthService = {
       return { success: false, error: 'A staff member with this email address already exists.' };
     }
 
+    const safeData = { ...data };
+    delete (safeData as { password?: string }).password;
     const newStaff: StaffMember = {
-      ...data,
+      ...safeData,
       id: `staff-${Date.now()}`,
       accountCreated: new Date().toISOString(),
-      permissions: data.permissions || DEFAULT_ROLE_PERMISSIONS[data.role] || [],
+      permissions: safeData.permissions || DEFAULT_ROLE_PERMISSIONS[safeData.role] || [],
     };
 
     const members = this.getStaffMembers();
@@ -833,7 +803,9 @@ export const newsAuthService = {
       }
     }
 
-    const updatedMembers = members.map((s) => (s.id === id ? { ...s, ...updates } : s));
+    const safeUpdates = { ...updates };
+    delete (safeUpdates as { password?: string }).password;
+    const updatedMembers = members.map((s) => (s.id === id ? { ...s, ...safeUpdates } : s));
     this.saveStaffMembers(updatedMembers);
 
     this.logAudit(
@@ -896,7 +868,7 @@ export const newsAuthService = {
   submitStaffAccountApplication(data: {
     fullName: string;
     email: string;
-    password: string;
+    password?: string;
     jobTitle?: string;
     organization?: string;
     reason?: string;
@@ -906,7 +878,6 @@ export const newsAuthService = {
 
     if (fullName.length < 3) return { success: false, error: 'Please enter your full name.' };
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return { success: false, error: 'Please enter a valid email address.' };
-    if (!data.password || data.password.length < 8) return { success: false, error: 'Password must be at least 8 characters long.' };
 
     const members = this.getStaffMembers();
     if (members.some((s) => s.email.toLowerCase() === cleanEmail)) {
@@ -915,11 +886,12 @@ export const newsAuthService = {
 
     // New public applications always land as EDITORS pending administrator
     // approval — least privilege until an admin elevates the role.
+    // Credentials are provisioned later through the server-side admin flow;
+    // the browser never receives or stores a password.
     const application: StaffMember = {
       id: `staff-${Date.now()}`,
       name: fullName,
       email: cleanEmail,
-      password: data.password,
       role: 'EDITOR',
       status: 'pending_approval',
       permissions: [],
@@ -945,7 +917,7 @@ export const newsAuthService = {
     return { success: true };
   },
 
-  requestStaffPasswordReset(email: string): { success: boolean; message: string; demoDelivery?: { token: string; code: string } } {
+  requestStaffPasswordReset(email: string): { success: boolean; message: string } {
     const cleanEmail = String(email || '').trim().toLowerCase();
     const genericMessage = 'If a News Management account exists for that email, a secure reset link has been sent. The link is valid for 15 minutes.';
 
@@ -960,66 +932,16 @@ export const newsAuthService = {
       return { success: true, message: genericMessage };
     }
 
-    const token = `nwr-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    try {
-      const existing: Array<{ token: string; email: string; code: string; expiresAt: number; attempts: number }> =
-        JSON.parse(localStorage.getItem(STORAGE_KEYS.PASSWORD_RESET_TOKENS) || '[]');
-      const kept = existing.filter((r) => r.email !== cleanEmail && r.expiresAt > Date.now());
-      kept.push({ token, email: cleanEmail, code, expiresAt: Date.now() + 15 * 60 * 1000, attempts: 0 });
-      localStorage.setItem(STORAGE_KEYS.PASSWORD_RESET_TOKENS, JSON.stringify(kept));
-    } catch {
-      localStorage.setItem(
-        STORAGE_KEYS.PASSWORD_RESET_TOKENS,
-        JSON.stringify([{ token, email: cleanEmail, code, expiresAt: Date.now() + 15 * 60 * 1000, attempts: 0 }])
-      );
-    }
-
+    // Password recovery is owned by the server-side News Management flow.
+    // Browser storage never holds reset tokens or codes.
     this.logAudit('PASSWORD_RESET_REQUESTED', 'auth', staff.name, `Reset link dispatched to ${cleanEmail}.`, 'info', 'success', staff.id);
-    // Demo environment: email delivery is simulated, so the token + code are
-    // surfaced directly for testing (same pattern as the core auth service).
-    return { success: true, message: genericMessage, demoDelivery: { token, code } };
+    return { success: true, message: genericMessage };
   },
 
-  resetStaffPassword(input: { token: string; code: string; newPassword: string }): { success: boolean; error?: string } {
-    const records: Array<{ token: string; email: string; code: string; expiresAt: number; attempts: number }> = (() => {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEYS.PASSWORD_RESET_TOKENS) || '[]');
-      } catch {
-        return [];
-      }
-    })();
-
-    const record = records.find((r) => r.token === String(input.token || '').trim());
-    const saveRecords = (list: typeof records) => localStorage.setItem(STORAGE_KEYS.PASSWORD_RESET_TOKENS, JSON.stringify(list));
-
-    if (!record || record.expiresAt < Date.now()) {
-      return { success: false, error: 'The reset link could not be verified or has expired. Please request a new one.' };
-    }
-    if (String(input.code || '').trim() !== record.code) {
-      record.attempts += 1;
-      if (record.attempts >= 5) {
-        saveRecords(records.filter((r) => r.token !== record.token));
-        return { success: false, error: 'Too many incorrect codes. Please request a new reset link.' };
-      }
-      saveRecords(records);
-      return { success: false, error: `Incorrect verification code. (${5 - record.attempts} attempts remaining).` };
-    }
-    if (!input.newPassword || input.newPassword.length < 8) {
-      return { success: false, error: 'The new password must be at least 8 characters long.' };
-    }
-
-    const staff = this.getStaffByEmail(record.email);
-    if (!staff) {
-      saveRecords(records.filter((r) => r.token !== record.token));
-      return { success: false, error: 'This News Management account no longer exists.' };
-    }
-
-    const members = this.getStaffMembers().map((s) => (s.id === staff.id ? { ...s, password: input.newPassword } : s));
-    this.saveStaffMembers(members);
-    saveRecords(records.filter((r) => r.token !== record.token)); // single-use
-
-    this.logAudit('PASSWORD_RESET_COMPLETED', 'auth', staff.name, `Password reset completed for ${staff.email}.`, 'info', 'success', staff.id);
-    return { success: true };
+  resetStaffPassword(_input: { token: string; code: string; newPassword: string }): { success: boolean; error?: string } {
+    return {
+      success: false,
+      error: 'News Management password changes must be completed through the server-verified password reset flow.'
+    };
   },
 };

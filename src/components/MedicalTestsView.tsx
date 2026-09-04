@@ -1,31 +1,16 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  FlaskConical, 
-  Search, 
-  Clock, 
-  TestTube, 
-  CheckCircle2, 
-  AlertCircle, 
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  FlaskConical,
+  Search,
   Sparkles,
-  Info,
-  X,
   ChevronRight,
   ChevronLeft,
-  Activity,
-  ShieldAlert,
-  FileText,
-  HelpCircle,
-  HeartPulse,
-  Droplets,
-  Stethoscope,
-  Microscope,
-  BookOpen,
-  Filter,
-  Layers
+  Filter
 } from 'lucide-react';
 import { MEDICAL_TESTS } from '../data/healthData';
 import { MedicalTest } from '../types';
 import { useLocalization } from '../context/LocalizationContext';
+import { MedicalTestDetailPage } from './medical-tests/MedicalTestDetailPage';
 
 const ITEMS_PER_PAGE = 24;
 
@@ -36,8 +21,7 @@ export const MedicalTestsView: React.FC = () => {
   const [selectedTestId, setSelectedTestId] = useState<string>('test-crp');
   const [userValue, setUserValue] = useState<string>('');
   const [interpreterResult, setInterpreterResult] = useState<string | null>(null);
-  const [activeModalTest, setActiveModalTest] = useState<MedicalTest | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'uses' | 'prep' | 'results' | 'faqs'>('overview');
+  const [selectedTest, setSelectedTest] = useState<MedicalTest | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const categories = [
@@ -86,6 +70,59 @@ export const MedicalTestsView: React.FC = () => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredTests.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredTests, currentPage]);
+
+  // Hash-driven deep links / dedicated detail navigation, matching how
+  // Diseases and Medicines open a full-page detail when a specific item is
+  // clicked. #medical-tests/<id> → test detail page.
+  useEffect(() => {
+    const applyHash = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+      if (hash.startsWith('medical-tests/')) {
+        const id = hash.replace('medical-tests/', '').trim();
+        const found = MEDICAL_TESTS.find((m) => m.id === id);
+        if (found) {
+          setSelectedTest(found);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else if (hash === 'medical-tests') {
+        setSelectedTest(null);
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
+  const openTest = (test: MedicalTest) => {
+    setSelectedTest(test);
+    if (window.location.hash.replace(/^#\/?/, '').split('?')[0] !== `medical-tests/${test.id}`) {
+      window.location.hash = `#medical-tests/${test.id}`;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const backToCatalog = () => {
+    setSelectedTest(null);
+    if (window.location.hash.includes('medical-tests/')) {
+      window.location.hash = '#medical-tests';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // If a specific test is selected, render the dedicated full-page detail
+  // (same pattern as disease and medicine detail pages) instead of a modal.
+  if (selectedTest) {
+    return (
+      <MedicalTestDetailPage
+        test={selectedTest}
+        onBack={backToCatalog}
+        onOpenTest={(id) => {
+          const next = MEDICAL_TESTS.find((m) => m.id === id);
+          if (next) openTest(next);
+        }}
+      />
+    );
+  }
 
   const interpretValue = () => {
     const val = parseFloat(userValue);
@@ -367,10 +404,7 @@ export const MedicalTestsView: React.FC = () => {
                         {test.category}
                       </span>
                       <h3 
-                        onClick={() => {
-                          setActiveModalTest(test);
-                          setActiveTab('overview');
-                        }}
+                        onClick={() => openTest(test)}
                         className="text-base font-bold text-slate-900 group-hover:text-cyan-700 transition cursor-pointer"
                       >
                         {test.name}
@@ -410,10 +444,7 @@ export const MedicalTestsView: React.FC = () => {
 
                 <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end text-xs font-bold text-cyan-700 group-hover:text-cyan-800">
                   <button
-                    onClick={() => {
-                      setActiveModalTest(test);
-                      setActiveTab('overview');
-                    }}
+                    onClick={() => openTest(test)}
                     className="inline-flex items-center gap-1 font-bold hover:text-cyan-900 transition"
                   >
                     <span>Full Diagnostic Guide</span>
@@ -483,412 +514,6 @@ export const MedicalTestsView: React.FC = () => {
           </div>
         )}
 
-        {/* Detailed Modal / Slide-over for Medical Test */}
-        {activeModalTest && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-            <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto">
-              
-              {/* Modal Header */}
-              <div className="p-6 bg-gradient-to-r from-cyan-900 via-sky-900 to-slate-900 text-white flex items-start justify-between">
-                <div>
-                  <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-[10px] font-bold uppercase tracking-wider">
-                    {activeModalTest.category}
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-black mt-2 leading-tight">
-                    {activeModalTest.name}
-                  </h2>
-                  <p className="text-xs text-cyan-100/90 mt-1 max-w-2xl">
-                    {activeModalTest.description}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setActiveModalTest(null)}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Modal Quick Spec Bar */}
-              <div className="bg-slate-100 border-b border-slate-200 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Sample Type</span>
-                  <span className="font-semibold text-slate-800 truncate block">{activeModalTest.sampleType}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Results Time</span>
-                  <span className="font-semibold text-slate-800">{activeModalTest.timeToResults}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Preparation</span>
-                  <span className="font-semibold text-slate-800 truncate block">{activeModalTest.preparation}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Primary Focus</span>
-                  <span className="font-semibold text-cyan-800 truncate block">{activeModalTest.category}</span>
-                </div>
-              </div>
-
-              {/* Modal Tabs */}
-              <div className="flex border-b border-slate-200 bg-white overflow-x-auto">
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition cursor-pointer ${
-                    activeTab === 'overview'
-                      ? 'border-cyan-600 text-cyan-700 bg-cyan-50/50'
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Overview & Mechanism
-                </button>
-                <button
-                  onClick={() => setActiveTab('uses')}
-                  className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition cursor-pointer ${
-                    activeTab === 'uses'
-                      ? 'border-cyan-600 text-cyan-700 bg-cyan-50/50'
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Clinical Indications & Uses
-                </button>
-                <button
-                  onClick={() => setActiveTab('prep')}
-                  className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition cursor-pointer ${
-                    activeTab === 'prep'
-                      ? 'border-cyan-600 text-cyan-700 bg-cyan-50/50'
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Preparation & Safety
-                </button>
-                <button
-                  onClick={() => setActiveTab('results')}
-                  className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition cursor-pointer ${
-                    activeTab === 'results'
-                      ? 'border-cyan-600 text-cyan-700 bg-cyan-50/50'
-                      : 'border-transparent text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Results & Reference Ranges
-                </button>
-                {activeModalTest.faqs && activeModalTest.faqs.length > 0 && (
-                  <button
-                    onClick={() => setActiveTab('faqs')}
-                    className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition cursor-pointer ${
-                      activeTab === 'faqs'
-                        ? 'border-cyan-600 text-cyan-700 bg-cyan-50/50'
-                        : 'border-transparent text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    Clinical FAQs ({activeModalTest.faqs.length})
-                  </button>
-                )}
-              </div>
-
-              {/* Modal Body Content */}
-              <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800 text-xs leading-relaxed">
-                
-                {/* TAB 1: OVERVIEW */}
-                {activeTab === 'overview' && (
-                  <div className="space-y-6">
-                    {/* Summary Purpose */}
-                    <div className="p-4 rounded-2xl bg-cyan-50/80 border border-cyan-100">
-                      <h4 className="font-bold text-cyan-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <Info className="h-4 w-4 text-cyan-600" /> Primary Clinical Purpose
-                      </h4>
-                      <p className="text-slate-700">{activeModalTest.purpose}</p>
-                    </div>
-
-                    {/* Overview Text */}
-                    {activeModalTest.overview && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-2">Comprehensive Overview</h4>
-                        <p className="text-slate-600 leading-relaxed">{activeModalTest.overview}</p>
-                      </div>
-                    )}
-
-                    {/* What is it */}
-                    {activeModalTest.whatIsIt && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-2">What is this Test?</h4>
-                        <p className="text-slate-600 leading-relaxed">{activeModalTest.whatIsIt}</p>
-                      </div>
-                    )}
-
-                    {/* Why Important */}
-                    {activeModalTest.whyImportant && (
-                      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1">
-                          Why is this Biomarker/Test Important?
-                        </h4>
-                        <p className="text-slate-700">{activeModalTest.whyImportant}</p>
-                      </div>
-                    )}
-
-                    {/* How It Works */}
-                    {activeModalTest.howItWorks && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-2">Biological Mechanism & Procedure Pathway</h4>
-                        <div className="p-4 rounded-2xl bg-white border border-slate-200 whitespace-pre-line text-slate-700">
-                          {activeModalTest.howItWorks}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 2: USES & CONDITIONS */}
-                {activeTab === 'uses' && (
-                  <div className="space-y-6">
-                    {/* Why Performed */}
-                    {activeModalTest.whyPerformed && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                          <Stethoscope className="h-4 w-4 text-cyan-600" /> Why Healthcare Providers Perform This Test
-                        </h4>
-                        <div className="grid sm:grid-cols-2 gap-2.5">
-                          {activeModalTest.whyPerformed.map((reason, idx) => (
-                            <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                              <CheckCircle2 className="h-4 w-4 text-cyan-600 shrink-0 mt-0.5" />
-                              <span className="text-slate-700">{reason}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Conditions Detected */}
-                    {activeModalTest.conditionsDetected && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-rose-600" /> Medical Conditions & Diseases Identified
-                        </h4>
-                        <div className="space-y-2">
-                          {activeModalTest.conditionsDetected.map((cond, idx) => (
-                            <div key={idx} className="p-3 rounded-2xl bg-rose-50/50 border border-rose-100 text-slate-800 flex items-center gap-2">
-                              <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0"></span>
-                              <span>{cond}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Who Should Get It */}
-                    {activeModalTest.whoShouldGetIt && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3">Who Should Undergo Testing?</h4>
-                        <ul className="list-disc pl-5 space-y-1.5 text-slate-700">
-                          {activeModalTest.whoShouldGetIt.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* When Not Interpreted Alone */}
-                    {activeModalTest.whenNotInterpretedAlone && (
-                      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-                        <h4 className="font-bold text-amber-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                          <AlertCircle className="h-4 w-4 text-amber-600" /> Clinical Context & Limitations
-                        </h4>
-                        <ul className="list-disc pl-5 space-y-1 text-amber-900 text-[11px]">
-                          {activeModalTest.whenNotInterpretedAlone.map((warn, idx) => (
-                            <li key={idx}>{warn}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 3: PREPARATION */}
-                {activeTab === 'prep' && (
-                  <div className="space-y-6">
-                    {/* Checklist */}
-                    {activeModalTest.testPreparationChecklist ? (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3">Patient Preparation Checklist</h4>
-                        <div className="space-y-2.5">
-                          {activeModalTest.testPreparationChecklist.map((item, idx) => (
-                            <div key={idx} className="p-3.5 rounded-2xl bg-sky-50/60 border border-sky-100 flex items-start gap-3">
-                              <span className="flex items-center justify-center h-5 w-5 rounded-full bg-cyan-700 text-white font-bold text-[10px] shrink-0">
-                                {idx + 1}
-                              </span>
-                              <p className="text-slate-800 font-medium">{item}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1">Standard Preparation</h4>
-                        <p className="text-slate-700">{activeModalTest.preparation}</p>
-                      </div>
-                    )}
-
-                    {/* Risks and Complications */}
-                    {activeModalTest.risksAndComplications && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-2">Procedure Safety & Risks</h4>
-                        <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100 text-emerald-950">
-                          <ul className="list-disc pl-5 space-y-1">
-                            {activeModalTest.risksAndComplications.map((risk, idx) => (
-                              <li key={idx}>{risk}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Post test recovery */}
-                    {activeModalTest.postTestRecovery && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-2">Post-Test Recovery & Next Steps</h4>
-                        <p className="text-slate-700">{activeModalTest.postTestRecovery}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 4: RESULTS & REFERENCE RANGES */}
-                {activeTab === 'results' && (
-                  <div className="space-y-6">
-                    {/* Normal Values Table */}
-                    {activeModalTest.normalValuesDetails ? (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3">Physiological Reference Range Bounds</h4>
-                        <div className="overflow-x-auto rounded-2xl border border-slate-200">
-                          <table className="w-full text-left text-xs border-collapse">
-                            <thead className="bg-slate-100 text-slate-700 font-bold uppercase text-[10px]">
-                              <tr>
-                                <th className="p-3 border-b border-slate-200">Category / Parameter</th>
-                                <th className="p-3 border-b border-slate-200">Reference Bound</th>
-                                <th className="p-3 border-b border-slate-200">Clinical Interpretation</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                              {activeModalTest.normalValuesDetails.map((row, idx) => (
-                                <tr key={idx} className="hover:bg-slate-50">
-                                  <td className="p-3 font-bold text-slate-900">{row.title}</td>
-                                  <td className="p-3 font-mono font-bold text-cyan-800">{row.range}</td>
-                                  <td className="p-3 text-slate-600">{row.interpretation}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
-                        <h4 className="font-bold text-emerald-900 text-xs uppercase tracking-wider mb-1">Standard Reference Range</h4>
-                        <p className="text-emerald-950 font-medium">{activeModalTest.normalRange}</p>
-                      </div>
-                    )}
-
-                    {/* High Interpretation */}
-                    {activeModalTest.highInterpretation && (
-                      <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200">
-                        <h4 className="font-bold text-rose-900 text-xs uppercase tracking-wider mb-2">
-                          High Level / Abnormal Findings Significance
-                        </h4>
-                        <ul className="list-disc pl-5 space-y-1 text-rose-950">
-                          {activeModalTest.highInterpretation.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Low Interpretation */}
-                    {activeModalTest.lowInterpretation && (
-                      <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200">
-                        <h4 className="font-bold text-sky-900 text-xs uppercase tracking-wider mb-2">
-                          Low Level / Decreased Value Significance
-                        </h4>
-                        <ul className="list-disc pl-5 space-y-1 text-sky-950">
-                          {activeModalTest.lowInterpretation.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Factors Affecting Results */}
-                    {activeModalTest.factorsAffectingResults && (
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm mb-3">Factors Affecting Test Accuracy & Results</h4>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          {activeModalTest.factorsAffectingResults.map((item, idx) => (
-                            <div key={idx} className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                              <span className="font-bold text-slate-900 block mb-0.5">{item.factor}</span>
-                              <p className="text-slate-600 text-[11px]">{item.effect}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Advantages vs Limitations */}
-                    <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                      {activeModalTest.advantagesAndBenefits && (
-                        <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-                          <h5 className="font-bold text-emerald-900 text-xs uppercase tracking-wider mb-2">Key Advantages</h5>
-                          <ul className="list-disc pl-4 space-y-1 text-emerald-950 text-[11px]">
-                            {activeModalTest.advantagesAndBenefits.map((adv, idx) => (
-                              <li key={idx}>{adv}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {activeModalTest.limitationsAndDisadvantages && (
-                        <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200">
-                          <h5 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2">Key Limitations</h5>
-                          <ul className="list-disc pl-4 space-y-1 text-slate-700 text-[11px]">
-                            {activeModalTest.limitationsAndDisadvantages.map((lim, idx) => (
-                              <li key={idx}>{lim}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 5: FAQS */}
-                {activeTab === 'faqs' && activeModalTest.faqs && (
-                  <div className="space-y-4">
-                    <h4 className="font-bold text-slate-900 text-sm mb-3">Frequently Asked Clinical Questions</h4>
-                    {activeModalTest.faqs.map((faq, idx) => (
-                      <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                        <h5 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                          <HelpCircle className="h-4 w-4 text-cyan-600 shrink-0" /> {faq.question}
-                        </h5>
-                        <p className="text-slate-600 pl-6 text-xs leading-relaxed">{faq.answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-4 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <ShieldAlert className="h-4 w-4 text-slate-400" /> Patient Education Resource — Always consult your physician.
-                </span>
-                <button
-                  onClick={() => setActiveModalTest(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition cursor-pointer"
-                >
-                  Close Guide
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
 
       </div>
     </div>

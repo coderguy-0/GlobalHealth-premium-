@@ -38,6 +38,8 @@ interface RecipesViewProps {
   hideHeader?: boolean;
   onNavigate?: (tab: NavigationTab) => void;
   onAskAI?: (prompt: string) => void;
+  /** Optional recipe id to open automatically (used by the Nutrients index). */
+  initialRecipeId?: string;
 }
 
 type TagMatchMode = 'any' | 'all';
@@ -48,7 +50,8 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
   onToggleSave,
   hideHeader = false,
   onNavigate,
-  onAskAI
+  onAskAI,
+  initialRecipeId
 }) => {
   // Search & Sorting
   const [searchTerm, setSearchTerm] = useState('');
@@ -110,6 +113,18 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, [allRecipes]);
+
+  // Open the recipe requested by the "Nutrients" index without losing the
+  // recipe's full detail page (which keeps its own nutrition, vitamin,
+  // mineral, macro and safety sections).
+  useEffect(() => {
+    if (!initialRecipeId) return;
+    const found = allRecipes.find((r) => r.id === initialRecipeId || r.title.toLowerCase().replace(/\s+/g, '-') === initialRecipeId.toLowerCase());
+    if (found) {
+      setActiveModalRecipe(found);
+      window.location.hash = `#recipes/${found.id}`;
+    }
+  }, [initialRecipeId, allRecipes]);
 
   const openRecipe = (recipe: Recipe) => {
     setActiveModalRecipe(recipe);

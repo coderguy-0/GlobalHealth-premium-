@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   ShieldCheck, AlertTriangle, Clock3, CalendarClock, UserRound, DoorOpen, ClipboardList,
   BadgeCheck, ArrowRight, Building2, CheckCircle2, Info, UserPlus, PlusCircle, CalendarDays,
-  RefreshCw, FileCheck2, Users, Star
+  RefreshCw, FileCheck2, Users, Star, Siren, BedDouble, FlaskConical, ScanLine, Pill,
+  Droplets, Truck, Link2, Wallet, Activity,
 } from 'lucide-react';
 import { useHospitalPortal, WorkspaceView, VERIFICATION_LABEL, APPOINTMENT_STATUS_LABEL, CONSULTATION_LABEL } from './hospitalPortalData';
 
@@ -13,12 +14,13 @@ const QUICK_ACTIONS: { label: string; view: WorkspaceView; icon: React.ReactNode
   { label: 'View Appointments', view: 'appointments', icon: <CalendarDays className="h-4 w-4" /> },
   { label: 'Update Hours', view: 'hours', icon: <Clock3 className="h-4 w-4" /> },
   { label: 'Manage Services', view: 'services', icon: <ClipboardList className="h-4 w-4" /> },
+  { label: 'Pricing Center', view: 'pricing', icon: <ClipboardList className="h-4 w-4" /> },
   { label: 'Review Verification', view: 'verification', icon: <FileCheck2 className="h-4 w-4" /> },
   { label: 'Manage Staff', view: 'staff', icon: <Users className="h-4 w-4" /> },
 ];
 
 export const HospitalDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => void }> = ({ onNavigate }) => {
-  const { organization, departments, doctors, services, appointments, documents, verification } = useHospitalPortal();
+  const { organization, departments, doctors, services, appointments, documents, verification, labTests, imaging, pharmacy, bloodBanks, prices } = useHospitalPortal();
   const [loading, setLoading] = useState(true);
 
   // Simulated fetch — skeleton states per spec §77.
@@ -34,6 +36,17 @@ export const HospitalDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => voi
   const activeDoctors = doctors.filter((d) => d.hospitalId === organization.id && d.affiliationStatus === 'active');
   const activeDepts = departments.filter((d) => d.hospitalId === organization.id && d.status === 'active');
   const activeServices = services.filter((s) => s.hospitalId === organization.id && s.status === 'active');
+  const scopedLab = labTests.filter((l) => l.hospitalId === organization.id);
+  const scopedImaging = imaging.filter((i) => i.hospitalId === organization.id);
+  const scopedPharmacy = pharmacy.filter((p) => p.hospitalId === organization.id);
+  const scopedBlood = bloodBanks.filter((b) => b.hospitalId === organization.id);
+  const scopedPrices = prices.filter((p) => p.hospitalId === organization.id);
+  const publishedPrices = scopedPrices.filter((p) => p.publicStatus === 'published').length;
+  const pendingPrices = scopedPrices.filter((p) => p.publicStatus === 'pending_review' || p.publicStatus === 'draft').length;
+  const emergencyAvailable = organization.emergency.available;
+  const labAvailable = scopedLab.filter((l) => l.availability === 'available').length;
+  const imagingAvailable = scopedImaging.filter((i) => i.available).length;
+  const pharmacyAvailable = scopedPharmacy.filter((p) => p.name).length;
 
   const expiringDoc = documents.find((d) => d.hospitalId === organization.id && d.status === 'expiring_soon');
   const expiringAcc = organization.accreditations.find((a) => a.verificationStatus === 'expiring_soon' || a.verificationStatus === 'expired');
@@ -109,6 +122,92 @@ export const HospitalDashboard: React.FC<{ onNavigate: (v: WorkspaceView) => voi
         <Metric label="Active doctors" value={activeDoctors.length} sub={`${doctors.filter((d) => d.hospitalId === organization.id).length} total`} />
         <Metric label="Departments" value={activeDepts.length} sub={`${activeServices.length} services`} />
       </div>
+
+      {/* Operations center (§59–§60): service-level status, never color alone */}
+      <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-soft" aria-labelledby="ops-title">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h3 id="ops-title" className="flex items-center gap-2 text-sm font-extrabold text-[#0B1F33]">
+            <Activity className="h-4 w-4 text-[#1769AA]" /> Operations Center
+          </h3>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#CDE0EC] bg-[#EDF6FC] px-3 py-1 text-[10px] font-bold text-[#1769AA]">
+            <RefreshCw className="h-3 w-3" /> Auto-refreshes with hospital data
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <OpCard
+            icon={<Siren className="h-4 w-4" />} title="Emergency"
+            status={emergencyAvailable ? 'Operational' : 'Downtime'}
+            statusClassName={emergencyAvailable ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-700'}
+            detail={organization.emergency.hours || '24×7'}
+            action="Review emergency profile"
+            onClick={() => onNavigate('services')}
+          />
+          <OpCard
+            icon={<BedDouble className="h-4 w-4" />} title="Care & Beds"
+            status={organization.emergency.available ? 'Admissions open' : 'Check emergency'}
+            statusClassName="border-[#CDE0EC] bg-[#EDF6FC] text-[#1769AA]"
+            detail={`${activeServices.length} active services · ${activeDepts.length} departments`}
+            action="Open departments"
+            onClick={() => onNavigate('departments')}
+          />
+          <OpCard
+            icon={<FlaskConical className="h-4 w-4" />} title="Laboratory"
+            status={labAvailable > 0 ? `${labAvailable} tests available` : 'Not configured'}
+            statusClassName={labAvailable > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'}
+            detail={`${scopedLab.length} tests total`}
+            action="Manage lab"
+            onClick={() => onNavigate('laboratory')}
+          />
+          <OpCard
+            icon={<ScanLine className="h-4 w-4" />} title="Imaging"
+            status={imagingAvailable > 0 ? `${imagingAvailable} modalities online` : 'Not configured'}
+            statusClassName={imagingAvailable > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'}
+            detail={`${scopedImaging.length} modalities total`}
+            action="Manage imaging"
+            onClick={() => onNavigate('imaging')}
+          />
+          <OpCard
+            icon={<Pill className="h-4 w-4" />} title="Pharmacy"
+            status={pharmacyAvailable > 0 ? 'In-house active' : 'No pharmacy configured'}
+            statusClassName={pharmacyAvailable > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'}
+            detail={scopedPharmacy[0]?.hours || '—'}
+            action="Manage pharmacy"
+            onClick={() => onNavigate('pharmacy')}
+          />
+          <OpCard
+            icon={<Droplets className="h-4 w-4" />} title="Blood Bank"
+            status={scopedBlood.length > 0 ? 'Operational' : 'Not configured'}
+            statusClassName={scopedBlood.length > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'}
+            detail={scopedBlood[0]?.hours || '—'}
+            action="Manage blood bank"
+            onClick={() => onNavigate('blood_bank')}
+          />
+          <OpCard
+            icon={<Truck className="h-4 w-4" />} title="Ambulance"
+            status={organization.emergency.available ? 'Dispatch available' : 'Dispatch check required'}
+            statusClassName={organization.emergency.available ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'}
+            detail={organization.emergency.contact || 'Emergency contact not set'}
+            action="Manage emergency"
+            onClick={() => onNavigate('services')}
+          />
+          <OpCard
+            icon={<Wallet className="h-4 w-4" />} title="Pricing & Billing"
+            status={publishedPrices > 0 ? `${publishedPrices} published prices` : 'No published prices'}
+            statusClassName={publishedPrices > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'}
+            detail={`${pendingPrices} pending review`}
+            action="Open pricing center"
+            onClick={() => onNavigate('pricing')}
+          />
+          <OpCard
+            icon={<Link2 className="h-4 w-4" />} title="GlobalHealth Sync"
+            status={organization.publicStatus === 'published' ? 'Profile synchronized' : 'Profile awaiting publication'}
+            statusClassName={organization.publicStatus === 'published' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'}
+            detail={`Profile ${organization.publicStatus.replace('_', ' ')}`}
+            action="Review publication"
+            onClick={() => onNavigate('verification')}
+          />
+        </div>
+      </section>
 
       {/* Quick actions (§15) */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft" aria-labelledby="qa-title">
@@ -257,5 +356,17 @@ const SummaryCard: React.FC<{ icon: React.ReactNode; label: string; value: numbe
       <span className="block text-sm font-extrabold text-slate-900">{value} {label}</span>
       <span className="block truncate text-[10px] text-slate-400">{sub}</span>
     </span>
+  </button>
+);
+
+const OpCard: React.FC<{ icon: React.ReactNode; title: string; status: string; statusClassName: string; detail: string; action: string; onClick: () => void }> = ({ icon, title, status, statusClassName, detail, action, onClick }) => (
+  <button type="button" onClick={onClick} className="flex cursor-pointer flex-col rounded-2xl border border-[#E2E8F0] bg-[#F5F8FA] p-4 text-left transition hover:border-[#CDE0EC] hover:bg-[#EDF6FC]">
+    <span className="flex items-center gap-2 text-[#0B1F33]">
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#1769AA] ring-1 ring-[#E2E8F0]">{icon}</span>
+      <span className="text-xs font-extrabold">{title}</span>
+    </span>
+    <span className={`mt-3 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusClassName}`}>{status}</span>
+    <span className="mt-1.5 text-[11px] text-[#607080]">{detail}</span>
+    <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-[#1769AA]">{action} <ArrowRight className="h-3 w-3" /></span>
   </button>
 );

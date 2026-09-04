@@ -12,7 +12,8 @@ import {
   SettlementLedgerItem,
   PharmacyStaffRole,
   PortalOrderStatus,
-  PrescriptionReviewStatus
+  PrescriptionReviewStatus,
+  PharmacyFeeConfiguration
 } from '../types/pharmacyPortal';
 import { 
   DEFAULT_PHARMACY_PROFILE, 
@@ -25,7 +26,8 @@ import {
   DEFAULT_NOTIFICATIONS, 
   DEFAULT_SETTLEMENTS, 
   DEFAULT_SUPPORT_TICKETS, 
-  DEFAULT_AUDIT_LOGS 
+  DEFAULT_AUDIT_LOGS,
+  DEFAULT_FEE_CONFIGURATION
 } from '../data/pharmacyPortalData';
 import { updatePartnerInventory, fetchPartnerMe } from './pharmacyInventoryClient';
 
@@ -43,6 +45,7 @@ const STORAGE_KEYS = {
   AUDIT_LOGS: 'gh_pharmacy_portal_audit_logs',
   CURRENT_STAFF_ID: 'gh_pharmacy_portal_current_staff_id',
   CURRENT_BRANCH_ID: 'gh_pharmacy_portal_current_branch_id',
+  FEE_CONFIG: 'gh_pharmacy_portal_fee_config',
   IS_AUTHENTICATED: 'gh_pharmacy_portal_auth_state',
   APPLICATIONS: 'gh_pharmacy_portal_applications',
 };
@@ -104,6 +107,23 @@ export class PharmacyPortalService {
     const updated = { ...current, ...profile };
     this.setStored(STORAGE_KEYS.PROFILE, updated);
     this.logAction('Profile Update', 'Updated pharmacy details and store policies', 'Staff');
+    return updated;
+  }
+
+  // Configurable platform fee configuration
+  static getFeeConfiguration(): PharmacyFeeConfiguration {
+    return this.getStored(STORAGE_KEYS.FEE_CONFIG, DEFAULT_FEE_CONFIGURATION);
+  }
+
+  static updateFeeConfiguration(feeConfig: Partial<PharmacyFeeConfiguration>): PharmacyFeeConfiguration {
+    const current = this.getFeeConfiguration();
+    const updated = { ...current, ...feeConfig, updatedAt: new Date().toISOString() };
+    this.setStored(STORAGE_KEYS.FEE_CONFIG, updated);
+    this.logAction(
+      'Fee Configuration Update',
+      `Updated platform fees (${feeConfig.platformCommissionPercent ?? current.platformCommissionPercent}% commission, payment ${feeConfig.paymentProcessingPercent ?? current.paymentProcessingPercent}%).`,
+      'Pricing'
+    );
     return updated;
   }
 

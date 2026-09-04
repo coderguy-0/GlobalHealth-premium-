@@ -5,28 +5,118 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { createHash, randomBytes } from 'crypto';
+import { createHash, createHmac, randomBytes } from 'crypto';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { PHARMACY_PRODUCTS, VERIFIED_PHARMACY_PARTNERS } from './src/data/pharmacyProductsData';
 import { INITIAL_HOSPITALS, INITIAL_DEPARTMENTS, INITIAL_PORTAL_DOCTORS, INITIAL_BLOOD_BANK } from './src/data/hospitalInitialData';
+import { detectSafetyRisk } from './src/core/ai/aiSafety';
+import { retrieveVerifiedKnowledge } from './src/core/ai/aiKnowledge';
+import { loadRuntimeConfig } from './src/server/config';
+import { createLogger } from './src/server/logger';
+import { apiError } from './src/server/errors';
+import {
+  hashSecret,
+  verifySecret,
+  secureToken,
+  generateTotpSecret,
+  verifyTotp
+} from './src/server/security';
 
 async function startServer() {
+  const config = loadRuntimeConfig(process.env);
   const app = express();
+  const logger = createLogger('server');
   const appDir = process.cwd();
+  const RUNTIME_DIR = path.join(appDir, config.runtimeDir, 'runtime');
+  const readJsonFile = <T>(file: string, fallback: T): T => {
+    try {
+      if (!fs.existsSync(file)) return fallback;
+      const raw = fs.readFileSync(file, 'utf8').trim();
+      return raw ? (JSON.parse(raw) as T) : fallback;
+    } catch (err) {
+      // A corrupt runtime cache should never block startup; the next write
+      // repairs it. This is deliberately logged and not surfaced to users.
+      console.warn('[GlobalHealth] Runtime cache could not be read:', file, (err as Error)?.message);
+      return fallback;
+    }
+  };
+  const writeJsonFile = (file: string, data: unknown) => {
+    try {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      const tmp = `${file}.tmp`;
+      fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+      fs.renameSync(tmp, file); // atomic-ish replace, avoids partial writes
+    } catch (err) {
+      console.warn('[GlobalHealth] Runtime cache could not be written:', file, (err as Error)?.message);
+    }
+  };
+  const writeSecureJsonFile = (file: string, data: unknown) => {
+    try {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      const tmp = `${file}.tmp`;
+      fs.writeFileSync(tmp, JSON.stringify(data, null, 2), { encoding: 'utf8', mode: 0o600 });
+      if (fs.existsSync(tmp)) fs.chmodSync(tmp, 0o600);
+      fs.renameSync(tmp, file);
+      if (fs.existsSync(file)) fs.chmodSync(file, 0o600);
+    } catch (err) {
+      console.warn('[GlobalHealth] Runtime account store could not be written:', file, (err as Error)?.message);
+    }
+  };
 
   // Dynamic port binding for Cloud Run / Container deployment with 3000 default
-  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const PORT = config.port;
+  const IS_PRODUCTION = config.isProduction;
+  for (const warning of config.warnings) {
+    logger.warn('startup configuration warning', { warning });
+  }
 
   // High payload parser for base64 medical certificate uploads
   app.use(express.json({ limit: '15mb' }));
   app.use(express.urlencoded({ extended: true }));
 
-  // Native CORS middleware
+  // Enterprise request identity + basic security headers.
   app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const incoming = Array.isArray(req.headers['x-request-id']) ? req.headers['x-request-id'][0] : req.headers['x-request-id'];
+    const requestId =
+      typeof incoming === 'string' && /^[A-Za-z0-9_.-]{1,80}$/.test(incoming)
+        ? incoming
+        : `req-${randomBytes(12).toString('hex')}`;
+    (req as any).requestId = requestId;
+    res.setHeader('X-Request-Id', requestId);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('X-XSS-Protection', '0');
+    next();
+  });
+
+  // Native CORS middleware. Production deployments require an explicit
+  // CORS_ORIGIN allowlist. Requests without an Origin header (same-origin
+  // browser navigation/native clients) are unaffected and always allowed.
+  const configuredCorsOrigins = config.corsOrigins;
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const localDevOrigin = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i;
+    const requestProto = String(req.headers['x-forwarded-proto'] || req.protocol || 'http');
+    const sameOrigin =
+      origin && req.headers.host && origin === `${requestProto}://${req.headers.host}`;
+    if (origin && (configuredCorsOrigins.includes(origin) || sameOrigin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    } else if (origin && IS_PRODUCTION) {
+      return res.status(403).json({
+        success: false,
+        code: 'CORS_ORIGIN_DENIED',
+        error: 'Origin is not allowed by this server.'
+      });
+    } else if (origin && !IS_PRODUCTION && (localDevOrigin.test(origin) || configuredCorsOrigins.length === 0)) {
+      // Non-production convenience only (local SPA or explicitly configured
+      // development origins). Production never reaches this branch.
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Key');
     if (req.method === 'OPTIONS') {
       return res.sendStatus(204);
     }
@@ -48,69 +138,147 @@ async function startServer() {
         heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),
         heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024),
       },
-      version: '2.4.0-enterprise'
+      version: '2.4.0-enterprise',
+      requestId: (req as any).requestId,
+    });
+  });
+
+  // Readiness probe (safe for orchestrators/load balancers). It does not expose
+  // secrets or internal architecture; it only confirms the HTTP server and
+  // runtime persistence directory are usable.
+  app.get('/api/ready', (req, res) => {
+    const runtimeWritable = (() => {
+      try {
+        fs.mkdirSync(RUNTIME_DIR, { recursive: true });
+        const probe = path.join(RUNTIME_DIR, '.ready-probe');
+        fs.writeFileSync(probe, String(Date.now()), 'utf8');
+        fs.unlinkSync(probe);
+        return true;
+      } catch {
+        return false;
+      }
+    })();
+    return res.status(runtimeWritable ? 200 : 503).json({
+      success: runtimeWritable,
+      status: runtimeWritable ? 'READY' : 'NOT_READY',
+      timestamp: new Date().toISOString(),
+      uptimeSeconds: Math.floor(process.uptime()),
+      requestId: (req as any).requestId,
     });
   });
 
   // ----------------------------------------------------------------------
-  // 2. Multimodal AI License Verification & OCR Gateway
+  // 2. Credential Verification Gateway
   // ----------------------------------------------------------------------
-  app.post('/api/verify-credential', (req, res) => {
-    try {
-      const { fullName, npiNumber, medicalCouncilNumber, licenseNumber, speciality } = req.body;
+  // Production behavior: this endpoint NEVER synthesizes a verification
+  // verdict. It requires a configured medical-registry gateway
+  // (MEDAUTH_REGISTRY_URL + MEDAUTH_REGISTRY_SECRET) and reflects the
+  // gateway's authoritative result. Without that integration it returns a
+  // clearly unverified/availability result rather than claiming "VERIFIED".
+  app.post('/api/verify-credential', async (req, res) => {
+    const { fullName, npiNumber, medicalCouncilNumber, licenseNumber, speciality } = req.body || {};
+    if (!fullName || !npiNumber || !licenseNumber) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing mandatory credential parameters: fullName, npiNumber, and licenseNumber are required.'
+      });
+    }
 
-      if (!fullName || !npiNumber || !licenseNumber) {
-        return res.status(400).json({
+    const registryUrl = config.medAuthRegistryUrl;
+    const registrySecret = config.medAuthRegistrySecret;
+    if (!registryUrl || !registrySecret) {
+      return res.status(503).json({
+        success: false,
+        code: 'VERIFICATION_UNAVAILABLE',
+        verificationResult: {
+          status: 'NOT_VERIFIED',
+          confidenceScore: 0,
+          summary: 'Credential verification could not be completed because no medical registry gateway is configured. No user-facing verification is asserted.',
+          mismatches: ['registry_not_configured']
+        }
+      });
+    }
+
+    const requestPayload = {
+      fullName: String(fullName).trim(),
+      npiNumber: String(npiNumber).trim(),
+      medicalCouncilNumber: medicalCouncilNumber ? String(medicalCouncilNumber).trim() : undefined,
+      licenseNumber: String(licenseNumber).trim(),
+      speciality: speciality ? String(speciality).trim() : undefined
+    };
+    const payloadBody = JSON.stringify(requestPayload);
+    const signature = createHmac('sha256', registrySecret).update(payloadBody).digest('hex');
+
+    try {
+      const registryResponse = await fetch(registryUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-MEDAUTH-SIGNATURE': signature
+        },
+        body: payloadBody,
+        signal: AbortSignal.timeout(8000)
+      });
+      if (!registryResponse.ok) {
+        return res.status(502).json({
           success: false,
-          error: 'Missing mandatory credential parameters: fullName, npiNumber, and licenseNumber are required.'
+          code: 'REGISTRY_UNAVAILABLE',
+          verificationResult: {
+            status: 'NOT_VERIFIED',
+            confidenceScore: 0,
+            summary: 'The registered medical registry gateway returned an error. No verification is asserted.',
+            mismatches: ['registry_error']
+          }
         });
       }
-
-      // Generate cryptographic hash signature
-      const cleanName = fullName.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4) || 'DOC';
-      const badgeId = `MEDAUTH-${Math.floor(10000 + Math.random() * 90000)}-${cleanName}`;
-      const securityHash = `sha256_${Math.random().toString(36).substring(2, 12)}_${Date.now().toString(36)}`;
-
+      const registryData = (await registryResponse.json()) as Record<string, any>;
+      const verified = registryData?.verified === true;
+      const confidence = Number(registryData?.confidenceScore ?? 0);
+      const matches = Array.isArray(registryData?.matches) ? registryData.matches : [];
+      const verifiedFields = registryData?.verifiedFields && typeof registryData.verifiedFields === 'object'
+        ? registryData.verifiedFields
+        : {};
+      if (!verified) {
+        return res.json({
+          success: false,
+          verificationResult: {
+            status: 'NOT_VERIFIED',
+            confidenceScore: confidence > 0 ? Math.min(confidence, 99) : 0,
+            summary: registryData?.summary || 'The medical registry did not confirm these credentials at this time.',
+            mismatches: matches,
+            verifiedFields,
+            verifiedAt: new Date().toISOString()
+          }
+        });
+      }
+      const verificationId = typeof registryData?.verificationId === 'string'
+        ? registryData.verificationId
+        : `REG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
       return res.json({
         success: true,
         verificationResult: {
           status: 'VERIFIED',
-          confidenceScore: 98,
-          summary: `Credentials audited and confirmed against State Medical Board registry for ${fullName} (${speciality || 'General Medicine'}).`,
-          mismatches: [],
-          verifiedFields: {
-            fullNameMatch: true,
-            npiMatch: true,
-            licenseMatch: true,
-            councilMatch: true,
-            certValid: true,
-          },
-          verificationBadgeId: badgeId,
+          confidenceScore: Math.max(0, Math.min(confidence || 100, 100)),
+          summary: registryData?.summary || `Credentials confirmed by the configured medical registry for ${String(fullName).trim()}.`,
+          mismatches: matches,
+          verifiedFields,
+          verificationBadgeId: verificationId,
           verifiedAt: new Date().toISOString(),
-          securityHash: securityHash,
-          deaScheduleClearance: 'SCHEDULE_II_THROUGH_V_ACTIVE'
+          securityHash: `sha256_${createHash('sha256').update(payloadBody).digest('hex').slice(0, 24)}`
         }
       });
     } catch (err: any) {
-      // Resilient deterministic fallback guarantees continuity
-      const fallbackBadge = `MEDAUTH-${Math.floor(10000 + Math.random() * 90000)}-DOC`;
-      return res.json({
-        success: true,
+      // No fabricated fallback verdict. The caller gets an explicit
+      // "could not verify" result with no verification claim.
+      console.warn('[GlobalHealth] Medical registry verification failed:', (err as Error)?.message || 'unknown error');
+      return res.status(503).json({
+        success: false,
+        code: 'VERIFICATION_UNAVAILABLE',
         verificationResult: {
-          status: 'VERIFIED',
-          confidenceScore: 92,
-          summary: 'Credentials verified via MedAuth Medical Board Registry gateway fallback.',
-          mismatches: [],
-          verifiedFields: {
-            fullNameMatch: true,
-            npiMatch: true,
-            licenseMatch: true,
-            councilMatch: true,
-            certValid: true,
-          },
-          verificationBadgeId: fallbackBadge,
-          verifiedAt: new Date().toISOString(),
-          securityHash: `sha256_fb_${Math.random().toString(36).substring(2, 10)}`,
+          status: 'NOT_VERIFIED',
+          confidenceScore: 0,
+          summary: 'The medical registry gateway could not be reached at this time. No verification is asserted.',
+          mismatches: ['registry_unreachable']
         }
       });
     }
@@ -119,17 +287,23 @@ async function startServer() {
   // ----------------------------------------------------------------------
   // 3. E-Prescription Safety Validator & Signature Gateway
   // ----------------------------------------------------------------------
-  app.post('/api/prescribe', (req, res) => {
-    const { doctorId, patientId, medications, allergyList } = req.body;
+  app.post('/api/prescribe', requireDoctor, (req: any, res: any) => {
+    const doctor: ConsentDoctor = req.authDoctor;
+    const { patientId, medications, allergyList } = req.body || {};
 
+    if (!patientId) {
+      return res.status(400).json({ success: false, error: 'A patient record is required before a prescription can be prepared.' });
+    }
     if (!medications || !Array.isArray(medications) || medications.length === 0) {
-      return res.status(400).json({ error: 'No prescription items provided.' });
+      return res.status(400).json({ success: false, error: 'No prescription items provided.' });
+    }
+    if (!/^usr-/.test(String(patientId))) {
+      return res.status(400).json({ success: false, error: 'The patient identifier is invalid.' });
     }
 
     // Evaluate potential contraindications
     const detectedInteractions: any[] = [];
     const medNames = medications.map((m: any) => (m.medicationName || '').toLowerCase());
-
     if (allergyList && Array.isArray(allergyList)) {
       const allergies = allergyList.map((a: string) => a.toLowerCase());
       medNames.forEach((med: string) => {
@@ -143,14 +317,44 @@ async function startServer() {
       });
     }
 
+    const rxId = `RX-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const createdAt = new Date().toISOString();
+    const signingSecret = config.prescriptionSigningSecret;
+    const isSigned = Boolean(signingSecret);
+    const signature = isSigned
+      ? createHmac('sha256', signingSecret)
+          .update(`${doctor.doctorId}|${patientId}|${rxId}|${medNames.join(',')}|${createdAt}`)
+          .digest('hex')
+      : null;
+    const heldForInteraction = detectedInteractions.length > 0;
+    const status = !isSigned ? 'HELD_FOR_SIGNING' : heldForInteraction ? 'HELD_FOR_CONFIRMATION' : 'READY_FOR_PHARMACY';
+
+    audit(req, {
+      patientUserId: patientId,
+      actorId: doctor.doctorId,
+      actorRole: 'DOCTOR',
+      eventType: 'PRESCRIPTION_PREPARED',
+      resourceType: 'Prescription',
+      resourceId: rxId,
+      result: heldForInteraction ? 'held_for_interaction' : 'prepared',
+      detail: `Prescription for ${medications.length} item(s) prepared by verified doctor ${doctor.doctorId}; signed=${isSigned ? 'yes' : 'no'}`
+    });
+
     return res.json({
       success: true,
-      prescriptionId: `RX-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      dispatchedAt: new Date().toISOString(),
+      rxId,
+      prescriptionId: rxId,
+      preparedAt: createdAt,
       itemCount: medications.length,
       interactions: detectedInteractions,
-      digitalSignature: `sig_md_${doctorId || 'doc'}_${Math.random().toString(36).substring(2, 12)}`,
-      status: detectedInteractions.length > 0 ? 'HELD_FOR_CONFIRMATION' : 'DISPATCHED_TO_PHARMACY'
+      signingStatus: isSigned ? 'SIGNED' : 'UNSIGNED',
+      digitalSignature: signature,
+      status,
+      message: !isSigned
+        ? 'Prescription prepared but held because no server signing secret is configured.'
+        : heldForInteraction
+          ? 'Prescription held for interaction confirmation.'
+          : 'Prescription prepared for pharmacy processing.'
     });
   });
 
@@ -329,14 +533,14 @@ async function startServer() {
     details: string;
   }
 
-  // Passwords/secrets are never stored in plain text: salted SHA-256 digest.
-  const hashSecret = (salt: string, value: string) =>
-    createHash('sha256').update(`${salt}::${value}::globalhealth`).digest('hex');
-
+  // Password hashing, secure token generation, and TOTP are implemented in
+  // src/server/security.ts and imported at the top of this file so they can be
+  // unit tested and reused by the future API modules.
   // Brute-force protection for credential checks (per identifier, 15 min window).
   interface AttemptWindow { count: number; firstAt: number; lockedUntil: number }
   const LOGIN_ATTEMPTS: Map<string, AttemptWindow> = new Map();
   const REAUTH_ATTEMPTS: Map<string, AttemptWindow> = new Map();
+  const PUBLIC_2FA_CHALLENGES: Map<string, { userId: string; expiresAt: number; attempts: number }> = new Map();
   const checkRateLimit = (
     store: Map<string, AttemptWindow>,
     key: string,
@@ -359,97 +563,106 @@ async function startServer() {
     store.set(key, w);
   };
 
-  // In-memory persistent state during server runtime
-  const PUBLIC_USERS: Map<string, ServerPublicUser> = new Map([
-    [
-      'usr-sarah-jenkins',
-      {
-        id: 'usr-sarah-jenkins',
-        username: 'sarah_wellness',
-        fullName: 'Sarah Jenkins',
-        firstName: 'Sarah',
-        lastName: 'Jenkins',
-        email: 'sarah.jenkins@example.com',
-        phoneNumber: '+1 (555) 234-5678',
-        passwordHash: hashSecret('usr-sarah-jenkins', 'Password123!'),
-        role: 'VERIFIED_USER',
-        accountStatus: 'ACTIVE',
-        isEmailVerified: true,
-        isPhoneVerified: true,
-        country: 'United States',
-        preferredLanguage: 'English',
-        twoFactor: {
-          enabled: false,
-          backupCodes: ['8392-1928', '4729-5829', '1948-2849', '9582-1049']
-        },
-        dietaryPreferences: ['Mediterranean', 'Heart-Healthy', 'Anti-Inflammatory'],
-        healthGoals: ['Balance Blood Glucose', 'Weight & Metabolic Wellness'],
-        marketingConsent: true,
-        createdAt: '2026-01-15T10:30:00.000Z',
-        lastLoginAt: new Date().toISOString()
-      }
-    ],
-    [
-      'usr-alex-turner',
-      {
-        id: 'usr-alex-turner',
-        username: 'alex_turner',
-        fullName: 'Alex Turner',
-        firstName: 'Alex',
-        lastName: 'Turner',
-        email: 'alex.turner@example.com',
-        phoneNumber: '+1 (555) 876-5432',
-        passwordHash: hashSecret('usr-alex-turner', 'Password123!'),
-        role: 'PUBLIC_USER',
-        accountStatus: 'ACTIVE',
-        isEmailVerified: true,
-        isPhoneVerified: false,
-        country: 'United Kingdom',
-        preferredLanguage: 'English',
-        twoFactor: {
-          enabled: false
-        },
-        dietaryPreferences: ['Gluten-Free'],
-        healthGoals: ['General Longevity'],
-        marketingConsent: false,
-        createdAt: '2026-02-10T14:20:00.000Z',
-        lastLoginAt: new Date().toISOString()
-      }
-    ]
-  ]);
+  // Per-IP request buckets for sensitive endpoints. Unlike the brute-force
+  // window above, these count successful requests too, so a single caller
+  // cannot hammer signup, login recovery, AI, or OTP endpoints.
+  interface ApiRateWindow { count: number; firstAt: number }
+  const API_RATE_LIMITS: Map<string, ApiRateWindow> = new Map();
+  const hitRateLimit = (
+    bucket: string,
+    key: string,
+    maxRequests: number,
+    windowMs: number
+  ): { allowed: boolean; retryInMs: number } => {
+    const fullKey = `${bucket}:${key}`;
+    const now = Date.now();
+    let w = API_RATE_LIMITS.get(fullKey);
+    if (!w || now - w.firstAt > windowMs) {
+      w = { count: 0, firstAt: now };
+    }
+    if (w.count >= maxRequests) {
+      return { allowed: false, retryInMs: Math.max(1000, w.firstAt + windowMs - now) };
+    }
+    w.count += 1;
+    API_RATE_LIMITS.set(fullKey, w);
+    return { allowed: true, retryInMs: 0 };
+  };
 
-  const ACTIVE_SESSIONS: Map<string, ServerSession> = new Map([
-    [
-      'sess-current-demo',
-      {
-        sessionId: 'sess-current-demo',
-        userId: 'usr-sarah-jenkins',
-        deviceName: 'MacBook Pro (macOS 15)',
-        deviceType: 'Desktop',
-        browser: 'Chrome 128.0',
-        os: 'macOS Sonoma',
-        ipAddress: '198.51.100.42',
-        location: 'New York, United States',
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        lastActive: new Date().toISOString()
-      }
-    ],
-    [
-      'sess-mobile-demo',
-      {
-        sessionId: 'sess-mobile-demo',
-        userId: 'usr-sarah-jenkins',
-        deviceName: 'iPhone 16 Pro (iOS 18)',
-        deviceType: 'Mobile',
-        browser: 'Mobile Safari 18.1',
-        os: 'iOS 18',
-        ipAddress: '198.51.100.88',
-        location: 'New York, United States',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        lastActive: new Date(Date.now() - 7200000).toISOString()
-      }
-    ]
-  ]);
+  // Public-user account and session stores. In production, demo accounts and
+  // pre-created sessions are NOT seeded: every login must use a user created
+  // through the signup/verification flow and restored from the account store.
+  const PUBLIC_USERS: Map<string, ServerPublicUser> = new Map();
+  const ACTIVE_SESSIONS: Map<string, ServerSession> = new Map();
+  if (!IS_PRODUCTION) {
+    PUBLIC_USERS.set('usr-sarah-jenkins', {
+      id: 'usr-sarah-jenkins',
+      username: 'sarah_wellness',
+      fullName: 'Sarah Jenkins',
+      firstName: 'Sarah',
+      lastName: 'Jenkins',
+      email: 'sarah.jenkins@example.com',
+      phoneNumber: '+1 (555) 234-5678',
+      passwordHash: hashSecret('usr-sarah-jenkins', 'Password123!'),
+      role: 'VERIFIED_USER',
+      accountStatus: 'ACTIVE',
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      country: 'United States',
+      preferredLanguage: 'English',
+      twoFactor: { enabled: false, backupCodes: ['8392-1928', '4729-5829', '1948-2849', '9582-1049'] },
+      dietaryPreferences: ['Mediterranean', 'Heart-Healthy', 'Anti-Inflammatory'],
+      healthGoals: ['Balance Blood Glucose', 'Weight & Metabolic Wellness'],
+      marketingConsent: true,
+      createdAt: '2026-01-15T10:30:00.000Z',
+      lastLoginAt: new Date().toISOString()
+    });
+    PUBLIC_USERS.set('usr-alex-turner', {
+      id: 'usr-alex-turner',
+      username: 'alex_turner',
+      fullName: 'Alex Turner',
+      firstName: 'Alex',
+      lastName: 'Turner',
+      email: 'alex.turner@example.com',
+      phoneNumber: '+1 (555) 876-5432',
+      passwordHash: hashSecret('usr-alex-turner', 'Password123!'),
+      role: 'PUBLIC_USER',
+      accountStatus: 'ACTIVE',
+      isEmailVerified: true,
+      isPhoneVerified: false,
+      country: 'United Kingdom',
+      preferredLanguage: 'English',
+      twoFactor: { enabled: false },
+      dietaryPreferences: ['Gluten-Free'],
+      healthGoals: ['General Longevity'],
+      marketingConsent: false,
+      createdAt: '2026-02-10T14:20:00.000Z',
+      lastLoginAt: new Date().toISOString()
+    });
+    ACTIVE_SESSIONS.set('sess-current-demo', {
+      sessionId: 'sess-current-demo',
+      userId: 'usr-sarah-jenkins',
+      deviceName: 'MacBook Pro (macOS 15)',
+      deviceType: 'Desktop',
+      browser: 'Chrome 128.0',
+      os: 'macOS Sonoma',
+      ipAddress: '198.51.100.42',
+      location: 'New York, United States',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      lastActive: new Date().toISOString()
+    });
+    ACTIVE_SESSIONS.set('sess-mobile-demo', {
+      sessionId: 'sess-mobile-demo',
+      userId: 'usr-sarah-jenkins',
+      deviceName: 'iPhone 16 Pro (iOS 18)',
+      deviceType: 'Mobile',
+      browser: 'Mobile Safari 18.1',
+      os: 'iOS 18',
+      ipAddress: '198.51.100.88',
+      location: 'New York, United States',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      lastActive: new Date(Date.now() - 7200000).toISOString()
+    });
+  }
 
   const AUDIT_LOGS: ServerAuditLog[] = [
     {
@@ -463,10 +676,19 @@ async function startServer() {
     }
   ];
 
-  // Helper function to sanitize user for frontend
+  // Helper function to sanitize user for frontend. The TOTP secret and backup
+  // codes are NEVER exposed on normal auth/user responses — they are returned
+  // only once during explicit 2FA setup (and never again).
   const sanitizeUser = (user: ServerPublicUser) => {
-    const { passwordHash, verificationCode, resetToken, ...safeUser } = user;
-    return safeUser;
+    const { passwordHash, verificationCode, resetToken, twoFactor, ...safeUser } = user;
+    return {
+      ...safeUser,
+      twoFactor: {
+        enabled: Boolean(twoFactor?.enabled),
+        method: twoFactor?.method,
+        verifiedAt: twoFactor?.verifiedAt
+      }
+    };
   };
 
   // Helper to extract device info
@@ -493,6 +715,10 @@ async function startServer() {
 
   // 1. LOGIN ENDPOINT
   app.post('/api/auth/login', (req, res) => {
+    const entryRl = hitRateLimit('auth-login', String(req.ip || 'anonymous'), 30, 5 * 60 * 1000);
+    if (!entryRl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many attempts. Please try again in ${Math.ceil(entryRl.retryInMs / 60000)} minute(s).` });
+    }
     const { identifier, password, rememberMe } = req.body;
 
     if (!identifier || !password) {
@@ -530,7 +756,7 @@ async function startServer() {
     }
 
     // Generic incorrect credential error to prevent account enumeration
-    if (!foundUser || hashSecret(foundUser.id, password) !== foundUser.passwordHash) {
+    if (!foundUser || !verifySecret(foundUser.id, password, foundUser.passwordHash)) {
       registerFailedAttempt(LOGIN_ATTEMPTS, cleanIdentifier, 15 * 60 * 1000);
       AUDIT_LOGS.push({
         id: `aud-${Date.now()}`,
@@ -546,6 +772,14 @@ async function startServer() {
         success: false,
         error: 'Unable to sign in with those credentials. Please try again.'
       });
+    }
+
+    // Migrate legacy PBKDF2 hashes to scrypt on successful sign-in without
+    // weakening the stored format for accounts that already use scrypt.
+    if (foundUser.passwordHash.startsWith('pbkdf2-sha256$')) {
+      foundUser.passwordHash = hashSecret(foundUser.id, password);
+      PUBLIC_USERS.set(foundUser.id, foundUser);
+      persistRuntimeAccounts();
     }
 
     // Check account status
@@ -580,9 +814,16 @@ async function startServer() {
 
     // Check 2FA requirement
     if (foundUser.twoFactor && foundUser.twoFactor.enabled) {
+      const challengeId = secureToken("2fa");
+      PUBLIC_2FA_CHALLENGES.set(challengeId, {
+        userId: foundUser.id,
+        expiresAt: Date.now() + 5 * 60 * 1000,
+        attempts: 0
+      });
       return res.status(200).json({
         success: true,
         twoFactorRequired: true,
+        challengeId,
         userId: foundUser.id,
         method: foundUser.twoFactor.method || 'authenticator_app',
         message: 'Two-factor authentication required.'
@@ -591,7 +832,7 @@ async function startServer() {
 
     // Generate active session
     const uaInfo = parseUserAgent(req.headers['user-agent']);
-    const sessionId = `sess-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const sessionId = secureToken("sess");
     const session: ServerSession = {
       sessionId,
       userId: foundUser.id,
@@ -605,6 +846,7 @@ async function startServer() {
       lastActive: new Date().toISOString()
     };
     ACTIVE_SESSIONS.set(sessionId, session);
+    persistRuntimeAccounts();
 
     foundUser.lastLoginAt = new Date().toISOString();
     PUBLIC_USERS.set(foundUser.id, foundUser);
@@ -631,6 +873,10 @@ async function startServer() {
 
   // 2. SIGN UP ENDPOINT
   app.post('/api/auth/signup', (req, res) => {
+    const rl = hitRateLimit('auth-signup', String(req.ip || 'anonymous'), 10, 60 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many account creations from this device. Please try again later.' });
+    }
     const {
       firstName,
       lastName,
@@ -746,6 +992,7 @@ async function startServer() {
     };
 
     PUBLIC_USERS.set(userId, newUser);
+    persistRuntimeAccounts();
 
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
@@ -759,18 +1006,20 @@ async function startServer() {
 
     return res.status(201).json({
       success: true,
-      message: 'Account created successfully. Please verify your email.',
+      message: 'Account created successfully. Please verify the 6-digit code sent to your registered contact method.',
       verificationRequired: true,
       verificationType: 'email',
       userId,
-      email: cleanEmail,
-      // For development/prototype ease, we provide the verification code in response metadata
-      devCode: verificationCode
+      email: cleanEmail
     });
   });
 
   // 3. VERIFY CODE ENDPOINT (EMAIL OR PHONE)
   app.post('/api/auth/verify-code', (req, res) => {
+    const rl = hitRateLimit('auth-verify', String(req.ip || 'anonymous'), 15, 5 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many verification attempts. Please wait a moment and try again.' });
+    }
     const { userId, code, type } = req.body;
 
     if (!userId || !code) {
@@ -789,8 +1038,6 @@ async function startServer() {
     }
 
     // A verification flow must be in progress (pending, unexpired code).
-    // The universal demo code '123456' is honored only in that context —
-    // it can never be used to flip an arbitrary account to verified.
     if (!user.verificationCode || user.verificationCode.expiresAt < Date.now()) {
       return res.status(404).json({
         success: false,
@@ -798,8 +1045,9 @@ async function startServer() {
       });
     }
 
-    // Check code match (accept generated code or universal test code '123456')
-    const isValid = user.verificationCode.code === String(code).trim() || String(code).trim() === '123456';
+    // Only the account-specific generated code is accepted. A universal or
+    // shared test code is deliberately NOT accepted in any environment.
+    const isValid = user.verificationCode.code === String(code).trim();
 
     if (!isValid) {
       AUDIT_LOGS.push({
@@ -831,7 +1079,7 @@ async function startServer() {
 
     // Create session
     const uaInfo = parseUserAgent(req.headers['user-agent']);
-    const sessionId = `sess-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const sessionId = secureToken("sess");
     const session: ServerSession = {
       sessionId,
       userId: user.id,
@@ -845,6 +1093,7 @@ async function startServer() {
       lastActive: new Date().toISOString()
     };
     ACTIVE_SESSIONS.set(sessionId, session);
+    persistRuntimeAccounts();
 
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
@@ -892,16 +1141,20 @@ async function startServer() {
       expiresAt: Date.now() + 15 * 60 * 1000
     };
     PUBLIC_USERS.set(user.id, user);
+    persistRuntimeAccounts();
 
     return res.json({
       success: true,
-      message: `A new 6-digit verification code has been dispatched to your registered ${type === 'phone' ? 'mobile number' : 'email address'}.`,
-      devCode: freshCode
+      message: `A new 6-digit verification code has been dispatched to your registered ${type === 'phone' ? 'mobile number' : 'email address'}.`
     });
   });
 
   // 5. FORGOT PASSWORD (PRIVACY-PRESERVING)
   app.post('/api/auth/forgot-password', (req, res) => {
+    const rl = hitRateLimit('auth-recovery', String(req.ip || 'anonymous'), 8, 15 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many recovery requests. Please try again later.' });
+    }
     const { identifier } = req.body;
 
     if (!identifier) {
@@ -926,13 +1179,14 @@ async function startServer() {
       }
     }
 
-    let resetToken = `rst-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    let resetToken = secureToken("rst");
     if (matchedUser) {
       matchedUser.resetToken = {
         token: resetToken,
         expiresAt: Date.now() + 30 * 60 * 1000 // 30 mins
       };
       PUBLIC_USERS.set(matchedUser.id, matchedUser);
+      persistRuntimeAccounts();
 
       AUDIT_LOGS.push({
         id: `aud-${Date.now()}`,
@@ -945,11 +1199,12 @@ async function startServer() {
       });
     }
 
-    // Always return privacy-preserving response
+    // Always return privacy-preserving response. Recovery tokens are delivered
+    // through the registered email/SMS channel only and are never returned to
+    // the browser that issued the request.
     return res.json({
       success: true,
-      message: "If an eligible account matches the information provided, we'll send instructions to the registered contact method.",
-      resetToken: matchedUser ? resetToken : undefined
+      message: "If an eligible account matches the information provided, we'll send instructions to the registered contact method."
     });
   });
 
@@ -995,8 +1250,8 @@ async function startServer() {
       });
     }
 
-    // Update password
-    targetUser.passwordHash = newPassword;
+    // Update password — never store the raw secret; derive the PBKDF2 hash.
+    targetUser.passwordHash = hashSecret(targetUser.id, newPassword);
     targetUser.resetToken = undefined;
     PUBLIC_USERS.set(targetUser.id, targetUser);
 
@@ -1006,6 +1261,7 @@ async function startServer() {
         ACTIVE_SESSIONS.delete(sId);
       }
     }
+    persistRuntimeAccounts();
 
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
@@ -1055,6 +1311,7 @@ async function startServer() {
       return res.status(404).json({ success: false, error: 'Session not found.' });
     }
     ACTIVE_SESSIONS.delete(sessionId);
+    persistRuntimeAccounts();
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
       userId: user.id,
@@ -1082,6 +1339,7 @@ async function startServer() {
         count += 1;
       }
     }
+    persistRuntimeAccounts();
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
       userId: user.id,
@@ -1103,7 +1361,7 @@ async function startServer() {
     }
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    if (hashSecret(user.id, currentPassword || '') !== user.passwordHash) {
+    if (!verifySecret(user.id, currentPassword || '', user.passwordHash)) {
       registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
       return res.status(400).json({ success: false, error: 'The current password you entered is incorrect.' });
     }
@@ -1119,6 +1377,7 @@ async function startServer() {
     user.passwordHash = hashSecret(user.id, newPassword);
     PUBLIC_USERS.set(user.id, user);
     REAUTH_ATTEMPTS.delete(user.id);
+    persistRuntimeAccounts();
 
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
@@ -1140,14 +1399,15 @@ async function startServer() {
   app.post('/api/auth/2fa/setup', (req, res) => {
     const user = authenticate(req);
     if (!user) return res.status(401).json({ success: false, code: 'AUTH_REQUIRED', error: 'Please sign in to configure two-factor authentication.' });
+    if (user.twoFactor?.enabled) {
+      return res.status(409).json({ success: false, code: 'TWO_FACTOR_ALREADY_ENABLED', error: 'Two-factor authentication is already enabled.' });
+    }
 
-    const secretKey = 'JBSWY3DPEHPK3PXP';
-    const backupCodes = [
-      `${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-      `${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-      `${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
+    // Unique per-account TOTP secret. Never ship or reuse a fixed secret.
+    const secretKey = generateTotpSecret();
+    const backupCodes = Array.from({ length: 4 }, () =>
       `${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`
-    ];
+    );
 
     user.twoFactor = {
       enabled: false,
@@ -1155,6 +1415,17 @@ async function startServer() {
       backupCodes
     };
     PUBLIC_USERS.set(user.id, user);
+    persistRuntimeAccounts();
+
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: '2FA_SETUP_STARTED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: 'Two-factor authentication setup initialized with a new per-account secret'
+    });
 
     return res.json({
       success: true,
@@ -1168,15 +1439,18 @@ async function startServer() {
     const user = authenticate(req);
     if (!user) return res.status(401).json({ success: false, code: 'AUTH_REQUIRED', error: 'Please sign in to verify two-factor authentication.' });
     const { code } = req.body || {};
-
-    if (String(code).trim().length !== 6) {
-      return res.status(400).json({ success: false, error: 'Please enter a valid 6-digit authenticator code.' });
+    if (!user.twoFactor?.secretKey || user.twoFactor.enabled) {
+      return res.status(400).json({ success: false, code: 'TWO_FACTOR_SETUP_REQUIRED', error: 'Please start two-factor authentication setup first.' });
+    }
+    if (!verifyTotp(user.twoFactor.secretKey, String(code || ''))) {
+      return res.status(400).json({ success: false, code: 'INVALID_TOTP', error: 'The authenticator code is invalid or has expired.' });
     }
 
     user.twoFactor.enabled = true;
     user.twoFactor.method = 'authenticator_app';
     user.twoFactor.verifiedAt = new Date().toISOString();
     PUBLIC_USERS.set(user.id, user);
+    persistRuntimeAccounts();
 
     AUDIT_LOGS.push({
       id: `aud-${Date.now()}`,
@@ -1185,12 +1459,88 @@ async function startServer() {
       timestamp: new Date().toISOString(),
       ipAddress: req.ip || '127.0.0.1',
       status: 'success',
-      details: 'Two-factor authentication enabled'
+      details: 'Two-factor authentication enabled and verified'
     });
 
     return res.json({
       success: true,
       message: 'Two-factor authentication enabled successfully.'
+    });
+  });
+
+  // 11b. TOTP LOGIN VERIFICATION
+  // A successful password-only login never creates a session when 2FA is
+  // enabled; the second factor must be verified through this endpoint.
+  app.post('/api/auth/2fa/login', (req, res) => {
+    const rl = hitRateLimit('auth-2fa-login', String(req.ip || 'anonymous'), 15, 5 * 60 * 1000);
+    if (!rl.allowed) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many two-factor verification attempts. Please wait a moment and try again.' });
+    }
+    const { challengeId, code } = req.body || {};
+    const challenge = challengeId ? PUBLIC_2FA_CHALLENGES.get(String(challengeId)) : undefined;
+    if (!challenge || challenge.expiresAt < Date.now()) {
+      return res.status(400).json({ success: false, code: 'CHALLENGE_EXPIRED', error: 'This two-factor sign-in has expired. Please sign in again.' });
+    }
+    const user = PUBLIC_USERS.get(challenge.userId);
+    if (!user || !user.twoFactor?.enabled || !user.twoFactor.secretKey) {
+      PUBLIC_2FA_CHALLENGES.delete(String(challengeId));
+      return res.status(400).json({ success: false, code: 'TWO_FACTOR_NOT_CONFIGURED', error: 'This account is not configured for two-factor authentication. Please sign in again.' });
+    }
+    if (!verifyTotp(user.twoFactor.secretKey, String(code || ''))) {
+      challenge.attempts += 1;
+      if (challenge.attempts >= 5) {
+        PUBLIC_2FA_CHALLENGES.delete(String(challengeId));
+        return res.status(429).json({ success: false, code: 'TWO_FACTOR_LOCKED', error: 'Too many invalid codes. Please sign in again to receive a fresh challenge.' });
+      }
+      AUDIT_LOGS.push({
+        id: `aud-${Date.now()}`,
+        userId: user.id,
+        event: '2FA_LOGIN_FAILED',
+        timestamp: new Date().toISOString(),
+        ipAddress: req.ip || '127.0.0.1',
+        status: 'warning',
+        details: 'Invalid two-factor code during login'
+      });
+      return res.status(400).json({ success: false, code: 'INVALID_TOTP', error: 'The authenticator code is invalid or has expired.' });
+    }
+    PUBLIC_2FA_CHALLENGES.delete(String(challengeId));
+    LOGIN_ATTEMPTS.delete(user.id);
+
+    const uaInfo = parseUserAgent(req.headers['user-agent']);
+    const sessionId = secureToken("sess");
+    const session: ServerSession = {
+      sessionId,
+      userId: user.id,
+      deviceName: uaInfo.deviceName,
+      deviceType: uaInfo.deviceType,
+      browser: uaInfo.browser,
+      os: uaInfo.os,
+      ipAddress: req.ip || '127.0.0.1',
+      location: 'Current Location',
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString()
+    };
+    ACTIVE_SESSIONS.set(sessionId, session);
+    persistRuntimeAccounts();
+    user.lastLoginAt = new Date().toISOString();
+    PUBLIC_USERS.set(user.id, user);
+
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'USER_LOGIN_SUCCESS_2FA',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Two-factor sign-in successful via ${uaInfo.browser} on ${uaInfo.os}`
+    });
+
+    return res.json({
+      success: true,
+      message: `Welcome back, ${user.firstName}!`,
+      user: sanitizeUser(user),
+      session: { ...session, isCurrent: true },
+      token: sessionId
     });
   });
 
@@ -1200,6 +1550,7 @@ async function startServer() {
     const token = sessionId || (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '');
     if (token) {
       ACTIVE_SESSIONS.delete(token);
+      persistRuntimeAccounts();
     }
     return res.json({
       success: true,
@@ -1315,6 +1666,55 @@ async function startServer() {
     return data;
   }
 
+  // ----------------------------------------------------------------------
+  // Disk-backing for the public-user account store. This is NOT a demo cache:
+  // it preserves accounts, sessions, private data, and security state across
+  // restarts. `data/runtime/` is git-ignored and the file is written 0600.
+  // ----------------------------------------------------------------------
+  const RUNTIME_ACCOUNT_STORE = path.join(RUNTIME_DIR, 'account-store.json');
+  const persistRuntimeAccounts = () => {
+    writeSecureJsonFile(RUNTIME_ACCOUNT_STORE, {
+      savedAt: new Date().toISOString(),
+      users: [...PUBLIC_USERS.values()],
+      sessions: [...ACTIVE_SESSIONS.values()],
+      privateData: [...PRIVATE_DATA.entries()].map(([userId, data]) => ({ userId, data }))
+    });
+  };
+  try {
+    const persistedAccountStore = readJsonFile<{
+      users?: ServerPublicUser[];
+      sessions?: ServerSession[];
+      privateData?: { userId: string; data: any }[];
+    }>(RUNTIME_ACCOUNT_STORE, {});
+    if (Array.isArray(persistedAccountStore.users) && persistedAccountStore.users.length > 0) {
+      PUBLIC_USERS.clear();
+      for (const user of persistedAccountStore.users) {
+        if (user && typeof user.id === 'string' && typeof user.email === 'string') {
+          PUBLIC_USERS.set(user.id, user);
+        }
+      }
+    }
+    if (Array.isArray(persistedAccountStore.sessions) && persistedAccountStore.sessions.length > 0) {
+      ACTIVE_SESSIONS.clear();
+      for (const session of persistedAccountStore.sessions) {
+        if (session && typeof session.sessionId === 'string' && typeof session.userId === 'string') {
+          ACTIVE_SESSIONS.set(session.sessionId, session);
+        }
+      }
+    }
+    if (Array.isArray(persistedAccountStore.privateData) && persistedAccountStore.privateData.length > 0) {
+      PRIVATE_DATA.clear();
+      for (const entry of persistedAccountStore.privateData) {
+        if (entry && typeof entry.userId === 'string' && entry.data && typeof entry.data === 'object') {
+          PRIVATE_DATA.set(entry.userId, entry.data);
+        }
+      }
+    }
+  } catch {
+    /* load failure already logged */
+  }
+  setInterval(() => persistRuntimeAccounts(), 5000).unref();
+
   // Resolve and validate the bearer session token. Returns the authenticated
   // user or null. Enforces session expiry (sliding window) and account status.
   function authenticate(req: any): ServerPublicUser | null {
@@ -1375,6 +1775,28 @@ async function startServer() {
     next();
   }
 
+  // Server-side EHR access share tokens. The token is a capability created only
+  // by the signed-in account owner; it is never trusted from the client.
+  const EHR_CONSENT_SHARES = new Map<
+    string,
+    { token: string; userId: string; granteeName: string; granteeType: string; scopes: string[]; expiresAt: number; createdAt: number; revokedAt?: number }
+  >();
+  const EHR_CONSENT_SHARE_DIR = path.join(RUNTIME_DIR, 'ehr-consent-shares.json');
+  try {
+    const persisted = readJsonFile<
+      { token: string; userId: string; granteeName: string; granteeType: string; scopes: string[]; expiresAt: number; createdAt: number; revokedAt?: number }[]
+    >(EHR_CONSENT_SHARE_DIR, []);
+    for (const share of persisted) {
+      if (share && typeof share.token === 'string' && typeof share.userId === 'string') {
+        EHR_CONSENT_SHARES.set(share.token, share);
+      }
+    }
+  } catch {
+    /* persistence load already logged */
+  }
+  const persistEhrConsentShares = () =>
+    writeJsonFile(EHR_CONSENT_SHARE_DIR, [...EHR_CONSENT_SHARES.values()]);
+
   // GET /api/auth/me — validate the current session and return the user.
   app.get('/api/auth/me', (req, res) => {
     const user = authenticate(req);
@@ -1386,6 +1808,91 @@ async function startServer() {
       });
     }
     return res.json({ success: true, user: sanitizeUser(user) });
+  });
+
+  // ---- Protected: create a server-scoped EHR access share token ----.
+  const ALLOWED_CONSENT_SCOPES = new Set(['Vitals', 'Labs', 'Medications', 'Diagnoses', 'Imaging', 'Clinical Notes']);
+  app.post('/api/ehr/consent-share', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const { granteeName, granteeType, scopes, durationDays } = req.body || {};
+    const cleanName = typeof granteeName === 'string' ? granteeName.trim().slice(0, 120) : '';
+    const cleanType = typeof granteeType === 'string' ? granteeType.trim().slice(0, 40) : 'Physician';
+    if (!cleanName) {
+      return res.status(400).json({ success: false, error: 'Provider name is required.' });
+    }
+    const cleanScopes = Array.isArray(scopes)
+      ? [...new Set(scopes.filter((s: unknown): s is string => typeof s === 'string' && ALLOWED_CONSENT_SCOPES.has(s)))].slice(0, ALLOWED_CONSENT_SCOPES.size)
+      : [];
+    if (cleanScopes.length === 0) {
+      return res.status(400).json({ success: false, error: 'Select at least one record scope to share.' });
+    }
+    const days = Number(durationDays);
+    const validDays = [1, 7, 30, 365].includes(days) ? days : 7;
+    const token = secureToken("gh-ehr");
+    const now = Date.now();
+    EHR_CONSENT_SHARES.set(token, {
+      token,
+      userId: user.id,
+      granteeName: cleanName,
+      granteeType: cleanType,
+      scopes: cleanScopes,
+      createdAt: now,
+      expiresAt: now + validDays * 86400000,
+    });
+    persistEhrConsentShares();
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'EHR_CONSENT_SHARE_CREATED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Created ${validDays}-day EHR access share for ${cleanName} (${cleanScopes.length} scope(s))`
+    });
+    return res.status(201).json({
+      success: true,
+      token,
+      url: `/api/ehr/shared-consent/${token}`,
+      expiresAt: now + validDays * 86400000,
+      scope: cleanScopes,
+    });
+  });
+
+  // ---- Public verification of a non-revoked, unexpired share link ----.
+  app.get('/api/ehr/shared-consent/:token', (req, res) => {
+    const share = EHR_CONSENT_SHARES.get(req.params.token);
+    if (!share || share.revokedAt || share.expiresAt < Date.now()) {
+      return res.status(404).json({ success: false, error: 'This access link is invalid or has expired.' });
+    }
+    return res.json({
+      success: true,
+      granteeName: share.granteeName,
+      granteeType: share.granteeType,
+      scopes: share.scopes,
+      createdAt: share.createdAt,
+      expiresAt: share.expiresAt,
+      revocable: true,
+    });
+  });
+
+  // ---- Protected: revoke an EHR access share (owner only) ----.
+  app.delete('/api/ehr/consent-share/:token', requireAuth, (req: any, res) => {
+    const user: ServerPublicUser = req.authUser;
+    const share = EHR_CONSENT_SHARES.get(req.params.token);
+    if (!share) return res.status(404).json({ success: false, error: 'This access link could not be found.' });
+    if (share.userId !== user.id) return res.status(403).json({ success: false, error: 'You do not have permission to revoke this access link.' });
+    share.revokedAt = Date.now();
+    persistEhrConsentShares();
+    AUDIT_LOGS.push({
+      id: `aud-${Date.now()}`,
+      userId: user.id,
+      event: 'EHR_CONSENT_SHARE_REVOKED',
+      timestamp: new Date().toISOString(),
+      ipAddress: req.ip || '127.0.0.1',
+      status: 'success',
+      details: `Revoked EHR access share for ${share.granteeName}`
+    });
+    return res.json({ success: true, revoked: true });
   });
 
   // ---- Protected: Personal Health Dashboard (owner-only aggregate) ----
@@ -1558,20 +2065,21 @@ async function startServer() {
     const user: ServerPublicUser = req.authUser;
     const data = seedPrivateData(user.id, user.fullName);
     const { category, itemId, action } = req.body || {};
-    const validCategories: (keyof typeof data.savedLibrary)[] = [
+    const validCategories = [
       'medicines',
       'doctors',
       'hospitals',
       'articles',
       'guides',
       'posts'
-    ];
-    if (!validCategories.includes(category) || !itemId) {
+    ] as const;
+    const categoryKey = validCategories.find((key) => key === category);
+    if (!categoryKey || !itemId) {
       return res.status(400).json({ success: false, error: 'Invalid save request.' });
     }
-    const list = data.savedLibrary[category] as string[];
+    const list = data.savedLibrary[categoryKey];
     if (action === 'remove') {
-      data.savedLibrary[category] = list.filter((id) => id !== itemId) as any;
+      data.savedLibrary[categoryKey] = list.filter((id) => id !== itemId);
     } else if (!list.includes(itemId)) {
       list.push(itemId);
     }
@@ -1956,7 +2464,7 @@ async function startServer() {
   ]);
 
   const nowIso = () => new Date().toISOString();
-  const APP_BASE = process.env.APP_URL || `http://localhost:${PORT}`;
+  const APP_BASE = config.appUrl || `http://localhost:${PORT}`;
 
   // ---------------- APPEND-ONLY, HASH-CHAINED AUDIT TRAIL ---------------
   // Every important event receives a unique event ID, a server-generated
@@ -2222,7 +2730,7 @@ async function startServer() {
       if (s.expiresAt < Date.now()) DOCTOR_SESSIONS.delete(t);
     }
     const session: DoctorSession = {
-      token: `doc-sess-${randomBytes(24).toString('hex')}`,
+      token: secureToken("doc-sess"),
       doctorId,
       issuedAt: nowIso(),
       lastSeenAt: nowIso(),
@@ -2301,7 +2809,7 @@ async function startServer() {
           d.fullName.toLowerCase() === cleanId
       ) || null;
 
-    if (!doctor || hashSecret(doctor.doctorId, String(password || '')) !== doctor.passwordHash) {
+    if (!doctor || !verifySecret(doctor.doctorId, String(password || ''), doctor.passwordHash)) {
       registerFailedAttempt(DOCTOR_LOGIN_ATTEMPTS, cleanId, 15 * 60 * 1000);
       audit(null, {
         actorId: doctor?.doctorId || 'unknown',
@@ -2311,6 +2819,10 @@ async function startServer() {
         detail: 'Incorrect doctor credentials'
       });
       return res.status(401).json({ success: false, error: 'Incorrect doctor credentials.' });
+    }
+    if (doctor.passwordHash.startsWith('pbkdf2-sha256$')) {
+      doctor.passwordHash = hashSecret(doctor.doctorId, String(password || ''));
+      DOCTORS.set(doctor.doctorId, doctor);
     }
     if (doctor.verificationStatus !== 'VERIFIED') {
       return res.status(403).json({ success: false, error: 'This doctor account is awaiting verification.' });
@@ -2340,7 +2852,7 @@ async function startServer() {
   app.post('/api/doctor/auth/change-password', requireDoctor, (req: any, res) => {
     const doctor: ConsentDoctor = req.authDoctor;
     const { oldPassword, newPassword } = req.body || {};
-    if (hashSecret(doctor.doctorId, String(oldPassword || '')) !== doctor.passwordHash) {
+    if (!verifySecret(doctor.doctorId, String(oldPassword || ''), doctor.passwordHash)) {
       audit(req, { actorId: doctor.doctorId, actorRole: 'DOCTOR', eventType: 'DOCTOR_PASSWORD_CHANGE', result: 'failed', detail: 'Current password incorrect' });
       return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
@@ -2452,7 +2964,7 @@ async function startServer() {
       if (r.doctorId === doctor.doctorId && !r.used) DOCTOR_RESET_TOKENS.delete(t);
     }
     const record = {
-      token: `RST-DOC-${Math.floor(10000 + Math.random() * 90000)}-${randomBytes(3).toString('hex').toUpperCase()}`,
+      token: secureToken("rst-doc"),
       doctorId: doctor.doctorId,
       expiresAt: Date.now() + 60 * 60 * 1000,
       used: false,
@@ -2461,7 +2973,7 @@ async function startServer() {
     DOCTOR_RESET_TOKENS.set(record.token, record);
     audit(req, { actorId: doctor.doctorId, actorRole: 'DOCTOR', eventType: 'DOCTOR_RESET_REQUESTED', result: 'success', detail: `Password reset token issued for @${doctor.username}` });
     // Demo environment: delivery is simulated, so the token is returned.
-    return res.json({ ...generic, demoResetToken: record.token });
+    return res.json({ ...generic, ...(IS_PRODUCTION ? {} : { demoResetToken: record.token }) });
   });
 
   app.post('/api/doctor/auth/complete-reset', (req, res) => {
@@ -3129,7 +3641,10 @@ async function startServer() {
     const doctor: ConsentDoctor = req.authDoctor;
     const resolved = resolvePatient(req);
     if (resolved.error) return res.status(resolved.error.__status).json(resolved.error.__body);
-    const { patientUserId } = resolved;
+    const patientUserId = resolved.patientUserId;
+    if (!patientUserId) {
+      return res.status(400).json({ success: false, error: 'A patient account must be specified.' });
+    }
     const { reason } = req.body || {};
 
     if (!reason || String(reason).trim().length < 15) {
@@ -3155,6 +3670,9 @@ async function startServer() {
     };
     DOCTOR_ACCESS.set(patientUserId, [...(DOCTOR_ACCESS.get(patientUserId) || []), grant]);
 
+    const doctorName = doctor.fullName || doctor.doctorId;
+    const doctorOrganization = doctor.organization || doctor.specialty || 'GlobalHealth network';
+
     audit(req, {
       patientUserId,
       actorId: doctor.doctorId,
@@ -3170,13 +3688,13 @@ async function startServer() {
     pushPatientNotification(patientUserId, {
       type: 'security',
       title: 'Emergency access activated',
-      body: `${doctor.fullName} (${doctor.organization}) activated emergency view access to your record for a limited 2-hour period. Reason on file. This is view-only and has been recorded.`,
+      body: `${doctorName} (${doctorOrganization}) activated emergency view access to your record for a limited 2-hour period. Reason on file. This is view-only and has been recorded.`,
       requestId: undefined
     });
     sendGmail(patientUserId, {
       type: 'SECURITY_ALERT',
       subject: 'GlobalHealth: Security alert on your account',
-      body: `A verified doctor (${doctor.fullName}, ${doctor.organization}) activated EMERGENCY (break-glass) view access to your health record.\n\nThis access is:\n• Time-limited (2 hours)\n• View-only — no changes can be made\n• Fully recorded in your security history\n\nIf you do not recognize this, review your security history and contact support immediately.`
+      body: `A verified doctor (${doctorName}, ${doctorOrganization}) activated EMERGENCY (break-glass) view access to your health record.\n\nThis access is:\n• Time-limited (2 hours)\n• View-only — no changes can be made\n• Fully recorded in your security history\n\nIf you do not recognize this, review your security history and contact support immediately.`
     });
     pushDoctorNotification(doctor.doctorId, {
       type: 'emergency',
@@ -3296,7 +3814,7 @@ async function startServer() {
     if (!rl.allowed) {
       return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many verification attempts. Try again in ${Math.ceil(rl.retryInMs / 60000)} minutes.` });
     }
-    if (!password || hashSecret(user.id, password) !== user.passwordHash) {
+    if (!password || !verifySecret(user.id, password, user.passwordHash)) {
       registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
       audit(req, {
         patientUserId: user.id,
@@ -3417,7 +3935,7 @@ async function startServer() {
       if (!rl.allowed) {
         return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many verification attempts. Try again in ${Math.ceil(rl.retryInMs / 60000)} minutes.` });
       }
-      if (!password || hashSecret(user.id, String(password)) !== user.passwordHash) {
+      if (!password || !verifySecret(user.id, String(password), user.passwordHash)) {
         registerFailedAttempt(REAUTH_ATTEMPTS, user.id, 15 * 60 * 1000);
         audit(req, {
           patientUserId: user.id,
@@ -3551,15 +4069,16 @@ Request ID: ${requestId}`,
             audit(req, { patientUserId: user.id, actorId: 'SYSTEM', actorRole: 'SYSTEM', eventType: 'EHR_CHANGE_FAILED', requestId, result: 'failed', detail: 'Target record not found.' });
             return res.status(404).json({ success: false, error: 'This healthcare record could not be found.' });
           }
+          const targetRecord = record;
           if (cr.kind === 'remove' && cr.deletionType === 'permanent') {
             // Retention-controlled permanent deletion: the record leaves the
             // active EHR, but ALL versions are preserved in the audit-only
             // retention archive so history is never silently destroyed.
             const retained: RetainedRecord = {
-              recordId: record.recordId,
-              category: record.category,
-              title: record.title,
-              versions: record.versions,
+              recordId: targetRecord.recordId,
+              category: targetRecord.category,
+              title: targetRecord.title,
+              versions: targetRecord.versions,
               removedAt: nowIso(),
               requestId,
               reason: cr.reason,
@@ -3569,9 +4088,9 @@ Request ID: ${requestId}`,
             const arch = RETENTION_ARCHIVE.get(user.id) || [];
             arch.push(retained);
             RETENTION_ARCHIVE.set(user.id, arch);
-            records = records.filter((r) => r.recordId !== record.recordId);
+            records = records.filter((r) => r.recordId !== targetRecord.recordId);
           } else if (cr.kind === 'remove') {
-            record.status = 'archived'; // retention-safe default
+            targetRecord.status = 'archived'; // retention-safe default
           }
         }
 
@@ -4515,13 +5034,17 @@ Request ID: ${requestId}`,
     const auth = [...AUTHORITIES.values()].find(
       (a) => a.authorityId === identifier || a.profile.contactEmail.toLowerCase() === String(identifier || '').toLowerCase() || normOrg(a.profile.orgName) === normOrg(identifier)
     );
-    if (!auth || hashSecret(auth.authorityId, String(password || '')) !== auth.passwordHash) {
+    if (!auth || !verifySecret(auth.authorityId, String(password || ''), auth.passwordHash)) {
       registerFailedAttempt(AUTHORITY_LOGIN_ATTEMPTS, String(identifier || '').toLowerCase(), 15 * 60 * 1000);
       newsAudit(req, { actorId: auth?.authorityId || 'unknown', actorRole: 'AUTHORITY', action: 'AUTHORITY_LOGIN_FAILED', result: 'failed' });
       return res.status(401).json({ success: false, error: 'Incorrect authority credentials.' });
     }
+    if (auth.passwordHash.startsWith('pbkdf2-sha256$')) {
+      auth.passwordHash = hashSecret(auth.authorityId, String(password || ''));
+      AUTHORITIES.set(auth.authorityId, auth);
+    }
     AUTHORITY_LOGIN_ATTEMPTS.delete(String(identifier || '').toLowerCase());
-    const token = `news-auth-sess-${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`;
+    const token = secureToken("news-auth-sess");
     AUTHORITY_SESSIONS.set(token, { authorityId: auth.authorityId, createdAt: nowIso(), lastActive: nowIso() });
     newsAudit(req, { actorId: auth.authorityId, actorRole: 'AUTHORITY', action: 'AUTHORITY_LOGIN', targetType: 'authority', targetId: auth.authorityId, targetTitle: auth.profile.orgName, result: 'success' });
     return res.json({ success: true, token, authority: publicAuthorityView(auth) });
@@ -4695,11 +5218,15 @@ Request ID: ${requestId}`,
   app.post('/api/news/admin/login', (req, res) => {
     const { identifier, password } = req.body || {};
     const admin = [...NEWS_ADMINS.values()].find((a) => a.email.toLowerCase() === String(identifier || '').toLowerCase() || a.adminId === identifier);
-    if (!admin || hashSecret(admin.adminId, String(password || '')) !== admin.passwordHash) {
+    if (!admin || !verifySecret(admin.adminId, String(password || ''), admin.passwordHash)) {
       newsAudit(req, { actorId: admin?.adminId || 'unknown', actorRole: 'ADMIN', action: 'NEWS_ADMIN_LOGIN_FAILED', result: 'failed' });
       return res.status(401).json({ success: false, error: 'Incorrect administrator credentials.' });
     }
-    const token = `news-admin-sess-${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`;
+    if (admin.passwordHash.startsWith('pbkdf2-sha256$')) {
+      admin.passwordHash = hashSecret(admin.adminId, String(password || ''));
+      NEWS_ADMINS.set(admin.adminId, admin);
+    }
+    const token = secureToken("news-admin-sess");
     NEWS_ADMIN_SESSIONS.set(token, { adminId: admin.adminId, createdAt: nowIso(), lastActive: nowIso() });
     newsAudit(req, { actorId: admin.adminId, actorRole: 'ADMIN', action: 'NEWS_ADMIN_LOGIN', targetTitle: admin.name, result: 'success' });
     return res.json({ success: true, token, admin: { adminId: admin.adminId, name: admin.name, email: admin.email, role: admin.role, title: admin.title } });
@@ -4793,7 +5320,7 @@ Request ID: ${requestId}`,
     res.json({ success: true, authorities: list });
   });
 
-  const authorityStateAction = (action: 'suspend' | 'revoke' | 'restore') => (req: any, res) => {
+  const authorityStateAction = (action: 'suspend' | 'revoke' | 'restore') => (req: any, res: any) => {
     const admin: NewsAdmin = req.authNewsAdmin;
     const authority = AUTHORITIES.get(req.params.authorityId);
     if (!authority) return res.status(404).json({ success: false, error: 'This authority could not be found.' });
@@ -4995,7 +5522,7 @@ Request ID: ${requestId}`,
           correctionNotice: s.correctionNotice || null
         };
       })
-      .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
+      .sort((a, b) => ((a.publishedAt || '') < (b.publishedAt || '') ? 1 : -1));
     res.json({ success: true, articles: list });
   });
 
@@ -5139,12 +5666,12 @@ Request ID: ${requestId}`,
   });
 
   const issueAdminSession = (adminId: string) => {
-    const token = `news-admin-sess-${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`;
+    const token = secureToken("news-admin-sess");
     NEWS_ADMIN_SESSIONS.set(token, { adminId, createdAt: nowIso(), lastActive: nowIso() });
     return token;
   };
   const issueAuthoritySession = (authorityId: string) => {
-    const token = `news-auth-sess-${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`;
+    const token = secureToken("news-auth-sess");
     AUTHORITY_SESSIONS.set(token, { authorityId, createdAt: nowIso(), lastActive: nowIso() });
     return token;
   };
@@ -5165,10 +5692,14 @@ Request ID: ${requestId}`,
       (a) => a.email.toLowerCase() === idKey || a.adminId === identifier
     );
     if (admin) {
-      if (hashSecret(admin.adminId, String(password || '')) !== admin.passwordHash) {
+      if (!verifySecret(admin.adminId, String(password || ''), admin.passwordHash)) {
         registerFailedAttempt(NEWS_LOGIN_ATTEMPTS, idKey, 15 * 60 * 1000);
         newsAudit(req, { actorId: admin.adminId, actorRole: 'ADMIN', action: 'NEWS_ADMIN_LOGIN_FAILED', targetTitle: admin.name, result: 'failed' });
         return res.status(401).json({ success: false, code: 'INVALID_CREDENTIALS', error: SAFE_SIGNIN_ERROR });
+      }
+      if (admin.passwordHash.startsWith('pbkdf2-sha256$')) {
+        admin.passwordHash = hashSecret(admin.adminId, String(password || ''));
+        NEWS_ADMINS.set(admin.adminId, admin);
       }
       if (admin.status !== 'active') {
         newsAudit(req, { actorId: admin.adminId, actorRole: 'ADMIN', action: 'NEWS_ADMIN_LOGIN_SUSPENDED', targetTitle: admin.name, result: 'denied', reason: 'Account status: suspended' });
@@ -5177,7 +5708,7 @@ Request ID: ${requestId}`,
       NEWS_LOGIN_ATTEMPTS.delete(idKey);
       // Stronger control for administrators: MFA is always required.
       if (admin.mfaEnabled) {
-        const challengeId = `mfa-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+        const challengeId = secureToken('mfa');
         const code = String(Math.floor(100000 + Math.random() * 900000));
         NEWS_MFA_CHALLENGES.set(challengeId, { accountType: 'admin', accountId: admin.adminId, code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 });
         newsAudit(req, { actorId: admin.adminId, actorRole: 'ADMIN', action: 'NEWS_ADMIN_MFA_DISPATCHED', targetTitle: admin.name, result: 'dispatched' });
@@ -5187,8 +5718,10 @@ Request ID: ${requestId}`,
           accountType: 'admin',
           challengeId,
           challengeExpiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-          // Simulated email delivery (demo environment — no SMTP).
-          demoDelivery: { channel: 'Simulated email (demo environment)', recipientEmail: admin.email, code }
+          // MFA delivery must never expose the code to the browser in
+          // production; the code is delivered only through the configured
+          // email channel. Development builds may surface it for smoke tests.
+          ...(IS_PRODUCTION ? {} : { demoDelivery: { channel: 'Simulated email (dev only)', recipientEmail: admin.email, code } })
         });
       }
       const token = issueAdminSession(admin.adminId);
@@ -5201,10 +5734,14 @@ Request ID: ${requestId}`,
       (a) => a.profile.contactEmail.toLowerCase() === idKey || a.authorityId === identifier || normOrg(a.profile.orgName) === normOrg(identifier)
     );
     if (auth) {
-      if (hashSecret(auth.authorityId, String(password || '')) !== auth.passwordHash) {
+      if (!verifySecret(auth.authorityId, String(password || ''), auth.passwordHash)) {
         registerFailedAttempt(NEWS_LOGIN_ATTEMPTS, idKey, 15 * 60 * 1000);
         newsAudit(req, { actorId: auth.authorityId, actorRole: 'AUTHORITY', action: 'AUTHORITY_LOGIN_FAILED', targetTitle: auth.profile.orgName, result: 'failed' });
         return res.status(401).json({ success: false, code: 'INVALID_CREDENTIALS', error: SAFE_SIGNIN_ERROR });
+      }
+      if (auth.passwordHash.startsWith('pbkdf2-sha256$')) {
+        auth.passwordHash = hashSecret(auth.authorityId, String(password || ''));
+        AUTHORITIES.set(auth.authorityId, auth);
       }
       if (auth.state === 'SUSPENDED') {
         newsAudit(req, { actorId: auth.authorityId, actorRole: 'AUTHORITY', action: 'AUTHORITY_LOGIN_SUSPENDED', targetTitle: auth.profile.orgName, result: 'denied', reason: 'Organization suspended' });
@@ -5226,7 +5763,7 @@ Request ID: ${requestId}`,
       // MFA where practical: authority accounts holding publishing rights.
       const mfaNeeded = ['VERIFIED', 'VERIFIED_RESTRICTED'].includes(auth.state) && auth.permissions.canSubmit;
       if (mfaNeeded) {
-        const challengeId = `mfa-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+        const challengeId = secureToken('mfa');
         const code = String(Math.floor(100000 + Math.random() * 900000));
         NEWS_MFA_CHALLENGES.set(challengeId, { accountType: 'authority', accountId: auth.authorityId, code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 });
         newsAudit(req, { actorId: auth.authorityId, actorRole: 'AUTHORITY', action: 'AUTHORITY_MFA_DISPATCHED', targetTitle: auth.profile.orgName, result: 'dispatched' });
@@ -5236,7 +5773,7 @@ Request ID: ${requestId}`,
           accountType: 'authority',
           challengeId,
           challengeExpiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-          demoDelivery: { channel: 'Simulated email (demo environment)', recipientEmail: auth.profile.contactEmail, code }
+          ...(IS_PRODUCTION ? {} : { demoDelivery: { channel: 'Simulated email (dev only)', recipientEmail: auth.profile.contactEmail, code } })
         });
       }
       const token = issueAuthoritySession(auth.authorityId);
@@ -5363,7 +5900,7 @@ Request ID: ${requestId}`,
     // The response shape is IDENTICAL whether or not the account exists —
     // no account enumeration. In this demo environment the "email" is a
     // simulated delivery channel.
-    let token = `rst-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+    let token = secureToken("rst");
     let code = String(Math.floor(100000 + Math.random() * 900000));
     const admin = [...NEWS_ADMINS.values()].find((a) => a.email.toLowerCase() === emailKey);
     const auth = [...AUTHORITIES.values()].find((a) => a.profile.contactEmail.toLowerCase() === emailKey);
@@ -5388,8 +5925,7 @@ Request ID: ${requestId}`,
     }
     return res.json({
       success: true,
-      message: 'If a News Management account exists for that email, a secure reset link has been sent. The link is valid for 15 minutes.',
-      demoDelivery: { channel: 'Simulated email (demo environment)', code, resetToken: token }
+      message: 'If a News Management account exists for that email, a secure reset link has been sent. The link is valid for 15 minutes.'
     });
   });
 
@@ -5429,6 +5965,27 @@ Request ID: ${requestId}`,
     return res.json({ success: true, message: 'Your password has been reset and all previous sessions were signed out. You can now sign in.' });
   });
 
+  // Production does not load demo staff credentials. A bootstrap
+  // administrator may be provisioned explicitly through environment
+  // configuration; otherwise the News Management surface fails closed.
+  if (IS_PRODUCTION) {
+    NEWS_ADMIN_SEED.length = 0;
+    const bootstrapEmail = config.newsAdminBootstrap.email.toLowerCase();
+    const bootstrapPassword = config.newsAdminBootstrap.password;
+    if (bootstrapEmail && bootstrapPassword) {
+      NEWS_ADMIN_SEED.push({
+        adminId: 'news-admin-bootstrap',
+        name: config.newsAdminBootstrap.name,
+        email: bootstrapEmail,
+        passwordHash: hashSecret('news-admin-bootstrap', bootstrapPassword),
+        role: 'SUPER_ADMIN',
+        title: config.newsAdminBootstrap.name,
+        status: 'active',
+        mfaEnabled: true,
+        permissions: NEWS_ADMIN_ROLE_PERMISSIONS.SUPER_ADMIN
+      });
+    }
+  }
   NEWS_ADMIN_SEED.forEach((a) => NEWS_ADMINS.set(a.adminId, a));
 
   // ----------------------------------------------------------------------
@@ -5732,13 +6289,13 @@ Request ID: ${requestId}`,
         if (!partner || !partner.active || partner.verificationStatus !== 'VERIFIED') {
           return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: false, reason: 'PHARMACY_NOT_VERIFIED', medicineName: product.name };
         }
-        if (!isEligibleRecord(rec)) {
+        if (!rec || !isEligibleRecord(rec)) {
           return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: false, reason: availabilityDenialReason(rec), medicineName: product.name };
         }
-        if (rec!.stockQuantity < requested) {
-          return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: false, reason: 'INSUFFICIENT_STOCK', availableQuantity: rec!.stockQuantity, medicineName: product.name };
+        if (rec.stockQuantity < requested) {
+          return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: false, reason: 'INSUFFICIENT_STOCK', availableQuantity: rec.stockQuantity, medicineName: product.name };
         }
-        return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: true, stockQuantity: rec!.stockQuantity, stockStatus: rec!.stockStatus, medicineName: product.name };
+        return { productId: product.id, pharmacyId: item?.pharmacyId, eligible: true, stockQuantity: rec.stockQuantity, stockStatus: rec.stockStatus, medicineName: product.name };
       });
       return res.json({ success: true, availabilityVerified: true, asOf: new Date().toISOString(), results });
     } catch (err: any) {
@@ -5777,13 +6334,13 @@ Request ID: ${requestId}`,
         if (!partner || !partner.active || partner.verificationStatus !== 'VERIFIED') {
           return res.status(409).json({ success: false, code: 'PHARMACY_NOT_VERIFIED', medicineName: product.name, error: 'This pharmacy is no longer an active verified partner.' });
         }
-        if (!isEligibleRecord(rec)) {
+        if (!rec || !isEligibleRecord(rec)) {
           return res.status(409).json({ success: false, code: availabilityDenialReason(rec), medicineName: product.name, error: 'This medicine is no longer available at this pharmacy.' });
         }
-        if (rec!.stockQuantity < qty) {
-          return res.status(409).json({ success: false, code: 'INSUFFICIENT_STOCK', medicineName: product.name, availableQuantity: rec!.stockQuantity, error: `Only ${rec!.stockQuantity} unit(s) of ${product.name} remain at this pharmacy.` });
+        if (rec.stockQuantity < qty) {
+          return res.status(409).json({ success: false, code: 'INSUFFICIENT_STOCK', medicineName: product.name, availableQuantity: rec.stockQuantity, error: `Only ${rec.stockQuantity} unit(s) of ${product.name} remain at this pharmacy.` });
         }
-        lines.push({ product, rec: rec!, quantity: qty, lineTotal: Number((rec!.price * qty).toFixed(2)) });
+        lines.push({ product, rec, quantity: qty, lineTotal: Number((rec.price * qty).toFixed(2)) });
       }
 
       // Atomic commit: decrement every line (all lines re-verified above; the
@@ -5931,7 +6488,10 @@ Request ID: ${requestId}`,
   // GlobalHealth admin verification action (operator-side; requires the
   // server-held admin key — never shipped in the client bundle).
   app.post('/api/pharmacy-partner/auth/verify', (req, res) => {
-    const adminKey = process.env.GH_ADMIN_KEY || 'gh-admin-demo-2026';
+    const adminKey = config.ghAdminKey;
+    if (!adminKey) {
+      return res.status(503).json({ success: false, code: 'ADMIN_KEY_NOT_CONFIGURED', error: 'Administrator authorization is not configured on this server.' });
+    }
     if (String(req.headers?.['x-admin-key'] || '') !== adminKey) {
       return res.status(401).json({ success: false, error: 'Administrator authorization required.' });
     }
@@ -5958,7 +6518,10 @@ Request ID: ${requestId}`,
   });
 
   app.get('/api/pharmacy-partner/auth/pending', (req, res) => {
-    const adminKey = process.env.GH_ADMIN_KEY || 'gh-admin-demo-2026';
+    const adminKey = config.ghAdminKey;
+    if (!adminKey) {
+      return res.status(503).json({ success: false, code: 'ADMIN_KEY_NOT_CONFIGURED', error: 'Administrator authorization is not configured on this server.' });
+    }
     if (String(req.headers?.['x-admin-key'] || '') !== adminKey) {
       return res.status(401).json({ success: false, error: 'Administrator authorization required.' });
     }
@@ -5976,9 +6539,13 @@ Request ID: ${requestId}`,
       return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: `Too many sign-in attempts. Please try again in ${Math.ceil(rl.retryInMs / 60000)} minutes.` });
     }
     const account = PHARMACY_PARTNER_ACCOUNTS.get(cleanId);
-    if (!account || hashSecret(account.username, String(password || '')) !== account.passwordHash) {
+    if (!account || !verifySecret(account.username, String(password || ''), account.passwordHash)) {
       registerFailedAttempt(PHARMACY_PARTNER_LOGIN_ATTEMPTS, cleanId, 15 * 60 * 1000);
       return res.status(401).json({ success: false, error: 'Incorrect pharmacy partner credentials.' });
+    }
+    if (account.passwordHash.startsWith('pbkdf2-sha256$')) {
+      account.passwordHash = hashSecret(account.username, String(password || ''));
+      PHARMACY_PARTNER_ACCOUNTS.set(account.username, account);
     }
     if (account.status === 'PENDING_VERIFICATION') {
       return res.status(403).json({ success: false, code: 'PENDING_VERIFICATION', error: 'Your pharmacy is still pending verification by GlobalHealth. You will be able to sign in once your license is approved.' });
@@ -5991,7 +6558,7 @@ Request ID: ${requestId}`,
       if (sess.expiresAt < Date.now()) PHARMACY_PARTNER_SESSIONS.delete(t);
     }
     const session: PharmacyPartnerSession = {
-      token: `ppp-sess-${randomBytes(24).toString('hex')}`,
+      token: secureToken("ppp-sess"),
       username: account.username,
       partnerId: account.partnerId,
       issuedAt: nowIso(),
@@ -6021,7 +6588,7 @@ Request ID: ${requestId}`,
   app.post('/api/pharmacy-partner/auth/change-password', requireMarketPartner, (req: any, res) => {
     const account: PharmacyPartnerAccount = req.marketPartnerAccount;
     const { oldPassword, newPassword } = req.body || {};
-    if (hashSecret(account.username, String(oldPassword || '')) !== account.passwordHash) {
+    if (!verifySecret(account.username, String(oldPassword || ''), account.passwordHash)) {
       return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
     if (String(newPassword || '').length < 8) {
@@ -6043,10 +6610,10 @@ Request ID: ${requestId}`,
     for (const [t, r] of PHARMACY_PARTNER_RESET_TOKENS) {
       if (r.username === account.username && !r.used) PHARMACY_PARTNER_RESET_TOKENS.delete(t);
     }
-    const record = { token: `RST-PPP-${Math.floor(10000 + Math.random() * 90000)}-${randomBytes(3).toString('hex').toUpperCase()}`, username: account.username, expiresAt: Date.now() + 60 * 60 * 1000, used: false };
+    const record = { token: secureToken("rst-ppp"), username: account.username, expiresAt: Date.now() + 60 * 60 * 1000, used: false };
     PHARMACY_PARTNER_RESET_TOKENS.set(record.token, record);
     // Demo environment: simulated delivery returns the token.
-    return res.json({ ...generic, demoToken: record.token });
+    return res.json({ ...generic, ...(IS_PRODUCTION ? {} : { demoToken: record.token }) });
   });
 
   app.post('/api/pharmacy-partner/auth/complete-reset', (req, res) => {
@@ -6652,10 +7219,10 @@ Request ID: ${requestId}`,
   };
 
   const publicHospitalProjection = (rec: CentralHospitalRecord) => ({
+    ...rec,
     hospitalId: rec.hospitalId,
     version: rec.version,
     asOf: rec.lastUpdated,
-    ...rec,
     // Never expose non-public pricing drafts
     pricing: rec.pricing.filter((p) => p.status === 'PUBLISHED'),
     // Only ACTIVE child records are public; history stays preserved internally
@@ -6807,7 +7374,7 @@ Request ID: ${requestId}`,
     }
     const account =
       [...HOSPITAL_ACCOUNTS.values()].find((a) => a.username === cleanId || a.email.toLowerCase() === cleanId) || null;
-    if (!account || hashSecret(account.username, String(password || '')) !== account.passwordHash) {
+    if (!account || !verifySecret(account.username, String(password || ''), account.passwordHash)) {
       registerFailedAttempt(HOSPITAL_LOGIN_ATTEMPTS, cleanId, 15 * 60 * 1000);
       hospitalAudit({
         hospitalId: account?.hospitalId || 'unknown',
@@ -6826,6 +7393,10 @@ Request ID: ${requestId}`,
       });
       return res.status(401).json({ success: false, error: 'Incorrect hospital credentials.' });
     }
+    if (account.passwordHash.startsWith('pbkdf2-sha256$')) {
+      account.passwordHash = hashSecret(account.username, String(password || ''));
+      HOSPITAL_ACCOUNTS.set(account.username, account);
+    }
     if (account.status !== 'ACTIVE') {
       return res.status(403).json({ success: false, error: 'This hospital account is suspended. Please contact GlobalHealth support.' });
     }
@@ -6834,7 +7405,7 @@ Request ID: ${requestId}`,
       if (sess.expiresAt < Date.now()) HOSPITAL_SESSIONS.delete(t);
     }
     const session: HospitalPortalSession = {
-      token: `hpt-sess-${randomBytes(24).toString('hex')}`,
+      token: secureToken("hpt-sess"),
       username: account.username,
       hospitalId: account.hospitalId,
       issuedAt: nowIso(),
@@ -6879,7 +7450,7 @@ Request ID: ${requestId}`,
   app.post('/api/hospital-portal/auth/change-password', requireHospitalToken, (req: any, res) => {
     const account: HospitalPortalAccount = req.hospitalAccount;
     const { oldPassword, newPassword } = req.body || {};
-    if (hashSecret(account.username, String(oldPassword || '')) !== account.passwordHash) {
+    if (!verifySecret(account.username, String(oldPassword || ''), account.passwordHash)) {
       return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
     if (String(newPassword || '').length < 8) {
@@ -6944,9 +7515,9 @@ Request ID: ${requestId}`,
     for (const [t, r] of HOSPITAL_RESET_TOKENS) {
       if (r.username === account.username && !r.used) HOSPITAL_RESET_TOKENS.delete(t);
     }
-    const record = { token: `RST-HPT-${Math.floor(10000 + Math.random() * 90000)}-${randomBytes(3).toString('hex').toUpperCase()}`, username: account.username, expiresAt: Date.now() + 60 * 60 * 1000, used: false };
+    const record = { token: secureToken("rst-hpt"), username: account.username, expiresAt: Date.now() + 60 * 60 * 1000, used: false };
     HOSPITAL_RESET_TOKENS.set(record.token, record);
-    return res.json({ ...generic, demoToken: record.token });
+    return res.json({ ...generic, ...(IS_PRODUCTION ? {} : { demoToken: record.token }) });
   });
 
   app.post('/api/hospital-portal/auth/complete-reset', (req, res) => {
@@ -7078,6 +7649,10 @@ Request ID: ${requestId}`,
     role: 'user' | 'assistant';
     content: string;
     createdAt: number;
+    /** Client-supplied idempotency key. Repeated sends (retry, double-tap,
+     * concurrent tabs) return the previously stored message instead of
+     * creating duplicates. */
+    clientMessageId?: string;
   }
   interface ServerAiConversation {
     id: string;
@@ -7086,9 +7661,54 @@ Request ID: ${requestId}`,
     messages: ServerAiMessage[];
     createdAt: number;
     updatedAt: number;
+    isSaved: boolean;
+    archivedAt?: number;
+    deletedAt?: number;
   }
+  const AI_CONVERSATIONS_FILE = path.join(RUNTIME_DIR, 'ai-conversations.json');
+  const AI_SHARE_LINKS_FILE = path.join(RUNTIME_DIR, 'ai-share-links.json');
   const AI_CONVERSATIONS: Map<string, ServerAiConversation> = new Map();
+  const AI_SHARE_LINKS = new Map<
+    string,
+    { token: string; conversationId: string; userId: string; createdAt: number; revokedAt?: number }
+  >();
   const AI_TITLE = 'New conversation';
+
+  // Restore persisted user-owned chats on every server start. In-memory maps
+  // stay the source of truth for fast reads; writes are committed atomically
+  // to disk so restarts do not lose AI history.
+  try {
+    const persistedConversations = readJsonFile<ServerAiConversation[]>(AI_CONVERSATIONS_FILE, []);
+    for (const c of persistedConversations) {
+      if (
+        c &&
+        typeof c.id === 'string' &&
+        typeof c.userId === 'string' &&
+        Array.isArray(c.messages)
+      ) {
+        AI_CONVERSATIONS.set(c.id, {
+          ...c,
+          isSaved: Boolean(c.isSaved),
+          createdAt: Number(c.createdAt) || Date.now(),
+          updatedAt: Number(c.updatedAt) || Date.now(),
+        });
+      }
+    }
+    const persistedShares = readJsonFile<{ token: string; conversationId: string; userId: string; createdAt: number; revokedAt?: number }[]>(
+      AI_SHARE_LINKS_FILE,
+      []
+    );
+    for (const share of persistedShares) {
+      if (share && typeof share.token === 'string' && typeof share.conversationId === 'string') {
+        AI_SHARE_LINKS.set(share.token, share);
+      }
+    }
+  } catch (err) {
+    console.warn('[GlobalHealth] AI persistence could not be restored:', (err as Error)?.message);
+  }
+
+  const persistAiConversations = () => writeJsonFile(AI_CONVERSATIONS_FILE, [...AI_CONVERSATIONS.values()]);
+  const persistAiShareLinks = () => writeJsonFile(AI_SHARE_LINKS_FILE, [...AI_SHARE_LINKS.values()]);
 
   const aiConvId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -7098,6 +7718,9 @@ Request ID: ${requestId}`,
     messageCount: c.messages.length,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    isSaved: c.isSaved,
+    isArchived: typeof c.archivedAt === 'number',
+    isTrashed: typeof c.deletedAt === 'number',
   });
 
   const aiPublicConversation = (c: ServerAiConversation) => ({
@@ -7106,6 +7729,9 @@ Request ID: ${requestId}`,
     messages: c.messages,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    isSaved: c.isSaved,
+    isArchived: typeof c.archivedAt === 'number',
+    isTrashed: typeof c.deletedAt === 'number',
   });
 
   // Uniform 404 for missing OR foreign conversations.
@@ -7115,7 +7741,10 @@ Request ID: ${requestId}`,
     return conv;
   };
 
-  const aiValidMessage = (role: unknown, content: unknown): { role: 'user' | 'assistant'; content: string } | null => {
+  const aiValidMessage = (
+    role: unknown,
+    content: unknown
+  ): { role: 'user' | 'assistant'; content: string; clientMessageId?: string } | null => {
     if (role !== 'user' && role !== 'assistant') return null;
     if (typeof content !== 'string') return null;
     const trimmed = content.trim();
@@ -7124,11 +7753,19 @@ Request ID: ${requestId}`,
   };
 
   // GET /api/ai/conversations — the signed-in user's own summaries.
+  // Supports ?filter=recent|saved|archived|trash and ?q=text search.
   app.get('/api/ai/conversations', requireAuth, (req: any, res) => {
-    const list = [...AI_CONVERSATIONS.values()]
-      .filter((c) => c.userId === req.authUser.id)
-      .sort((a, b) => b.updatedAt - a.updatedAt)
-      .map(aiSummary);
+    const filter = typeof req.query?.filter === 'string' ? req.query.filter : 'recent';
+    const q = typeof req.query?.q === 'string' ? req.query.q.trim().toLowerCase() : '';
+    let owned = [...AI_CONVERSATIONS.values()].filter((c) => c.userId === req.authUser.id);
+    if (filter === 'saved') owned = owned.filter((c) => c.isSaved && !c.deletedAt);
+    else if (filter === 'archived') owned = owned.filter((c) => Boolean(c.archivedAt) && !c.deletedAt);
+    else if (filter === 'trash') owned = owned.filter((c) => Boolean(c.deletedAt));
+    else owned = owned.filter((c) => !c.deletedAt && !c.archivedAt);
+    if (q) {
+      owned = owned.filter((c) => c.title.toLowerCase().includes(q) || c.messages.some((m) => m.content.toLowerCase().includes(q)));
+    }
+    const list = owned.sort((a, b) => b.updatedAt - a.updatedAt).map(aiSummary);
     return res.json({ success: true, conversations: list });
   });
 
@@ -7144,12 +7781,19 @@ Request ID: ${requestId}`,
       messages: [],
       createdAt: now,
       updatedAt: now,
+      isSaved: false,
     };
     if (Array.isArray(messages)) {
       for (const m of messages) {
         const valid = aiValidMessage(m?.role, m?.content);
         if (!valid) continue;
-        conv.messages.push({ id: aiConvId('ai-msg'), ...valid, createdAt: now });
+        const clientMessageId =
+          typeof m?.clientMessageId === 'string' && m.clientMessageId.trim()
+            ? m.clientMessageId.trim().slice(0, 100)
+            : typeof m?.id === 'string'
+              ? m.id.trim().slice(0, 100)
+              : undefined;
+        conv.messages.push({ id: aiConvId('ai-msg'), ...valid, createdAt: now, clientMessageId });
       }
       if (conv.messages.length > 0) conv.updatedAt = now;
       const firstUser = conv.messages.find((m) => m.role === 'user');
@@ -7158,15 +7802,22 @@ Request ID: ${requestId}`,
       }
     }
     AI_CONVERSATIONS.set(conv.id, conv);
+    persistAiConversations();
     return res.status(201).json({ success: true, conversation: aiPublicConversation(conv) });
   });
 
-  // DELETE /api/ai/conversations — delete ALL of the user's conversations.
+  // DELETE /api/ai/conversations — soft-delete ALL of the user's conversations.
   app.delete('/api/ai/conversations', requireAuth, (req: any, res) => {
-    for (const [id, c] of AI_CONVERSATIONS.entries()) {
-      if (c.userId === req.authUser.id) AI_CONVERSATIONS.delete(id);
+    let count = 0;
+    for (const [, c] of AI_CONVERSATIONS.entries()) {
+      if (c.userId === req.authUser.id && !c.deletedAt) {
+        c.deletedAt = Date.now();
+        c.updatedAt = Date.now();
+        count += 1;
+      }
     }
-    return res.json({ success: true, deleted: true });
+    persistAiConversations();
+    return res.json({ success: true, deleted: true, count });
   });
 
   // GET /api/ai/conversations/:id — full conversation (owner only).
@@ -7178,29 +7829,57 @@ Request ID: ${requestId}`,
     return res.json({ success: true, conversation: aiPublicConversation(conv) });
   });
 
-  // PUT /api/ai/conversations/:id — rename (owner only).
+  // PUT /api/ai/conversations/:id — rename, save/unsave, archive/restore (owner only).
   app.put('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
     const conv = aiFindOwned(req.authUser.id, req.params.id);
     if (!conv) {
       return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
     }
-    const title = typeof req.body?.title === 'string' ? req.body.title.trim() : '';
-    if (!title || title.length > 80) {
-      return res.status(400).json({ success: false, error: 'A title of up to 80 characters is required.' });
+    if (req.body?.title !== undefined) {
+      const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
+      if (!title || title.length > 80) {
+        return res.status(400).json({ success: false, error: 'A title of up to 80 characters is required.' });
+      }
+      conv.title = title;
     }
-    conv.title = title;
+    if (req.body?.isSaved !== undefined && typeof req.body.isSaved === 'boolean') {
+      conv.isSaved = req.body.isSaved;
+    }
+    if (req.body?.archive !== undefined && typeof req.body.archive === 'boolean') {
+      if (req.body.archive) conv.archivedAt = Date.now();
+      else delete conv.archivedAt;
+    }
+    if (req.body?.restore !== undefined && req.body.restore === true) {
+      delete conv.deletedAt;
+      delete conv.archivedAt;
+    }
     conv.updatedAt = Date.now();
+    persistAiConversations();
     return res.json({ success: true, conversation: aiSummary(conv) });
   });
 
-  // DELETE /api/ai/conversations/:id — delete one (owner only).
+  // DELETE /api/ai/conversations/:id — soft-delete (owner only). Deleted chats
+  // move to Trash and can be restored. Use /permanent for true removal.
   app.delete('/api/ai/conversations/:id', requireAuth, (req: any, res) => {
     const conv = aiFindOwned(req.authUser.id, req.params.id);
     if (!conv) {
       return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
     }
+    conv.deletedAt = Date.now();
+    conv.updatedAt = Date.now();
+    persistAiConversations();
+    return res.json({ success: true, deleted: true, softDeleted: true });
+  });
+
+  // DELETE /api/ai/conversations/:id/permanent — permanent removal from Trash.
+  app.delete('/api/ai/conversations/:id/permanent', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
     AI_CONVERSATIONS.delete(conv.id);
-    return res.json({ success: true, deleted: true });
+    persistAiConversations();
+    return res.json({ success: true, deleted: true, permanent: true });
   });
 
   // POST /api/ai/conversations/:id/messages — append a message (owner only).
@@ -7213,14 +7892,149 @@ Request ID: ${requestId}`,
     if (!valid) {
       return res.status(400).json({ success: false, error: 'A message with role "user" or "assistant" and content up to 10,000 characters is required.' });
     }
-    const msg: ServerAiMessage = { id: aiConvId('ai-msg'), ...valid, createdAt: Date.now() };
+    const clientMessageId =
+      typeof req.body?.clientMessageId === 'string' && req.body.clientMessageId.trim()
+        ? req.body.clientMessageId.trim().slice(0, 100)
+        : typeof req.body?.id === 'string'
+          ? req.body.id.trim().slice(0, 100)
+          : undefined;
+
+    // Idempotency: if this client message was already successfully stored
+    // (retry after a dropped response, double-tap, or a concurrent tab), return
+    // the stored record instead of creating a duplicate. This is the
+    // duplicate-message safety net required by the unified chat contract.
+    if (clientMessageId) {
+      const existing = conv.messages.find((m) => m.clientMessageId === clientMessageId && m.role === valid.role);
+      if (existing) {
+        return res.status(200).json({ success: true, message: existing, deduplicated: true });
+      }
+    }
+
+    const msg: ServerAiMessage = { id: aiConvId('ai-msg'), ...valid, createdAt: Date.now(), clientMessageId };
     conv.messages.push(msg);
     conv.updatedAt = msg.createdAt;
     // Auto-title from the first user message when still untitled.
     if (conv.title === AI_TITLE && msg.role === 'user') {
       conv.title = msg.content.replace(/\s+/g, ' ').trim().slice(0, 48) || AI_TITLE;
     }
-    return res.status(201).json({ success: true, message: msg });
+    persistAiConversations();
+    return res.status(201).json({ success: true, message: msg, deduplicated: false });
+  });
+
+  // GET /api/ai/conversations/:id/export — download this user's OWN chat in
+  // plain-text or JSON form. The caller must be the conversation owner.
+  app.get('/api/ai/conversations/:id/export', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    const format = typeof req.query?.format === 'string' ? req.query.format.toLowerCase() : 'text';
+    if (format !== 'text' && format !== 'json') {
+      return res.status(400).json({ success: false, error: 'Export format must be "text" or "json".' });
+    }
+    const safeTitle = conv.title.replace(/[^\w\-. ]+/g, '_').replace(/\s+/g, '-').slice(0, 48) || 'ai-conversation';
+    if (format === 'json') {
+      return res.json({
+        success: true,
+        format: 'json',
+        filename: `${safeTitle}.json`,
+        contentType: 'application/json; charset=utf-8',
+        content: JSON.stringify(
+          {
+            conversation: {
+              id: conv.id,
+              title: conv.title,
+              createdAt: conv.createdAt,
+              updatedAt: conv.updatedAt,
+              isSaved: conv.isSaved,
+              isArchived: typeof conv.archivedAt === 'number',
+              isTrashed: typeof conv.deletedAt === 'number',
+            },
+            messages: conv.messages,
+          },
+          null,
+          2
+        ),
+      });
+    }
+    const lines = [
+      `GlobalHealth AI Conversation — ${conv.title}`,
+      `Exported: ${new Date().toISOString()}`,
+      `Messages: ${conv.messages.length}`,
+      '',
+    ];
+    for (const m of conv.messages) {
+      lines.push(`${m.role === 'user' ? 'You' : 'GlobalHealth AI'} (${new Date(m.createdAt).toISOString()}):`);
+      lines.push(m.content);
+      lines.push('');
+    }
+    lines.push('AI-generated information for educational use only. It is not a substitute for professional medical advice.');
+    return res.json({
+      success: true,
+      format: 'text',
+      filename: `${safeTitle}.txt`,
+      contentType: 'text/plain; charset=utf-8',
+      content: lines.join('\n'),
+    });
+  });
+
+  // POST /api/ai/conversations/:id/share — create a revocable share link for
+  // the owner's own conversation. A share token is a capability: possession of
+  // the URL grants read-only access until the owner revokes it.
+  app.post('/api/ai/conversations/:id/share', requireAuth, (req: any, res) => {
+    const conv = aiFindOwned(req.authUser.id, req.params.id);
+    if (!conv) {
+      return res.status(404).json({ success: false, error: 'This AI conversation could not be found.' });
+    }
+    if (conv.deletedAt) {
+      return res.status(400).json({ success: false, error: 'A deleted conversation cannot be shared. Restore it first.' });
+    }
+    const token = secureToken("ghshare");
+    AI_SHARE_LINKS.set(token, { token, conversationId: conv.id, userId: req.authUser.id, createdAt: Date.now() });
+    persistAiShareLinks();
+    return res.status(201).json({
+      success: true,
+      token,
+      shareId: token.slice(9, 17),
+      url: `/api/ai/conversations/shared/${token}`,
+      expiresAt: null,
+    });
+  });
+
+  // GET /api/ai/conversations/shared/:token — read-only public share view.
+  // Only explicitly shared, non-revoked chats are visible.
+  app.get('/api/ai/conversations/shared/:token', (req, res) => {
+    const share = AI_SHARE_LINKS.get(req.params.token);
+    if (!share || share.revokedAt) {
+      return res.status(404).json({ success: false, error: 'This shared AI conversation is no longer available.' });
+    }
+    const conv = AI_CONVERSATIONS.get(share.conversationId);
+    if (!conv || conv.deletedAt || conv.userId !== share.userId) {
+      return res.status(404).json({ success: false, error: 'This shared AI conversation is no longer available.' });
+    }
+    return res.json({
+      success: true,
+      title: conv.title,
+      createdAt: conv.createdAt,
+      updatedAt: conv.updatedAt,
+      messageCount: conv.messages.length,
+      messages: conv.messages.map((m) => ({ id: m.id, role: m.role, content: m.content, createdAt: m.createdAt })),
+      disclaimer: 'This conversation is shared by the account owner. AI-generated information is educational only and does not replace professional medical advice.',
+    });
+  });
+
+  // DELETE /api/ai/conversations/shared/:token — revoke a share link.
+  app.delete('/api/ai/conversations/shared/:token', requireAuth, (req: any, res) => {
+    const share = AI_SHARE_LINKS.get(req.params.token);
+    if (!share) {
+      return res.status(404).json({ success: false, error: 'This share link could not be found.' });
+    }
+    if (share.userId !== req.authUser.id) {
+      return res.status(403).json({ success: false, error: 'You do not have permission to revoke this share link.' });
+    }
+    share.revokedAt = Date.now();
+    persistAiShareLinks();
+    return res.json({ success: true, revoked: true });
   });
 
   // ----------------------------------------------------------------------
@@ -7228,14 +8042,36 @@ Request ID: ${requestId}`,
   // ----------------------------------------------------------------------
   app.post('/api/ai-assistant', async (req, res) => {
     try {
+      const rl = hitRateLimit('ai-assistant', String(req.ip || 'anonymous'), 20, 5 * 60 * 1000);
+      if (!rl.allowed) {
+        return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'The AI assistant is receiving a lot of requests. Please wait a moment and try again.' });
+      }
       const { prompt, language, userContext } = req.body;
-      const apiKey = process.env.GEMINI_API_KEY;
 
+      // Server-side safety backstop. This runs even if the generative model is
+      // not configured, so a direct API caller can never bypass urgent guidance
+      // with a normal knowledge answer.
+      const safety = detectSafetyRisk(String(prompt || ''), String((userContext as any)?.language || ''));
+      if (safety.risk === 'urgent' && safety.emergencyMessage) {
+        return res.json({
+          response: safety.emergencyMessage,
+          safety,
+          skipped: true,
+        });
+      }
+
+      const apiKey = config.geminiApiKey;
       if (!apiKey) {
         return res.status(503).json({
           error: 'GEMINI_API_KEY is not configured on the server.',
         });
       }
+
+      // RAG-style local verified knowledge retrieval. The model receives the
+      // source label + only matched facts so it never needs to invent facts
+      // about a medicine/condition/lab test the platform already has content
+      // for.
+      const knowledge = retrieveVerifiedKnowledge(String(prompt || ''), 3);
 
       const ai = new GoogleGenAI({
         apiKey,
@@ -7256,6 +8092,11 @@ Request ID: ${requestId}`,
         String(v ?? '').replace(/[\r\n\t]/g, ' ').replace(/[<>{}]/g, '').trim().slice(0, max);
       const ctxName = cleanCtx((userContext as any)?.displayName);
       const ctxMrn = cleanCtx((userContext as any)?.mrn, 24);
+      // Non-authoritative context from the client's understanding pipeline
+      // (intent, answer mode, transparency guidance). Bounded and sanitized so
+      // it cannot inject privileged instructions or leak private data.
+      const ctxSystem = cleanCtx((userContext as any)?.systemContext, 5000) || '';
+      const ctxHistory = cleanCtx((userContext as any)?.conversationHistory, 8000) || '';
 
       const identityInstruction =
         (userContext as any)?.authenticated && ctxName
@@ -7273,7 +8114,9 @@ SAFETY RULES (never violate):
 - Never invent statistics, percentages, or fake confidence values. If unsure, say so plainly.
 - GlobalHealth website assistance: you may point users to real GlobalHealth sections (Explore Diseases, View Medicine Information, Explore Lab Tests, Find a Doctor, Open Medical Map, Explore Verified Pharmacy Partners, Open Community, Wellness & Fitness, Health Tools/Calculators, Nutrition & Recipes). Never invent pages that do not exist.
 - Always end with a short note that this is educational information and not a substitute for professional medical advice.
-Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}`;
+Format responses cleanly with short markdown headings, brief paragraphs, and bullet points. Avoid walls of text.${langInstruction}${
+        ctxSystem ? `\nPLATFORM CONTEXT GUIDANCE (non-authoritative, from GlobalHealth's understanding layer): ${ctxSystem}` : ''
+      }${knowledge.context}${ctxHistory ? `\nCURRENT CONVERSATION HISTORY (recent, for continuity and reference resolution):\n${ctxHistory}\nUse this only to understand the user's current thread. Never repeat earlier answers verbatim.` : ''}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
@@ -7291,6 +8134,81 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
   });
 
   // ----------------------------------------------------------------------
+  // Cross-module runtime persistence (doctors, hospitals, pharmacy partners,
+  // news accounts, clinical consent/EHR objects, marketplace orders). This
+  // keeps domain data that was created at runtime across restarts. The file
+  // is written 0600 and lives under git-ignored data/runtime/.
+  // ----------------------------------------------------------------------
+  const RUNTIME_DOMAIN_STORE = path.join(RUNTIME_DIR, 'domain-store.json');
+  const persistDomainState = () => {
+    writeSecureJsonFile(RUNTIME_DOMAIN_STORE, {
+      savedAt: new Date().toISOString(),
+      doctors: [...DOCTORS.entries()],
+      doctorSessions: [...DOCTOR_SESSIONS.entries()],
+      doctorResetTokens: [...DOCTOR_RESET_TOKENS.entries()],
+      consentRequests: [...CONSENT_REQUESTS.entries()],
+      doctorAccess: [...DOCTOR_ACCESS.entries()],
+      ehrRecords: [...EHR_RECORDS.entries()],
+      attachments: [...ATTACHMENTS.entries()],
+      doctorNotifications: [...DOCTOR_NOTIFICATIONS.entries()],
+      retentionArchive: [...RETENTION_ARCHIVE.entries()],
+      decidedRequests: [...DECIDED_REQUESTS.entries()],
+      newsAdmins: [...NEWS_ADMINS.entries()],
+      authorities: [...AUTHORITIES.entries()],
+      newsAdminSessions: [...NEWS_ADMIN_SESSIONS.entries()],
+      authoritySessions: [...AUTHORITY_SESSIONS.entries()],
+      newsSubmissions: [...NEWS_SUBMISSIONS.entries()],
+      newsReports: [...NEWS_REPORTS.entries()],
+      authorityNotifications: [...AUTHORITY_NOTIFICATIONS.entries()],
+      adminNotifications: [...ADMIN_NOTIFICATIONS.entries()],
+      pharmacyPartnerAccounts: [...PHARMACY_PARTNER_ACCOUNTS.entries()],
+      pharmacyPartnerSessions: [...PHARMACY_PARTNER_SESSIONS.entries()],
+      pharmacyPartnerResetTokens: [...PHARMACY_PARTNER_RESET_TOKENS.entries()],
+      marketInventory: [...MARKET_INVENTORY.entries()],
+      marketOrders: [...MARKET_ORDERS.entries()],
+      hospitalAccounts: [...HOSPITAL_ACCOUNTS.entries()],
+      hospitalSessions: [...HOSPITAL_SESSIONS.entries()],
+      hospitalRegistry: [...HOSPITAL_REGISTRY.entries()],
+      hospitalResetTokens: [...HOSPITAL_RESET_TOKENS.entries()]
+    });
+  };
+  {
+    const persisted = readJsonFile<Record<string, any>>(RUNTIME_DOMAIN_STORE, {});
+    const apply = (entries: any, setter: (key: any, value: any) => void) => {
+      if (!Array.isArray(entries)) return;
+      for (const [key, value] of entries as [any, any][]) setter(key, value);
+    };
+    apply(persisted.doctors as any, (k, v) => DOCTORS.set(k, v));
+    apply(persisted.doctorSessions as any, (k, v) => DOCTOR_SESSIONS.set(k, v));
+    apply(persisted.doctorResetTokens as any, (k, v) => DOCTOR_RESET_TOKENS.set(k, v));
+    apply(persisted.consentRequests as any, (k, v) => CONSENT_REQUESTS.set(k, v));
+    apply(persisted.doctorAccess as any, (k, v) => DOCTOR_ACCESS.set(k, v));
+    apply(persisted.ehrRecords as any, (k, v) => EHR_RECORDS.set(k, v));
+    apply(persisted.attachments as any, (k, v) => ATTACHMENTS.set(k, v));
+    apply(persisted.doctorNotifications as any, (k, v) => DOCTOR_NOTIFICATIONS.set(k, v));
+    apply(persisted.retentionArchive as any, (k, v) => RETENTION_ARCHIVE.set(k, v));
+    apply(persisted.decidedRequests as any, (k, v) => DECIDED_REQUESTS.set(k, v));
+    apply(persisted.newsAdmins as any, (k, v) => NEWS_ADMINS.set(k, v));
+    apply(persisted.authorities as any, (k, v) => AUTHORITIES.set(k, v));
+    apply(persisted.newsAdminSessions as any, (k, v) => NEWS_ADMIN_SESSIONS.set(k, v));
+    apply(persisted.authoritySessions as any, (k, v) => AUTHORITY_SESSIONS.set(k, v));
+    apply(persisted.newsSubmissions as any, (k, v) => NEWS_SUBMISSIONS.set(k, v));
+    apply(persisted.newsReports as any, (k, v) => NEWS_REPORTS.set(k, v));
+    apply(persisted.authorityNotifications as any, (k, v) => AUTHORITY_NOTIFICATIONS.set(k, v));
+    apply(persisted.adminNotifications as any, (k, v) => ADMIN_NOTIFICATIONS.set(k, v));
+    apply(persisted.pharmacyPartnerAccounts as any, (k, v) => PHARMACY_PARTNER_ACCOUNTS.set(k, v));
+    apply(persisted.pharmacyPartnerSessions as any, (k, v) => PHARMACY_PARTNER_SESSIONS.set(k, v));
+    apply(persisted.pharmacyPartnerResetTokens as any, (k, v) => PHARMACY_PARTNER_RESET_TOKENS.set(k, v));
+    apply(persisted.marketInventory as any, (k, v) => MARKET_INVENTORY.set(k, v));
+    apply(persisted.marketOrders as any, (k, v) => MARKET_ORDERS.set(k, v));
+    apply(persisted.hospitalAccounts as any, (k, v) => HOSPITAL_ACCOUNTS.set(k, v));
+    apply(persisted.hospitalSessions as any, (k, v) => HOSPITAL_SESSIONS.set(k, v));
+    apply(persisted.hospitalRegistry as any, (k, v) => HOSPITAL_REGISTRY.set(k, v));
+    apply(persisted.hospitalResetTokens as any, (k, v) => HOSPITAL_RESET_TOKENS.set(k, v));
+  }
+  setInterval(() => persistDomainState(), 10000).unref();
+
+  // ----------------------------------------------------------------------
   // 6. API 404 boundary — unknown /api paths return JSON 404 in EVERY mode
   // (registered before the Vite middleware / static fallback so the SPA
   // shell can never mask a broken API call as HTTP 200 HTML).
@@ -7299,10 +8217,27 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
     return res.status(404).json({ success: false, error: 'API endpoint not found.' });
   });
 
+  // Centralized API error boundary. User-facing errors never leak stack
+  // traces, SQL, provider keys, or database internals.
+  app.use('/api', (err: any, req: any, res: any, _next: any) => {
+    console.error(`[GlobalHealth] API error ${req.requestId || ''}:`, err);
+    return res.status(err?.status || 500).json({
+      success: false,
+      error: {
+        code: err?.code || 'INTERNAL_ERROR',
+        message:
+          err?.message && (err?.status === 429 || err?.status === 401 || err?.status === 403 || err?.status === 400)
+            ? err.message
+            : 'Something went wrong. Please try again.',
+      },
+      requestId: req.requestId,
+    });
+  });
+
   // ----------------------------------------------------------------------
   // 7. Vite Dev Server / SPA Static Fallback
   // ----------------------------------------------------------------------
-  if (process.env.NODE_ENV !== 'production') {
+  if (!IS_PRODUCTION) {
     const vite = await createViteServer({
       server: { middlewareMode: true, allowedHosts: true },
       appType: 'spa',
@@ -7322,12 +8257,9 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[MedAuth & GlobalHealth Enterprise] Server listening on http://0.0.0.0:${PORT}`);
-    if (!process.env.GEMINI_API_KEY) {
-      console.warn(
-        '[GlobalHealth] GEMINI_API_KEY is not set. The site runs normally, but the AI Assistant ' +
-        'will return a "not configured" message. Add GEMINI_API_KEY to your .env file to enable it.'
-      );
+    logger.info('server listening', { host: '0.0.0.0', port: PORT, mode: config.nodeEnv });
+    if (!config.geminiApiKey) {
+      logger.warn('AI assistant disabled', { reason: 'GEMINI_API_KEY not set' });
     }
   });
 }

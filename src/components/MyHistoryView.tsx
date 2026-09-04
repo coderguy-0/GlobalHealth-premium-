@@ -232,8 +232,8 @@ const fmtDay = (iso?: string | null) => {
 };
 
 // ------------------------------------------------------------- component --
-export const MyHistoryView: React.FC = () => {
-  const [tab, setTab] = useState<TabId>('all');
+export const MyHistoryView: React.FC<{ initialTab?: TabId }> = ({ initialTab = 'all' }) => {
+  const [tab, setTab] = useState<TabId>(initialTab);
   const [events, setEvents] = useState<HistoryEvent[]>([]);
   const [requests, setRequests] = useState<ConsentReqLite[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -275,6 +275,12 @@ export const MyHistoryView: React.FC = () => {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Keep the selected history section in sync when the header account menu
+  // asks for a specific destination (e.g. "Notifications").
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
 
   // Deep links: #my-history?event=AUD-… or #my-history?request=GH-REQ-…
   useEffect(() => {

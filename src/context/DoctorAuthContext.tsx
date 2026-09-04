@@ -96,7 +96,7 @@ interface DoctorAuthContextType {
     email?: string;
     organization?: string;
     specialty?: string;
-    role?: string;
+    role?: DoctorAccount['role'];
     department?: string;
     registrationNo?: string;
   }) => void;

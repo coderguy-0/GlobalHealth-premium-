@@ -46,7 +46,7 @@ export const StaffManagementTab: React.FC<StaffManagementTabProps> = ({
       licenseNumber: licenseNumber ? licenseNumber : undefined,
       status: 'Active',
       assignedBranchId,
-      assignedBranchName: branch?.name,
+      assignedBranchName: branch?.name || '',
       permissions: {
         canReviewPrescriptions: role === 'Pharmacy Owner' || role === 'Pharmacist' || role === 'Pharmacy Administrator',
         canDispenseMedicines: role === 'Pharmacy Owner' || role === 'Pharmacist' || role === 'Order Manager',
@@ -59,7 +59,7 @@ export const StaffManagementTab: React.FC<StaffManagementTabProps> = ({
     });
 
     setIsAddStaffModal(false);
-    onStaffUpdated();
+    onStaffUpdated?.();
   };
 
   return (

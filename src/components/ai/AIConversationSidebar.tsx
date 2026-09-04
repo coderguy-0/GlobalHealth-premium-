@@ -9,9 +9,20 @@ import {
   Trash2,
   UserCircle2,
   X,
+  Star,
+  Archive,
+  RotateCcw,
+  LayoutList,
+  Trash,
+  FileText,
+  FileJson,
+  Printer,
+  Share2,
+  Link2,
 } from 'lucide-react';
-import type { AIConversationSummary, AIHistoryGroupKey } from './types';
+import type { AIConversationSummary, AIHistoryGroupKey, AIHistoryFilter } from './types';
 import { AI_HISTORY_GROUP_LABELS } from './types';
+import type { AIChatExportAction } from './aiApi';
 import { AIErrorState, type AIErrorKind } from './AIErrorState';
 
 interface AIConversationSidebarProps {
@@ -21,14 +32,24 @@ interface AIConversationSidebarProps {
   activeId: string | null;
   loading?: boolean;
   historyError?: { kind: AIErrorKind; message: string } | null;
+  filter?: AIHistoryFilter;
+  onFilterChange?: (filter: AIHistoryFilter) => void;
   onRetryHistory?: () => void;
   onSignIn?: () => void;
   onSelect: (id: string) => void;
   onNewChat: () => void;
   onRename: (id: string, title: string) => void;
+  onToggleSave: (id: string) => void;
+  onToggleArchive: (id: string, archived?: boolean) => void;
+  onRestore: (id: string) => void;
   onDelete: (id: string) => void;
+  onPermanentDelete: (id: string) => void;
   onDeleteAll: () => void;
   onSaveSession: () => void;
+  onExportChat?: (format: AIChatExportAction) => void;
+  onShareChat?: () => void;
+  shareUrl?: string | null;
+  onRevokeShare?: () => void;
 }
 
 function dayKey(ts: number): string {
@@ -63,20 +84,31 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
   activeId,
   loading,
   historyError,
+  filter = 'recent',
+  onFilterChange,
   onRetryHistory,
   onSignIn,
   onSelect,
   onNewChat,
   onRename,
+  onToggleSave,
+  onToggleArchive,
+  onRestore,
   onDelete,
+  onPermanentDelete,
   onDeleteAll,
   onSaveSession,
+  onExportChat,
+  onShareChat,
+  shareUrl,
+  onRevokeShare,
 }) => {
   const [query, setQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [armedDelete, setArmedDelete] = useState<string | null>(null);
   const [armedDeleteAll, setArmedDeleteAll] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
   const editRef = useRef<HTMLInputElement>(null);
   const timers = useRef<number[]>([]);
 
@@ -176,6 +208,83 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
         </button>
       </div>
 
+      {signedIn && activeId && (
+        <div className="px-3 pb-2">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onExportChat?.('text')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" /> TXT
+            </button>
+            <button
+              type="button"
+              onClick={onShareChat}
+              disabled={!onShareChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <Share2 className="h-3.5 w-3.5" aria-hidden="true" /> Share
+            </button>
+            <button
+              type="button"
+              onClick={() => onExportChat?.('json')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <FileJson className="h-3.5 w-3.5" aria-hidden="true" /> JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => onExportChat?.('pdf')}
+              disabled={!onExportChat}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-[11px] font-bold text-slate-600 transition hover:border-medical-200 hover:bg-medical-50 hover:text-medical-700 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
+            >
+              <Printer className="h-3.5 w-3.5" aria-hidden="true" /> PDF
+            </button>
+          </div>
+          {shareUrl && (
+            <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+                <Link2 className="h-3 w-3" aria-hidden="true" /> Revocable share link
+              </div>
+              <input
+                readOnly
+                value={shareUrl}
+                onFocus={(e) => e.currentTarget.select()}
+                aria-label="Shared conversation link"
+                className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-700 focus:outline-none"
+              />
+              <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(shareUrl);
+                      setCopiedShare(true);
+                      window.setTimeout(() => setCopiedShare(false), 1800);
+                    } catch {
+                      /* clipboard unavailable; URL is selectable in the input */
+                    }
+                  }}
+                  className="rounded-lg bg-medical-600 px-2 py-1.5 text-[10px] font-bold text-white transition hover:bg-medical-700"
+                >
+                  {copiedShare ? 'Copied' : 'Copy'}
+                </button>
+                <button
+                  type="button"
+                  onClick={onRevokeShare}
+                  className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-600 transition hover:bg-rose-50"
+                >
+                  Revoke
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {signedIn && (
         <>
           {/* Search */}
@@ -193,10 +302,36 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
             </div>
           </div>
 
+          {/* History filters */}
+          <div className="grid grid-cols-4 gap-1 px-3 pb-2" role="tablist" aria-label="Conversation filters">
+            {(
+              [
+                { id: 'recent', label: 'Recent', icon: LayoutList },
+                { id: 'saved', label: 'Saved', icon: Star },
+                { id: 'archived', label: 'Archive', icon: Archive },
+                { id: 'trash', label: 'Trash', icon: Trash },
+              ] as const
+            ).map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === f.id}
+                onClick={() => onFilterChange?.(f.id)}
+                className={`flex flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500 ${
+                  filter === f.id ? 'bg-medical-50 text-medical-700 ring-1 ring-medical-200' : 'text-slate-400 hover:bg-slate-50'
+                }`}
+              >
+                <f.icon className="h-3.5 w-3.5" aria-hidden="true" />
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           {/* History list */}
           <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
             <h3 className="px-1 pb-1.5 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              My AI Conversations
+              {filter === 'saved' ? 'Saved Conversations' : filter === 'archived' ? 'Archived Conversations' : filter === 'trash' ? 'Trash' : 'My AI Conversations'}
             </h3>
 
             {historyError ? (
@@ -209,7 +344,15 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
               </div>
             ) : visibleGroups.length === 0 ? (
               <p className="px-1 py-6 text-center text-xs leading-relaxed text-slate-400">
-                {query ? 'No conversations match your search.' : 'No saved conversations yet. Start a new chat and it will be saved to your account automatically.'}
+                {query
+                  ? 'No conversations match your search.'
+                  : filter === 'saved'
+                  ? 'No saved conversations yet. Open a recent chat and tap the star to save it.'
+                  : filter === 'archived'
+                  ? 'No archived conversations.'
+                  : filter === 'trash'
+                  ? 'No deleted conversations.'
+                  : 'No conversations yet. Start a new chat and it will be saved to your account automatically.'}
               </p>
             ) : (
               visibleGroups.map((g) => (
@@ -279,27 +422,74 @@ export const AIConversationSidebar: React.FC<AIConversationSidebarProps> = ({
                               </button>
 
                               <span className="flex shrink-0 items-center gap-0.5 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditingId(c.id);
-                                    setDraft(c.title);
-                                  }}
-                                  aria-label={`Rename conversation: ${c.title}`}
-                                  className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                                >
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => (armed ? onDelete(c.id) : arm(c.id))}
-                                  aria-label={armed ? `Confirm delete: ${c.title}` : `Delete conversation: ${c.title}`}
-                                  className={`grid h-8 w-8 place-items-center rounded-lg transition ${
-                                    armed ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-slate-400 hover:bg-rose-50 hover:text-rose-600'
-                                  }`}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onToggleSave(c.id)}
+                                    aria-label={c.isSaved ? `Unsave conversation: ${c.title}` : `Save conversation: ${c.title}`}
+                                    title={c.isSaved ? 'Unsave' : 'Save'}
+                                    className={`grid h-8 w-8 place-items-center rounded-lg transition ${c.isSaved ? 'text-amber-500 hover:bg-amber-50' : 'text-slate-400 hover:bg-amber-50 hover:text-amber-500'}`}
+                                  >
+                                    <Star className={`h-3.5 w-3.5 ${c.isSaved ? 'fill-current' : ''}`} />
+                                  </button>
+                                )}
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingId(c.id);
+                                      setDraft(c.title);
+                                    }}
+                                    aria-label={`Rename conversation: ${c.title}`}
+                                    className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                                  >
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                                {filter !== 'trash' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onToggleArchive(c.id, !c.isArchived)}
+                                    aria-label={c.isArchived ? `Restore conversation from archive: ${c.title}` : `Archive conversation: ${c.title}`}
+                                    title={c.isArchived ? 'Restore from archive' : 'Archive'}
+                                    className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                                  >
+                                    <Archive className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                                {filter === 'trash' ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => onRestore(c.id)}
+                                      aria-label={`Restore conversation: ${c.title}`}
+                                      title="Restore"
+                                      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600"
+                                    >
+                                      <RotateCcw className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => onPermanentDelete(c.id)}
+                                      aria-label={`Permanently delete conversation: ${c.title}`}
+                                      title="Permanently delete"
+                                      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => (armed ? onDelete(c.id) : arm(c.id))}
+                                    aria-label={armed ? `Confirm delete: ${c.title}` : `Delete conversation: ${c.title}`}
+                                    className={`grid h-8 w-8 place-items-center rounded-lg transition ${
+                                      armed ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-slate-400 hover:bg-rose-50 hover:text-rose-600'
+                                    }`}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
                               </span>
                             </div>
                           )}

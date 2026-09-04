@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   CommunityTab, 
   FeedFilter, 
@@ -42,6 +42,39 @@ interface CommunityViewProps {
   isAuthenticated?: boolean;
   currentUser?: UserAccount | null;
   onRequireAuth?: (feature: string) => void;
+}
+
+/**
+ * Maps the single GlobalHealth account identity onto the Community profile.
+ * Every post, comment, reply, like, save, follow, message and profile action
+ * uses this same unified authenticated user — never a seeded demo identity.
+ */
+function toCommunityProfile(user: UserAccount | null | undefined): CommunityUserProfile {
+  const fallback = CURRENT_USER;
+  if (!user) return fallback;
+  const displayName = user.fullName?.trim() || user.username || fallback.displayName;
+  const joinedDate = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+    : fallback.joinedDate;
+  return {
+    id: user.id || fallback.id,
+    username: user.username || displayName.toLowerCase().replace(/[^a-z0-9]+/g, '_') || fallback.username,
+    displayName,
+    avatar: user.avatarUrl || fallback.avatar,
+    coverImage: fallback.coverImage,
+    role: 'member',
+    roleLabel: 'GlobalHealth Member',
+    isVerified: true,
+    bio: `Verified GlobalHealth account. Joined the community through the GlobalHealth User Portal.`,
+    location: 'GlobalHealth Community',
+    joinedDate,
+    reputationPoints: 0,
+    followersCount: 0,
+    followingCount: 0,
+    postsCount: 0,
+    badges: [{ id: 'b-gh', name: 'GlobalHealth Member', icon: '✅', description: 'Authenticated through the GlobalHealth User Portal.' }],
+    interests: user.healthGoals || [],
+  };
 }
 
 // Inline gate used for protected community tabs (messages, notifications, profile, saved).
@@ -95,7 +128,16 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   const [notifications, setNotifications] = useState<CommunityNotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [moderationReports, setModerationReports] = useState<ModerationReportItem[]>(INITIAL_MODERATION_REPORTS);
   const [recommendedUsers, setRecommendedUsers] = useState<CommunityUserProfile[]>(RECOMMENDED_USERS);
-  const [currentUser, setCurrentUser] = useState<CommunityUserProfile>(CURRENT_USER);
+  // Community identity always mirrors the ONE GlobalHealth session. For
+  // guests it stays a seeded display profile; after login every action uses
+  // the authenticated user's own id, name and profile.
+  const [currentUser, setCurrentUser] = useState<CommunityUserProfile>(() => toCommunityProfile(authUser));
+
+  // Keep the community identity in sync with the global session (login,
+  // switch account, logout) without needing any separate community login.
+  useEffect(() => {
+    setCurrentUser(toCommunityProfile(authUser));
+  }, [authUser]);
 
   // Selected Profile for viewing
   const [viewingProfile, setViewingProfile] = useState<CommunityUserProfile | null>(null);

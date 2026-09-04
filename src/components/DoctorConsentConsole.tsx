@@ -29,6 +29,8 @@ import {
   Layers
 } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext';
+
 const DOC_TOKEN_KEY = 'globalhealth_doctor_token';
 
 interface DoctorInfo {
@@ -138,6 +140,11 @@ const fmt = (iso?: string | null) => {
 };
 
 export const DoctorConsentConsole: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+  // ONE GLOBAL SESSION RULE: the Verified Doctor console is reachable from the
+  // User Portal, so it never asks a guest for doctor credentials. It requires
+  // the same GlobalHealth account first, then verifies the doctor role for the
+  // permission check. Logging out of GlobalHealth also destroys this token.
+  const { isAuthenticated, requireAuth, user: globalUser } = useAuth();
   const [doctor, setDoctor] = useState<DoctorInfo | null>(null);
   const [identifier, setIdentifier] = useState('doc-1');
   const [password, setPassword] = useState('Doctor123!');
@@ -287,7 +294,39 @@ export const DoctorConsentConsole: React.FC<{ onExit: () => void }> = ({ onExit 
     }
   };
 
-  // ---------------- LOGIN SCREEN ----------------
+  // ---------------- GLOBAL HEALTH ACCOUNT GATE ----------------
+  // The User Portal uses ONE GlobalHealth account. This is a role-based
+  // workspace, so it still requires the GlobalHealth user session before any
+  // doctor credential verification can be shown.
+  if (!isAuthenticated) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <ShieldCheck className="h-7 w-7" />
+          </div>
+          <h1 className="text-xl font-extrabold text-slate-900">Verified Doctor Portal</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">
+            This is a secure role-based workspace. Sign in with your GlobalHealth account first; after
+            that we verify your verified-doctor credentials and load authorized patient records.
+          </p>
+          <div className="mt-6 flex flex-col gap-2.5">
+            <button
+              onClick={() => requireAuth({ feature: 'open the Verified Doctor consent console' }, 'login')}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            >
+              <LogIn className="h-4 w-4" /> Log In / Sign Up
+            </button>
+            <button onClick={onExit} className="w-full rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300">
+              ← Back to GlobalHealth
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------- DOCTOR ROLE CREDENTIAL CHECK ----------------
   if (!doctor) {
     return (
       <div className="mx-auto max-w-md px-4 py-16">
@@ -297,7 +336,9 @@ export const DoctorConsentConsole: React.FC<{ onExit: () => void }> = ({ onExit 
               <Stethoscope className="h-7 w-7" />
             </div>
             <h1 className="text-xl font-extrabold text-slate-900">Verified Doctor Portal</h1>
-            <p className="mt-1 text-sm text-slate-500">Sign in to view authorized patient records and request consent.</p>
+            <p className="mt-1 text-sm text-slate-500">
+              GlobalHealth session active as <strong>{globalUser?.fullName || globalUser?.username || 'user'}</strong>. Verify your doctor credentials to continue.
+            </p>
           </div>
           {error && <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
           <form onSubmit={login} className="space-y-3">
@@ -676,7 +717,7 @@ const SCOPE_OPTIONS: { id: string; label: string }[] = [
 export const SCOPE_LABEL = (s: string) => SCOPE_OPTIONS.find((o) => o.id === s)?.label || s;
 
 const NewPatientRequest: React.FC<{ headers: () => Record<string, string>; onSubmitted: () => void; onError: (m: string) => void }> = ({ headers, onSubmitted, onError }) => {
-  const [email, setEmail] = useState('sarah.jenkins@example.com');
+  const [email, setEmail] = useState('');
   const [reason, setReason] = useState('Establish a doctor-patient access relationship to review your health information during care.');
   const [scope, setScope] = useState<string[]>(['profile', 'clinical', 'medications', 'allergies', 'labs', 'prescriptions', 'documents']);
   const [duration, setDuration] = useState<'30' | '90' | '365'>('365');
@@ -844,7 +885,7 @@ const RequestDetailModal: React.FC<{
             <div className="rounded-xl border border-slate-200 p-3">
               <div className="mb-2 text-[11px] font-bold uppercase text-slate-400">Questions &amp; answers</div>
               <div className="space-y-2">
-                {req.clarifications.map((c) => (
+                {(req.clarifications || []).map((c) => (
                   <div key={c.id} className={`rounded-lg p-2 text-xs ${c.from === 'PATIENT' ? 'bg-slate-50' : 'bg-teal-50'}`}>
                     <div className="mb-0.5 text-[10px] font-bold text-slate-400">{c.from === 'PATIENT' ? 'Patient' : 'You'} · {fmt(c.at)}</div>
                     <p className="text-slate-700">{c.message}</p>

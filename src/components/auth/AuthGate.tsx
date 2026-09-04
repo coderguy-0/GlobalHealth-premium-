@@ -9,7 +9,6 @@ import {
   EyeOff,
   ShieldCheck,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   Loader2
 } from 'lucide-react';
@@ -23,12 +22,14 @@ interface AuthGateProps {
   // Registration happens on the dedicated full-page Create Account flow
   // (stepped, with explicit narrow consent) — never an inline blanket consent.
   onOpenFullSignup?: () => void;
+  // Password recovery uses the same unified auth flow (full page).
+  onOpenForgotPassword?: () => void;
 }
 
 // A single, consistent authentication gate used across the entire app.
 // Used both as the global "this feature requires an account" modal and as the
 // full-page protected-route experience.
-export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullSignup }) => {
+export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullSignup, onOpenForgotPassword }) => {
   const { gateOpen, closeGate, gateMode, setGateMode, gateIntent, authenticate } = useAuth();
   const [mode, setLocalMode] = useState<'login' | 'signup'>('login');
   const [busy, setBusy] = useState(false);
@@ -53,8 +54,10 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
 
   if (!gateOpen) return null;
 
-  const finish = (user: UserAccount, token: string) => {
-    authenticate(user, token);
+  const finish = (user: UserAccount, token: string, publicUser?: unknown) => {
+    // Store the full server account too so the unified session carries the
+    // complete identity (permissions, security flags) into every feature.
+    authenticate(user, token, publicUser as any);
     onAuthenticated?.(user);
   };
 
@@ -79,7 +82,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
         body: { identifier: identifier.trim(), password, rememberMe: true }
       });
       if (res?.success && res.user && res.token) {
-        finish(toUserAccount(res.user), res.token);
+        finish(toUserAccount(res.user), res.token, res.user);
       } else if (res?.verificationRequired) {
         setError('Please verify your email first. A new account needs email verification.');
       } else {
@@ -87,30 +90,6 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
       }
     } catch (err: any) {
       setError(err.message || 'Unable to sign in. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleDemo = async () => {
-    setError('');
-    setBusy(true);
-    try {
-      const res = await apiFetch<{ success: boolean; user?: any; token?: string; error?: string }>(
-        '/api/auth/login',
-        {
-          method: 'POST',
-          auth: false,
-          body: { identifier: 'sarah.jenkins@example.com', password: 'Password123!', rememberMe: true }
-        }
-      );
-      if (res?.success && res.user && res.token) {
-        finish(toUserAccount(res.user), res.token);
-      } else {
-        setError(res?.error || 'Demo sign-in is unavailable.');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Demo sign-in is unavailable.');
     } finally {
       setBusy(false);
     }
@@ -227,6 +206,15 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
                   </button>
                 </div>
               </label>
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={onOpenForgotPassword}
+                  className="text-xs font-semibold text-medical-700 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
               <button
                 type="submit"
                 disabled={busy}
@@ -234,14 +222,6 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onAuthenticated, onOpenFullS
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
                 Log In
-              </button>
-              <button
-                type="button"
-                onClick={handleDemo}
-                disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-medical-200 bg-medical-50 py-2.5 text-sm font-semibold text-medical-700 transition hover:bg-medical-100 focus:outline-none focus:ring-2 focus:ring-medical-500 disabled:opacity-60"
-              >
-                <Sparkles className="h-4 w-4" /> Try a demo account
               </button>
               <p className="text-center text-sm text-slate-500">
                 New to GlobalHealth?{' '}

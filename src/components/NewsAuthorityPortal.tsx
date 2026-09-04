@@ -376,7 +376,6 @@ export const NewsAuthorityPortal: React.FC<{ onExit: () => void }> = ({ onExit }
 
   // ---------------- LOGIN / REGISTER SCREEN ----------------
   if (!authority) {
-    const stateMeta = authority ? STATE_META[authority.state] : null;
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-2xl px-4 py-10">

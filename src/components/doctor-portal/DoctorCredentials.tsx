@@ -5,7 +5,7 @@ import { useDoctorPortal, VERIFICATION_LABEL, Credential } from './doctorPortalD
 const inputCls = 'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-medical-500 focus:outline-none focus:ring-2 focus:ring-medical-500/20 transition';
 const labelCls = 'mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700';
 
-const VERIFY_ORDER = ['not_started', 'pending', 'under_review', 'additional_info_required', 'verified', 'rejected', 'suspended', 'expired'];
+const VERIFY_ORDER = ['not_started', 'pending', 'under_review', 'additional_info_required', 'verified', 'rejected', 'suspended', 'expired'] as const;
 
 export const DoctorCredentials: React.FC = () => {
   const { doctor, credentials, updateVerificationStatus, addCredential } = useDoctorPortal();
@@ -66,7 +66,7 @@ export const DoctorCredentials: React.FC = () => {
           ))}
         </div>
         <p className="mt-3 text-xs text-slate-600">
-          Current state: <span className="font-bold text-slate-800">{VERIFICATION_LABEL[doctor.verificationStatus]}</span>.{' '}
+          Current state: <span className="font-bold text-slate-800">{(VERIFICATION_LABEL as Record<string, string>)[doctor.verificationStatus] || doctor.verificationStatus}</span>.{' '}
           {doctor.verificationNextAction ? <span className="text-slate-500">{doctor.verificationNextAction}</span> : null}
         </p>
         {doctor.verificationStatus !== 'verified' && (

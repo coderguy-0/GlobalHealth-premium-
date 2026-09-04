@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useLocalization } from '../../context/LocalizationContext';
-import { loginUser } from '../../services/authService';
+import { loginUser, verifyTwoFactorLogin } from '../../services/authService';
 import { PublicUserAccount } from '../../types/auth';
 import { AvatarExpression } from './DoctorAvatar';
 
@@ -32,6 +32,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ identifier?: string; password?: string }>({});
+  const [twoFactorPending, setTwoFactorPending] = useState<{ challengeId: string; method: string } | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
 
   const validate = () => {
     const next: { identifier?: string; password?: string } = {};
@@ -65,6 +67,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         return;
       }
 
+      // Real two-factor gate: a session is only issued after the TOTP code
+      // is verified by the server.
+      if (result.twoFactorRequired && result.challengeId) {
+        setTwoFactorPending({ challengeId: result.challengeId, method: result.method || 'authenticator_app' });
+        setTwoFactorCode('');
+        setSuccessMessage('Enter the 6-digit code from your authenticator app.');
+        onAvatarInteract?.('verifying', 'One more step — open your authenticator app.');
+        return;
+      }
+
       setSuccessMessage(result.message || 'Login successful!');
       onAvatarInteract?.('success', 'Welcome back to GlobalHealth.');
       setTimeout(() => {
@@ -78,17 +90,106 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     }
   };
 
-  const handleFillDemoUser = (userType: 'sarah' | 'alex') => {
-    if (userType === 'sarah') {
-      setIdentifier('sarah.jenkins@example.com');
-      setPassword('Password123!');
-    } else {
-      setIdentifier('alex.turner@example.com');
-      setPassword('Password123!');
-    }
+  const handleSubmitTwoFactor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!twoFactorPending) return;
     setErrorMessage('');
-    setFieldErrors({});
+    setSuccessMessage('');
+    if (!/^\d{6}$/.test(twoFactorCode.trim())) {
+      setErrorMessage('Please enter the 6-digit code from your authenticator app.');
+      return;
+    }
+    setIsLoading(true);
+    const result = await verifyTwoFactorLogin(twoFactorPending.challengeId, twoFactorCode.trim());
+    setIsLoading(false);
+    if (result.success) {
+      setTwoFactorPending(null);
+      setTwoFactorCode('');
+      setSuccessMessage(result.message || 'Sign-in complete.');
+      onAvatarInteract?.('success', 'Welcome back to GlobalHealth.');
+      setTimeout(() => onSuccess(result.user, result.token), 450);
+    } else {
+      setErrorMessage(result.error || 'The two-factor code could not be verified.');
+      onAvatarInteract?.('error', 'That authenticator code did not work. Please try again.');
+    }
   };
+
+  if (twoFactorPending) {
+    return (
+      <div className="w-full">
+        <div className="mb-6 text-left">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 lg:text-3xl">Two-Factor Verification</h1>
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+            Open your authenticator app and enter the 6-digit code.
+          </p>
+        </div>
+
+        {errorMessage && (
+          <div role="alert" className="mb-5 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50/90 p-3.5 text-xs text-rose-800">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+        {successMessage && (
+          <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-medical-200 bg-medical-50 p-3 text-xs text-medical-800">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-medical-600" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmitTwoFactor} noValidate className="space-y-3.5">
+          <div>
+            <label htmlFor="login-totp" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Authenticator Code
+            </label>
+            <input
+              id="login-totp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={twoFactorCode}
+              onChange={(e) => {
+                setTwoFactorCode(e.target.value.replace(/[^\d]/g, '').slice(0, 6));
+                setErrorMessage('');
+              }}
+              placeholder="6-digit code"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-center text-2xl font-bold tracking-[0.35em] text-slate-900 placeholder:text-slate-300 focus:border-medical-500 focus:outline-hidden focus:ring-2 focus:ring-medical-500/20"
+              disabled={isLoading}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-medical-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-medical-600/20 transition hover:bg-medical-700 hover:shadow-lg active:bg-medical-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <span>Verifying...</span>
+              </>
+            ) : (
+              <>
+                <span>Verify &amp; Sign In</span>
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setTwoFactorPending(null);
+              setTwoFactorCode('');
+              setErrorMessage('');
+              setSuccessMessage('');
+            }}
+            className="w-full cursor-pointer text-center text-xs font-semibold text-slate-500 transition hover:text-medical-700"
+          >
+            Back to sign in
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -266,33 +367,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           )}
         </button>
       </form>
-
-      {/* Demo Credentials Quick Fill (development aid) */}
-      <div className="mt-5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 text-left">
-        <div className="mb-1.5 flex items-center justify-between">
-          <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            <Sparkles className="h-3 w-3 text-amber-500" />
-            Quick Demo User Access
-          </span>
-          <span className="text-[10px] text-slate-400">Pre-seeded</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => handleFillDemoUser('sarah')}
-            className="truncate rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-left text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-medical-300 hover:text-medical-700 cursor-pointer"
-          >
-            Sarah Jenkins (Verified)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleFillDemoUser('alex')}
-            className="truncate rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-left text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-medical-300 hover:text-medical-700 cursor-pointer"
-          >
-            Alex Turner (Standard)
-          </button>
-        </div>
-      </div>
 
       {/* Footer Navigation Switcher */}
       <div className="mt-6 border-t border-slate-100 pt-5 text-center">

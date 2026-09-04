@@ -20,7 +20,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   onOpenLegal,
   onAvatarInteract
 }) => {
-  const [resetToken, setResetToken] = useState(initialToken || 'rst-demo-valid');
+  const [resetToken, setResetToken] = useState(initialToken || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
