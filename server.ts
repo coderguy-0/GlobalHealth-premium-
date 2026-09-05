@@ -6491,7 +6491,10 @@ Request ID: ${requestId}`,
         });
       }
 
-      const orderId = `GH-MKT-${Date.now().toString(36).toUpperCase()}-${randomBytes(2).toString('hex').toUpperCase()}`;
+      // Customer-facing order number: GH-<year>-<6 chars>, unique within the store.
+      const makeOrderId = () => `GH-${new Date().getFullYear()}-${randomBytes(3).toString('hex').toUpperCase()}`;
+      let orderId = makeOrderId();
+      while (MARKET_ORDERS.has(orderId)) orderId = makeOrderId();
       MARKET_ORDERS.set(orderId, {
         orderId,
         placedAt: nowIso(),

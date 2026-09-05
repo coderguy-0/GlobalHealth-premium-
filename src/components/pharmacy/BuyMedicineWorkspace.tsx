@@ -86,9 +86,19 @@ type PrescriptionState =
 
 type PaymentMethod = 'UPI' | 'Credit / Debit Card' | 'Net Banking' | 'Cash on Delivery';
 
+/**
+ * Entry point that opened the workspace. Both modes share the exact same
+ * structure, progress indicator, checkout flow and purchasing rules — only the
+ * header copy and the "back" destination differ.
+ *  - 'buy'         → "Buy Now" from the medicines list (back → medicines list)
+ *  - 'stock-check' → "Check Pharmacy Stock" on a monograph (back → that monograph)
+ */
+export type BuyMedicineWorkspaceMode = 'buy' | 'stock-check';
+
 interface BuyMedicineWorkspaceProps {
-  /** The clinical monograph the customer clicked "Buy Now" on. */
+  /** The clinical monograph the customer clicked "Buy Now" / "Check Pharmacy Stock" on. */
   medicine: Medicine;
+  mode?: BuyMedicineWorkspaceMode;
   /** Existing verified cart. The workspace preserves it. */
   cartItems: CartItem[];
   onCartChange: (items: CartItem[]) => void;
@@ -137,9 +147,11 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
   onViewOrders,
   onTrackOrder,
   isAuthenticated,
-  onRequireAuth
+  onRequireAuth,
+  mode = 'buy'
 }) => {
   const { clinicalPrescriptions, activePatient } = usePatientEhr();
+  const isStockCheck = mode === 'stock-check';
   const { publicUser, user } = useAuth();
 
   // ------------------------------------------------------------------ draft
@@ -515,6 +527,8 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
   const [sortBy, setSortBy] = useState<'distance' | 'price' | 'delivery'>('distance');
   const [openOnly, setOpenOnly] = useState(false);
   const [inStockOnly, setInStockOnly] = useState(false);
+  /** Distance radius in km; 0 = "Nearby" (no radius limit, sorted by distance). */
+  const [radiusKm, setRadiusKm] = useState<0 | 2 | 5 | 10>(0);
 
   const filteredOptions = useMemo(() => {
     const q = pharmacySearch.trim().toLowerCase();
@@ -522,6 +536,7 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
     const list = options.filter((o) => {
       if (openOnly && !o.isOpenNow) return false;
       if (inStockOnly && o.stockStatus !== 'In Stock') return false;
+      if (radiusKm > 0 && o.distanceKm > radiusKm) return false;
       if (o.stockCount < quantity) return false;
       if (!q) return true;
       return (
@@ -535,7 +550,7 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
     return [...list].sort((a, b) =>
       sortBy === 'price' ? a.price - b.price : sortBy === 'delivery' ? etaRank(a.estimatedFulfillment) - etaRank(b.estimatedFulfillment) : a.distanceKm - b.distanceKm
     );
-  }, [options, pharmacySearch, sortBy, openOnly, inStockOnly, quantity]);
+  }, [options, pharmacySearch, sortBy, openOnly, inStockOnly, radiusKm, quantity]);
 
   const selectPartner = async (o: PartnerAvailabilityOption) => {
     if (!product) return;
@@ -747,16 +762,18 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
             className="inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back to Medicines</span>
+            <span className="hidden sm:inline">{isStockCheck ? 'Back to Medicine' : 'Back to Medicines'}</span>
             <span className="sm:hidden">Back</span>
           </button>
 
           <div className="min-w-0 text-center">
             <h1 id="buy-medicine-title" className="truncate text-lg font-black tracking-tight text-slate-900 sm:text-xl">
-              {placedOrder ? 'Order Confirmation' : `Buy ${medicine.name}`}
+              {placedOrder ? 'Order Confirmation' : isStockCheck ? 'Check Pharmacy Stock' : `Buy ${medicine.name}`}
             </h1>
             <p className="hidden truncate text-xs font-medium text-slate-500 sm:block">
-              Complete your purchase securely through a Verified Pharmacy Partner
+              {isStockCheck
+                ? `${medicine.name} · Find current availability from Verified Pharmacy Partners`
+                : 'Complete your purchase securely through a Verified Pharmacy Partner'}
             </p>
           </div>
 
@@ -848,6 +865,8 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
                     canContinue={canLeaveStep1}
                     onContinue={continueFromStep1}
                     isAuthenticated={isAuthenticated}
+                    asOf={asOf}
+                    stockCheckMode={isStockCheck}
                   />
                 )}
 
@@ -891,6 +910,8 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
                     openOnly={openOnly}
                     setOpenOnly={setOpenOnly}
                     inStockOnly={inStockOnly}
+                    radiusKm={radiusKm}
+                    setRadiusKm={setRadiusKm}
                     setInStockOnly={setInStockOnly}
                     selectedPartnerId={selectedPartnerId}
                     validatingPartnerId={validatingPartnerId}
@@ -1103,15 +1124,38 @@ interface Step1Props {
   canContinue: boolean;
   onContinue: () => void;
   isAuthenticated: boolean;
+  /** ISO timestamp of the last successful inventory read. */
+  asOf: string | null;
+  /** Opened from "Check Pharmacy Stock" — surfaces the live stock-check status prominently. */
+  stockCheckMode: boolean;
 }
 
-const Step1Medicine: React.FC<Step1Props> = ({ medicine, product, variants, onChangeVariant, quantity, setQuantity, quantityCap, loadingAvailability, availabilityError, options, totalStock, onRetry, canContinue, onContinue, isAuthenticated }) => {
+const Step1Medicine: React.FC<Step1Props> = ({ medicine, product, variants, onChangeVariant, quantity, setQuantity, quantityCap, loadingAvailability, availabilityError, options, totalStock, onRetry, canContinue, onContinue, isAuthenticated, asOf, stockCheckMode }) => {
   const bestPrice = options.length ? Math.min(...options.map((o) => o.price)) : product.price;
   const availabilityTone = loadingAvailability ? 'slate' : options.length === 0 ? 'red' : options.some((o) => o.stockStatus === 'In Stock') ? 'green' : 'amber';
   const availabilityLabel = loadingAvailability ? 'Checking stock...' : options.length === 0 ? 'Currently Unavailable' : options.some((o) => o.stockStatus === 'In Stock') ? 'In Stock' : 'Limited Stock';
 
   return (
     <>
+      {stockCheckMode && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`flex flex-col gap-1 rounded-2xl border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between ${loadingAvailability || (!asOf && !availabilityError) ? 'border-slate-200 bg-white text-slate-700' : availabilityError ? 'border-rose-200 bg-rose-50 text-rose-900' : 'border-emerald-200 bg-emerald-50 text-emerald-900'}`}
+        >
+          {loadingAvailability || (!asOf && !availabilityError) ? (
+            <span className="inline-flex items-center gap-2 font-bold"><Loader2 className="h-4 w-4 animate-spin text-emerald-600" />Checking current pharmacy stock…</span>
+          ) : availabilityError ? (
+            <span className="inline-flex items-center gap-2 font-bold"><AlertTriangle className="h-4 w-4" />Unable to fetch stock information. Please try again.</span>
+          ) : (
+            <span className="inline-flex items-center gap-2 font-bold"><CheckCircle2 className="h-4 w-4" />Stock information updated</span>
+          )}
+          {asOf && !loadingAvailability && !availabilityError && (
+            <span className="text-xs font-semibold text-emerald-800/80">Last updated: {new Date(asOf).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+          )}
+        </div>
+      )}
+
       <Card>
         <SectionTitle icon={<Pill className="h-5 w-5" />} title="Selected Medicine" subtitle="Already added to your purchase — no need to search again." />
 
@@ -1416,6 +1460,8 @@ interface Step3Props {
   setOpenOnly: (v: boolean) => void;
   inStockOnly: boolean;
   setInStockOnly: (v: boolean) => void;
+  radiusKm: 0 | 2 | 5 | 10;
+  setRadiusKm: (v: 0 | 2 | 5 | 10) => void;
   selectedPartnerId: string | null;
   validatingPartnerId: string | null;
   onSelect: (o: PartnerAvailabilityOption) => void;
@@ -1457,6 +1503,11 @@ const Step3Pharmacy: React.FC<Step3Props> = (p) => {
             <span className="font-bold uppercase tracking-wider text-slate-500">Sort by</span>
             {(['distance', 'price', 'delivery'] as const).map((k) => (
               <button key={k} type="button" onClick={() => p.setSortBy(k)} aria-pressed={p.sortBy === k} className={`rounded-full border px-3 py-1.5 font-bold capitalize transition cursor-pointer ${p.sortBy === k ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>{k === 'delivery' ? 'Delivery time' : k}</button>
+            ))}
+            <span className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+            <span className="font-bold uppercase tracking-wider text-slate-500">Distance</span>
+            {([0, 2, 5, 10] as const).map((r) => (
+              <button key={r} type="button" onClick={() => p.setRadiusKm(r)} aria-pressed={p.radiusKm === r} className={`rounded-full border px-3 py-1.5 font-bold transition cursor-pointer ${p.radiusKm === r ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>{r === 0 ? 'Nearby' : `${r} km`}</button>
             ))}
             <span className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
             <button type="button" onClick={() => p.setOpenOnly(!p.openOnly)} aria-pressed={p.openOnly} className={`rounded-full border px-3 py-1.5 font-bold transition cursor-pointer ${p.openOnly ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-700'}`}>Open now</button>

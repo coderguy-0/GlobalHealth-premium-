@@ -322,7 +322,13 @@ export default function App() {
   const tabFromHash = useCallback((): NavigationTab | null => {
     const raw = window.location.hash.replace(/^#\/?/, '').split('?')[0];
     if (!raw) return null;
-    return (VALID_TABS as string[]).includes(raw) ? (raw as NavigationTab) : null;
+    if ((VALID_TABS as string[]).includes(raw)) return raw as NavigationTab;
+    // Nested deep links such as #medicines/<id>, #medical-tests/<id> or
+    // #recipes/<id> belong to their parent tab; the view itself reads the
+    // sub-path. Without this, a cold load (or the app remount after a login)
+    // would silently fall back to Home.
+    const head = raw.split('/')[0];
+    return (VALID_TABS as string[]).includes(head) ? (head as NavigationTab) : null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

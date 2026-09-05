@@ -58,7 +58,7 @@ import { VerifiedPartnerSelectModal } from './pharmacy/VerifiedPartnerSelectModa
 import { PharmacyCartSlideOver } from './pharmacy/PharmacyCartSlideOver';
 import { PharmacyCheckoutModal } from './pharmacy/PharmacyCheckoutModal';
 import { OrderTrackingModal } from './pharmacy/OrderTrackingModal';
-import { BuyMedicineWorkspace, openInvoice } from './pharmacy/BuyMedicineWorkspace';
+import { BuyMedicineWorkspace, openInvoice, type BuyMedicineWorkspaceMode } from './pharmacy/BuyMedicineWorkspace';
 
 interface MedicinesViewProps {
   savedIds: string[];
@@ -161,11 +161,16 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   // and quantity; the gate appears when they continue, and the workspace is
   // restored at the same step after login (see BUY_INTENT_KEY).
   const [buyingMedicine, setBuyingMedicine] = useState<Medicine | null>(null);
+  // 'buy' = opened from a "Buy Now" button (back → medicines list);
+  // 'stock-check' = opened from "Check Pharmacy Stock" on a monograph
+  // (back → that monograph, which stays mounted underneath).
+  const [buyWorkspaceMode, setBuyWorkspaceMode] = useState<BuyMedicineWorkspaceMode>('buy');
   const BUY_INTENT_KEY = 'globalhealth_buy_medicine_intent_v1';
 
-  const openBuyWorkspace = (medicine: Medicine) => {
+  const openBuyWorkspace = (medicine: Medicine, mode: BuyMedicineWorkspaceMode = 'buy') => {
     setBuyingMedicine(medicine);
-    try { sessionStorage.setItem(BUY_INTENT_KEY, medicine.id); } catch {}
+    setBuyWorkspaceMode(mode);
+    try { sessionStorage.setItem(BUY_INTENT_KEY, JSON.stringify({ medicineId: medicine.id, mode })); } catch {}
     window.scrollTo({ top: 0 });
   };
 
@@ -175,6 +180,9 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
       sessionStorage.removeItem(BUY_INTENT_KEY);
       sessionStorage.removeItem('globalhealth_buy_medicine_draft_v1');
     } catch {}
+    // Stock-check mode returns to the monograph the customer came from; the
+    // monograph state was never cleared, so nothing else to restore.
+    window.scrollTo({ top: 0 });
   };
 
   const handleBuyMedicine = (medicine: Medicine) => {
@@ -184,10 +192,25 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   // Restore an in-progress purchase (e.g. after the login gate reloaded state).
   useEffect(() => {
     try {
-      const id = sessionStorage.getItem(BUY_INTENT_KEY);
-      if (!id) return;
+      const raw = sessionStorage.getItem(BUY_INTENT_KEY);
+      if (!raw) return;
+      let id = raw;
+      let mode: BuyMedicineWorkspaceMode = 'buy';
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed.medicineId) {
+          id = String(parsed.medicineId);
+          if (parsed.mode === 'stock-check') mode = 'stock-check';
+        }
+      } catch { /* legacy plain-id format */ }
       const found = MEDICINES.find((m) => m.id === id);
-      if (found) setBuyingMedicine(found);
+      if (found) {
+        setBuyingMedicine(found);
+        setBuyWorkspaceMode(mode);
+        // Keep the monograph underneath so "Back to Medicine" still works
+        // after a login round-trip.
+        if (mode === 'stock-check') setSelectedMedicineForMonograph(found);
+      }
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -522,7 +545,9 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   if (buyingMedicine) {
     return (
       <BuyMedicineWorkspace
+        key={`${buyWorkspaceMode}:${buyingMedicine.id}`}
         medicine={buyingMedicine}
+        mode={buyWorkspaceMode}
         cartItems={cartItems}
         onCartChange={setCartItems}
         uploadedPrescriptions={uploadedPrescriptions}
@@ -531,11 +556,13 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
         onBack={closeBuyWorkspace}
         onViewOrders={() => {
           closeBuyWorkspace();
+          closeMedicine();
           setActiveTab('orders');
           window.scrollTo({ top: 0 });
         }}
         onTrackOrder={(order) => {
           closeBuyWorkspace();
+          closeMedicine();
           setActiveTab('orders');
           setSelectedOrderForTracking(order);
         }}
@@ -559,18 +586,11 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
         onBack={closeMedicine}
         onNavigate={onNavigate}
         onAskAI={onAskAI}
-        onFindPharmacy={() => {
-          const prod = PHARMACY_PRODUCTS.find(
-            (p) =>
-              p.name.toLowerCase().includes(selectedMedicineForMonograph.name.toLowerCase()) ||
-              selectedMedicineForMonograph.name.toLowerCase().includes(p.name.toLowerCase())
-          );
-          setSelectedMedicineForMonograph(null);
-          // The in-page store tab has been removed; send the visitor to the
-          // verified pharmacy portal instead.
-          if (prod) setSearchTerm(prod.name);
-          onNavigateToPharmacyPortal?.('landing');
-        }}
+        // "Check Pharmacy Stock" opens the FULL-SCREEN Pharmacy Stock &
+        // Purchase Workspace for this exact monograph (same structure and
+        // checkout flow as Buy Medicine — only the entry point differs).
+        // The monograph stays mounted so "← Back to Medicine" returns here.
+        onFindPharmacy={() => openBuyWorkspace(selectedMedicineForMonograph, 'stock-check')}
       />
     );
   }

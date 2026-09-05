@@ -471,6 +471,40 @@ export const PHARMACY_PRODUCTS: PharmacyProduct[] = [
     lastReviewedDate: '2026-08-02'
   },
 
+  {
+    id: 'prod-clona-05',
+    name: 'Clonotril 0.5 Tablets (Clonazepam 0.5mg)',
+    brandName: 'Clonotril 0.5',
+    genericName: 'Clonazepam 0.5mg',
+    category: 'Prescription',
+    subCategory: 'Neurology — Seizure & Panic Disorder',
+    dosageForm: 'Tablet',
+    strength: '0.5 mg',
+    packSize: '15 Tablets / Strip',
+    mrp: 42.00,
+    price: 36.50,
+    discountPercent: 13,
+    prescriptionRequired: true,
+    rxSchedule: 'Schedule H',
+    availability: 'in_stock',
+    stockQuantity: 96,
+    pharmacyPartnerId: 'pharma-apex-01',
+    pharmacyPartnerName: 'Apex Central Clinical Dispensary',
+    imageUrl: 'https://images.unsplash.com/photo-1550572017-edd951b55104?w=800&auto=format&fit=crop&q=60',
+    imageType: 'tablet',
+    description: 'Long-acting benzodiazepine indicated for selected seizure disorders and panic disorder. Dispensed strictly against a valid prescription from a registered medical practitioner.',
+    uses: ['Adjunctive control of selected seizure disorders', 'Panic disorder with or without agoraphobia'],
+    composition: 'Clonazepam IP 0.5 mg per tablet',
+    manufacturer: 'Torrent Pharmaceuticals Ltd.',
+    countryOfOrigin: 'India',
+    storage: 'Store below 25°C in a dry place. Protect from light. Keep out of reach of children.',
+    warnings: 'Schedule H prescription medicine. May cause drowsiness — avoid driving or operating machinery. Do not stop abruptly; dose must be tapered under medical supervision. Avoid alcohol.',
+    dosageInstructions: 'Take exactly as prescribed by your doctor. Do not change the dose or frequency without consulting the prescriber.',
+    sideEffects: ['Drowsiness and fatigue', 'Dizziness or unsteadiness', 'Impaired coordination', 'Dependence with prolonged use'],
+    precautions: ['Inform your doctor about any history of respiratory disease, liver disease or substance dependence', 'Not recommended during pregnancy or breastfeeding unless advised by a specialist'],
+    lastReviewedDate: '2026-08-20'
+  },
+
   // =========================================================================
   // 3. GENERIC MEDICINES
   // =========================================================================
