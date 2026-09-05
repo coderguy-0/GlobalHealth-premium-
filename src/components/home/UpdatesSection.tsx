@@ -7,6 +7,7 @@ import { SectionHeading } from '../ui/SectionHeading';
 import { Reveal } from '../ui/Reveal';
 import { CardSkeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/States';
+import { openNewsArticleRoute } from '../news/newsArticleWorkspaceLogic';
 
 interface UpdatesSectionProps {
   onTabChange: (tab: NavigationTab) => void;
@@ -72,7 +73,8 @@ export const UpdatesSection: React.FC<UpdatesSectionProps> = ({ onTabChange }) =
                 <Reveal key={a.id} delay={i * 50}>
                   <button
                     type="button"
-                    onClick={() => onTabChange('news')}
+                    onClick={() => openNewsArticleRoute(a)}
+                    aria-label={`Read: ${a.title}`}
                     className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-soft transition duration-200 hover:-translate-y-0.5 hover:border-medical-200 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
                   >
                     {a.featuredImage ? (

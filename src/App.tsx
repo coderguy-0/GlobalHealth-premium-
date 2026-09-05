@@ -20,6 +20,7 @@ import { useAuth, toUserAccount } from './context/AuthContext';
 import { AuthSubView } from './types/auth';
 import { TERMS_VERSION } from './lib/policyVersions';
 import { newsAuthService } from './services/newsAuthService';
+import { parseNewsArticleHash } from './components/news/newsArticleWorkspaceLogic';
 
 // Heavy workspaces (portals, CMS, health-records suite) are code-split so the
 // public homepage never downloads them until a visitor actually opens one.
@@ -64,6 +65,10 @@ const CommunityView = lazy(() =>
 );
 const NewsView = lazy(() =>
   import('./components/NewsView').then((m) => ({ default: m.NewsView }))
+);
+// Full-screen News Workspace — every released article opens here (#news/<slug|id>).
+const NewsArticleWorkspace = lazy(() =>
+  import('./components/news/NewsArticleWorkspace').then((m) => ({ default: m.NewsArticleWorkspace }))
 );
 const AuthPage = lazy(() =>
   import('./components/AuthPage').then((m) => ({ default: m.AuthPage }))
@@ -299,7 +304,10 @@ export default function App() {
       // ignore storage failures
     }
   };
-  const [targetNewsArticleId, setTargetNewsArticleId] = useState<string | undefined>(undefined);
+  // Active full-screen news article (slug or id from the #news/<ref> route).
+  // The News listing stays mounted underneath so "Back to News" restores the
+  // visitor's previous search / category context.
+  const [newsArticleRef, setNewsArticleRef] = useState<string | null>(null);
 
 
 
@@ -323,6 +331,14 @@ export default function App() {
   useEffect(() => {
     const apply = () => {
       if (applyingHashRef.current) return;
+      const articleRef = parseNewsArticleHash(window.location.hash);
+      if (articleRef) {
+        setNewsArticleRef(articleRef);
+        setOverlayTab(null);
+        setCurrentTabState('news');
+        return;
+      }
+      setNewsArticleRef(null);
       const tab = tabFromHash();
       if (!tab) return;
       if (isOverlayTab(tab)) {
@@ -377,6 +393,16 @@ export default function App() {
     writeHash(currentTab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTab]);
+
+  // "Back to News": leave the article route and reveal the listing that is
+  // still mounted underneath (its search / category state is preserved).
+  const closeNewsArticle = useCallback(() => {
+    setNewsArticleRef(null);
+    setOverlayTab(null);
+    setCurrentTabState('news');
+    writeHash('news');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const setCurrentTab = useCallback((tab: NavigationTab, dashboardMode?: DashboardViewMode) => {
     if (dashboardMode) {
@@ -916,10 +942,7 @@ export default function App() {
         )}
 
         {currentTab === 'news' && (
-          <NewsView 
-            onOpenAdminCMS={() => setCurrentTab('news-management')} 
-            initialArticleId={targetNewsArticleId}
-          />
+          <NewsView onOpenAdminCMS={() => setCurrentTab('news-management')} />
         )}
 
         {/* Protected: Health & Security History (patient-only, append-only) */}
@@ -973,6 +996,40 @@ export default function App() {
       {/* Session-expired overlay */}
       <SessionExpiredModal />
 
+      {/* Full-screen News Workspace — replaces the former reader preview for
+          every news click. Routed (#news/<slug>) so each article is a real page. */}
+      {newsArticleRef && !overlayTab && (
+        <Suspense fallback={<RouteFallback />}>
+          <NewsArticleWorkspace
+            articleRef={newsArticleRef}
+            currentUser={currentUser}
+            onBack={closeNewsArticle}
+            onOpenNews={closeNewsArticle}
+            onSearch={() => {
+              setNewsArticleRef(null);
+              setCurrentTab('home');
+              window.setTimeout(() => window.dispatchEvent(new CustomEvent('gh:focus-search')), 150);
+            }}
+            onOpenAuth={() => {
+              setNewsArticleRef(null);
+              handleOpenAuthPage('login');
+            }}
+            onOpenUserMenu={() => {
+              setNewsArticleRef(null);
+              setCurrentTab('dashboard');
+            }}
+            onReport={(article) => {
+              // The News listing (still mounted underneath) owns the report dialog.
+              closeNewsArticle();
+              window.setTimeout(
+                () => window.dispatchEvent(new CustomEvent('gh:news-report', { detail: article })),
+                0
+              );
+            }}
+          />
+        </Suspense>
+      )}
+
       {/* Specialized portals & health-records workspaces overlap the website */}
       {overlayTab && overlayMeta && (
         <WorkspaceOverlay
@@ -990,7 +1047,7 @@ export default function App() {
 
       {/* Floating AI Assistant — persistent bottom-right doctor-boy avatar.
           Hidden inside the AI workspace itself and inside fullscreen overlays. */}
-      {!overlayTab && currentTab !== 'ai-assistant' && (
+      {!overlayTab && !newsArticleRef && currentTab !== 'ai-assistant' && (
         <GlobalHealthAIAssistant
           onOpen={() => {
             setAiInitialPrompt(undefined);

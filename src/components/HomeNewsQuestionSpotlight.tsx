@@ -28,10 +28,10 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import { NavigationTab, NewsArticle, HealthNewsQuestion, ResearchQuestionFormat } from '../types';
+import { NavigationTab, HealthNewsQuestion, ResearchQuestionFormat } from '../types';
 import { healthResearchQuestionService } from '../services/healthResearchQuestionService';
 import { newsService } from '../services/newsService';
-import { ArticlePreviewModal } from './news-admin/ArticlePreviewModal';
+import { openNewsArticleRoute } from './news/newsArticleWorkspaceLogic';
 
 interface HomeNewsQuestionSpotlightProps {
   onTabChange: (tab: NavigationTab) => void;
@@ -62,7 +62,6 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
   const [showFullEvidence, setShowFullEvidence] = useState<boolean>(false);
 
   // Reader Modal state
-  const [activeArticleModal, setActiveArticleModal] = useState<NewsArticle | null>(null);
   
   // User Lifetime Stats
   const [stats, setStats] = useState<{ totalAnswered: number; correctCount: number; accuracyRate: number }>({
@@ -196,31 +195,13 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
     setStats(healthResearchQuestionService.getUserStats());
   };
 
-  // Open Full Article Preview Modal
+  // Open the article in the full-screen News Workspace (#news/<slug|id>).
+  // The workspace resolves released CMS articles first and falls back to the
+  // public research-question record for journal articles not in the CMS.
   const handleOpenArticleModal = () => {
     if (!currentQuestion) return;
-
-    // Check if article exists in newsService or construct one
     const matched = newsService.getArticleById(currentQuestion.articleId);
-    if (matched) {
-      setActiveArticleModal(matched);
-    } else {
-      const synthArticle: NewsArticle = {
-        id: currentQuestion.articleId,
-        title: currentQuestion.articleTitle,
-        source: currentQuestion.articleSource,
-        date: currentQuestion.articleDate,
-        category: currentQuestion.specialty,
-        summary: currentQuestion.articleSummary || currentQuestion.explanation,
-        content: `### Clinical Study Overview\n\n**Journal:** ${currentQuestion.evidenceSummary.journalName}\n**Published:** ${currentQuestion.evidenceSummary.publishedDate}\n**DOI:** ${currentQuestion.evidenceSummary.studyDoi || '10.1016/gh.research.2026'}\n\n#### Study Population & Methods\n${currentQuestion.evidenceSummary.populationAndSample || 'Evaluated in prospective multicenter clinical cohort.'}\n\n#### Key Findings\n${currentQuestion.evidenceSummary.mainFinding}\n\n#### Clinical Significance\n${currentQuestion.evidenceSummary.clinicalSignificance}\n\n#### Methodological Limitations\n${currentQuestion.evidenceSummary.limitations || 'Findings should be interpreted alongside individual patient risk profiles.'}`,
-        readTime: '4 min read',
-        status: 'published',
-        visibility: 'Public',
-        author: currentQuestion.evidenceSummary.authorsList || 'Clinical Research Consortium',
-        featuredImage: currentQuestion.articleImageUrl
-      };
-      setActiveArticleModal(synthArticle);
-    }
+    openNewsArticleRoute(matched && matched.status === 'published' ? matched : { id: currentQuestion.articleId });
   };
 
   if (!currentQuestion) {
@@ -656,16 +637,6 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
         </div>
 
       </div>
-
-      {/* ========================================================================= */}
-      {/* 3. READER MODAL WHEN USER CLICKS "READ FULL RESEARCH ARTICLE" */}
-      {/* ========================================================================= */}
-      {activeArticleModal && (
-        <ArticlePreviewModal
-          article={activeArticleModal}
-          onClose={() => setActiveArticleModal(null)}
-        />
-      )}
 
       {/* ========================================================================= */}
       {/* 4. ADMIN QUESTION POOL & ROTATION INSPECTOR MODAL */}
