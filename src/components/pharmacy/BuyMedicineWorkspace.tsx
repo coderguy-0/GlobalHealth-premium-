@@ -402,7 +402,25 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
     setAddressForm(null);
   };
 
-  const deliveryToAddressOk = selectedAddress && selectedOption ? partnerDeliversToPin(selectedOption.partnerId, selectedAddress.pincode) : false;
+  // Delivery coverage is (re)checked whenever the address or pharmacy changes.
+  // The short async window shows "Checking delivery availability..." so the
+  // customer never sees a stale verdict flip silently.
+  const [checkingDelivery, setCheckingDelivery] = useState(false);
+  const [deliveryToAddressOk, setDeliveryToAddressOk] = useState(false);
+  useEffect(() => {
+    if (!selectedAddress || !selectedOption) {
+      setDeliveryToAddressOk(false);
+      return;
+    }
+    setCheckingDelivery(true);
+    const partnerId = selectedOption.partnerId;
+    const pin = selectedAddress.pincode;
+    const t = window.setTimeout(() => {
+      setDeliveryToAddressOk(partnerDeliversToPin(partnerId, pin));
+      setCheckingDelivery(false);
+    }, 450);
+    return () => window.clearTimeout(t);
+  }, [selectedAddress?.id, selectedAddress?.pincode, selectedOption?.partnerId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------------------------------------------------------- step 4 delivery
   const methods = availableDeliveryMethods(selectedOption);
@@ -595,6 +613,7 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
     !!selectedOption &&
     !!selectedAddress &&
     deliveryToAddressOk &&
+    !checkingDelivery &&
     !!deliveryMethod &&
     (deliveryMethod !== 'scheduled' || !!slotId) &&
     !!paymentMethod &&
@@ -900,6 +919,7 @@ export const BuyMedicineWorkspace: React.FC<BuyMedicineWorkspaceProps> = ({
                     emptyAddress={emptyAddress}
                     onSaveAddress={saveAddress}
                     deliveryToAddressOk={deliveryToAddressOk}
+                    checkingDelivery={checkingDelivery}
                     onChangePharmacy={() => goTo(3)}
                     methods={methods}
                     deliveryMethod={deliveryMethod}
@@ -1585,6 +1605,7 @@ interface Step4Props {
   emptyAddress: () => Omit<DeliveryAddress, 'id'>;
   onSaveAddress: () => void;
   deliveryToAddressOk: boolean;
+  checkingDelivery: boolean;
   onChangePharmacy: () => void;
   methods: DeliveryMethod[];
   deliveryMethod: DeliveryMethod | null;
@@ -1716,14 +1737,17 @@ const Step4Checkout: React.FC<Step4Props> = (p) => {
           </div>
         )}
 
-        {p.selectedAddressId && !p.deliveryToAddressOk && (
+        {p.selectedAddressId && p.checkingDelivery && (
+          <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-slate-600" role="status"><Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600" />Checking delivery availability...</p>
+        )}
+        {p.selectedAddressId && !p.checkingDelivery && !p.deliveryToAddressOk && (
           <div className="mt-4">
             <Notice tone="red" action={<SecondaryButton onClick={p.onChangePharmacy} className="px-3 py-1.5 text-xs">Choose another pharmacy</SecondaryButton>}>
               <strong>This pharmacy does not currently deliver to this address.</strong> Select another Verified Pharmacy Partner or a different address.
             </Notice>
           </div>
         )}
-        {p.selectedAddressId && p.deliveryToAddressOk && (
+        {p.selectedAddressId && !p.checkingDelivery && p.deliveryToAddressOk && (
           <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" />Delivery available to this address from {p.selectedOption.partnerName}.</p>
         )}
       </Card>
@@ -1971,6 +1995,31 @@ const NotListedCard: React.FC<{ medicine: Medicine; onBack: () => void }> = ({ m
 // Confirmation & tracking
 // ===========================================================================
 
+/** Opens a printable tax invoice built from the placed order (no external service). */
+export function openInvoice(order: PharmacyOrder) {
+  const rows = order.items.map((i) => `<tr><td>${i.productName} ${i.strength}</td><td style="text-align:right">${i.quantity}</td><td style="text-align:right">₹${i.unitPrice.toFixed(2)}</td><td style="text-align:right">₹${i.totalPrice.toFixed(2)}</td></tr>`).join('');
+  const pr = order.pricing;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${order.id}</title>
+<style>body{font-family:system-ui,Segoe UI,Arial,sans-serif;color:#0f172a;margin:40px;max-width:760px}h1{font-size:20px;margin:0}h2{font-size:13px;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 8px}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px 6px;border-bottom:1px solid #e2e8f0}th{text-align:left;font-size:12px;color:#475569}tfoot td{border:0;font-weight:700}.muted{color:#64748b;font-size:13px}.total td{font-size:18px;border-top:2px solid #0f172a}</style></head><body>
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><h1>GlobalHealth · Tax Invoice</h1><div class="muted">Verified Pharmacy Partner order</div></div><div style="text-align:right"><div><strong>${order.id}</strong></div><div class="muted">${new Date(order.date).toLocaleString('en-IN')}</div></div></div>
+<h2>Dispensing pharmacy</h2><div>${order.fulfillingPharmacy.name}</div><div class="muted">Licence ${order.fulfillingPharmacy.license}${order.fulfillingPharmacy.phone ? ' · ' + order.fulfillingPharmacy.phone : ''}</div>
+<h2>Deliver to</h2><div>${order.deliveryAddress.fullName}</div><div class="muted">${order.deliveryAddress.street}${order.deliveryAddress.apartment ? ', ' + order.deliveryAddress.apartment : ''}, ${order.deliveryAddress.city}, ${order.deliveryAddress.state} ${order.deliveryAddress.pincode} · ${order.deliveryAddress.phone}</div>
+<h2>Items</h2><table><thead><tr><th>Medicine</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody>
+<tfoot><tr><td colspan="3">Medicine subtotal</td><td style="text-align:right">₹${pr.itemsSubtotal.toFixed(2)}</td></tr>
+${pr.couponDiscount ? `<tr><td colspan="3">Discount (${pr.couponCode || 'coupon'})</td><td style="text-align:right">− ₹${pr.couponDiscount.toFixed(2)}</td></tr>` : ''}
+<tr><td colspan="3">Delivery fee</td><td style="text-align:right">₹${pr.deliveryFee.toFixed(2)}</td></tr>
+<tr><td colspan="3">GST (5%)</td><td style="text-align:right">₹${pr.tax.toFixed(2)}</td></tr>
+<tr class="total"><td colspan="3">Total ${order.paymentStatus === 'Paid' ? 'paid' : 'payable on delivery'} · ${order.paymentMethod}</td><td style="text-align:right">₹${pr.grandTotal.toFixed(2)}</td></tr></tfoot></table>
+<h2>Prescription</h2><div>${order.prescriptionStatus || (order.prescriptionId ? 'Verified' : 'Not Required')}${order.prescriptionId ? ' · Ref ' + order.prescriptionId : ''}</div>
+<p class="muted" style="margin-top:32px">This invoice was generated by GlobalHealth on behalf of the Verified Pharmacy Partner named above. Medicines are dispensed only against a valid prescription where required by law.</p>
+<script>window.onload=function(){window.print()}</script></body></html>`;
+  const win = window.open('', '_blank', 'noopener,width=860,height=900');
+  if (!win) return;
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}
+
 const ConfirmationView: React.FC<{ order: PharmacyOrder; onTrack: () => void; onViewOrders: () => void; onContinue: () => void }> = ({ order, onTrack, onViewOrders, onContinue }) => (
   <Card className="mx-auto max-w-2xl text-center">
     <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-600/30"><Check className="h-8 w-8" /></span>
@@ -2013,7 +2062,8 @@ const ConfirmationView: React.FC<{ order: PharmacyOrder; onTrack: () => void; on
       <SecondaryButton onClick={onViewOrders}><FileText className="h-4 w-4" />View Order</SecondaryButton>
       <SecondaryButton onClick={onContinue}><ShoppingCart className="h-4 w-4" />Continue Shopping</SecondaryButton>
     </div>
-    <p className="mt-5 text-xs text-slate-500">This order now appears in <strong>My Orders &amp; Prescriptions</strong> with its invoice and live tracking.</p>
+    <button type="button" onClick={() => openInvoice(order)} className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"><FileText className="h-3.5 w-3.5" />Download / print tax invoice</button>
+    <p className="mt-3 text-xs text-slate-500">This order now appears in <strong>My Orders &amp; Prescriptions</strong> with its invoice and live tracking.</p>
   </Card>
 );
 

@@ -58,7 +58,7 @@ import { VerifiedPartnerSelectModal } from './pharmacy/VerifiedPartnerSelectModa
 import { PharmacyCartSlideOver } from './pharmacy/PharmacyCartSlideOver';
 import { PharmacyCheckoutModal } from './pharmacy/PharmacyCheckoutModal';
 import { OrderTrackingModal } from './pharmacy/OrderTrackingModal';
-import { BuyMedicineWorkspace } from './pharmacy/BuyMedicineWorkspace';
+import { BuyMedicineWorkspace, openInvoice } from './pharmacy/BuyMedicineWorkspace';
 
 interface MedicinesViewProps {
   savedIds: string[];
@@ -1022,6 +1022,14 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                           Fulfillment: <strong className="text-slate-800">{order.fulfillingPharmacy.name}</strong>
                         </span>
 
+                        <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openInvoice(order)}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          <span>Invoice</span>
+                        </button>
                         <button
                           onClick={() => setSelectedOrderForTracking(order)}
                           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer"
@@ -1029,6 +1037,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
                           <Truck className="h-3.5 w-3.5 text-emerald-400" />
                           <span>Track Live Order</span>
                         </button>
+                        </div>
                       </div>
                     </div>
                   ))}
