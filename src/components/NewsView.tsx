@@ -22,29 +22,13 @@ import {
 } from 'lucide-react';
 import { newsService } from '../services/newsService';
 import { NewsArticle } from '../types';
-import { ArticlePreviewModal } from './news-admin/ArticlePreviewModal';
+import { openNewsArticleRoute, isReleasedArticle, authorityArticleToNewsArticle, type AuthorityPublicArticle } from './news/newsArticleWorkspaceLogic';
 import { useLocalization } from '../context/LocalizationContext';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch } from '../services/authClient';
 import { Flag, Building2, Loader2, CheckCircle2 } from 'lucide-react';
 
-interface AuthorityArticle {
-  articleRef: string;
-  headline: string;
-  summary: string;
-  content: string;
-  category: string;
-  sourceName: string;
-  sourceUrl: string;
-  sourceDate?: string;
-  references: string[];
-  highRisk: boolean;
-  submittedBy: { name: string; orgType: string; verified: boolean } | null;
-  publishedBy: string;
-  publishedAt: string;
-  updatedAt?: string;
-  correctionNotice?: string | null;
-}
+type AuthorityArticle = AuthorityPublicArticle;
 
 const REPORT_REASONS: { id: string; label: string }[] = [
   { id: 'incorrect_information', label: 'Incorrect information' },
@@ -60,15 +44,13 @@ const REPORT_REASONS: { id: string; label: string }[] = [
 
 interface NewsViewProps {
   onOpenAdminCMS?: () => void;
-  initialArticleId?: string;
 }
 
-export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArticleId }) => {
+export const NewsView: React.FC<NewsViewProps> = () => {
   const { t, formatNumber } = useLocalization();
   const { user: currentUser, requireAuth } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [activeArticleModal, setActiveArticleModal] = useState<NewsArticle | null>(null);
   const [authorityArticles, setAuthorityArticles] = useState<AuthorityArticle[]>([]);
   const [reportTarget, setReportTarget] = useState<NewsArticle | null>(null);
   const [reportReason, setReportReason] = useState('');
@@ -84,33 +66,12 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
       .catch(() => {});
   }, []);
 
-  const authorityByRef = useMemo(() => {
-    const m = new Map<string, AuthorityArticle>();
-    authorityArticles.forEach((a) => m.set(a.articleRef, a));
-    return m;
-  }, [authorityArticles]);
-
   // Load articles dynamically from newsService (filtered strictly to published status for public view)
   const allArticles = useMemo(() => newsService.getArticles(), []);
   // Merge: authority-published articles (from the governance engine) + CMS articles.
   const publishedArticles = useMemo(() => {
-    const cms = allArticles.filter((a) => a.status === 'published');
-    const fromAuthority: NewsArticle[] = authorityArticles.map((a) => ({
-      id: a.articleRef,
-      title: a.headline,
-      shortDescription: a.summary,
-      source: a.sourceName,
-      date: a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : '',
-      lastUpdated: a.updatedAt,
-      category: a.category,
-      summary: a.summary,
-      content: a.content,
-      readTime: `${Math.max(1, Math.round(a.content.length / 1000))} min read`,
-      author: a.submittedBy ? a.submittedBy.name : a.publishedBy,
-      status: 'published' as const,
-      visibility: 'Public' as const,
-      showMedicalDisclaimer: true
-    }));
+    const cms = allArticles.filter(isReleasedArticle);
+    const fromAuthority: NewsArticle[] = authorityArticles.map(authorityArticleToNewsArticle);
     const seen = new Set(fromAuthority.map((a) => a.id));
     return [...fromAuthority, ...cms.filter((a) => !seen.has(a.id))];
   }, [allArticles, authorityArticles]);
@@ -143,14 +104,20 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
     }
   };
 
+  // Every news click opens the full-screen News Workspace (#news/<slug|id>).
+  const openArticle = (art: NewsArticle) => openNewsArticleRoute(art);
+
+  // "Report This News" from inside the workspace hands the article back to
+  // this listing, which owns the report dialog.
   useEffect(() => {
-    if (initialArticleId) {
-      const matched = publishedArticles.find((a) => a.id === initialArticleId);
-      if (matched) {
-        setActiveArticleModal(matched);
-      }
-    }
-  }, [initialArticleId, publishedArticles]);
+    const onReportRequest = (e: Event) => {
+      const art = (e as CustomEvent<NewsArticle>).detail;
+      if (art) openReport(art);
+    };
+    window.addEventListener('gh:news-report', onReportRequest);
+    return () => window.removeEventListener('gh:news-report', onReportRequest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const categories = useMemo(() => {
     const list = Array.from(new Set(publishedArticles.map((a) => a.category)));
@@ -188,7 +155,10 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
               <Flame className="h-3 w-3" /> {t('Breaking News')}
             </span>
             <div 
-              onClick={() => setActiveArticleModal(breakingNews[0])}
+              onClick={() => openArticle(breakingNews[0])}
+              role="link"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(breakingNews[0]); } }}
               className="text-xs sm:text-sm font-bold truncate flex-1 cursor-pointer hover:underline"
             >
               {breakingNews[0].title}
@@ -248,7 +218,11 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
         {/* Featured Top Story Banner */}
         {featuredArticle && !searchTerm && selectedCategory === 'All' && (
           <div 
-            onClick={() => setActiveArticleModal(featuredArticle)}
+            onClick={() => openArticle(featuredArticle)}
+            role="link"
+            tabIndex={0}
+            aria-label={`Read: ${featuredArticle.title}`}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(featuredArticle); } }}
             className="cursor-pointer group rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-teal-400 transition grid grid-cols-1 lg:grid-cols-12"
           >
             <div className="lg:col-span-6 relative bg-slate-900 overflow-hidden min-h-[260px] lg:min-h-[340px]">
@@ -306,7 +280,11 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
           {filteredNews.map((art) => (
             <div
               key={art.id}
-              onClick={() => setActiveArticleModal(art)}
+              onClick={() => openArticle(art)}
+              role="link"
+              tabIndex={0}
+              aria-label={`Read: ${art.title}`}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(art); } }}
               className="cursor-pointer group rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-2xs hover:border-teal-300 hover:shadow-md transition flex flex-col justify-between"
             >
               <div>
@@ -360,24 +338,6 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
           ))}
         </div>
       </div>
-
-      {/* Reader Modal (with public trust indicators + reporting) */}
-      {activeArticleModal && (() => {
-        const authArt = authorityByRef.get(activeArticleModal.id);
-        return (
-          <ArticlePreviewModal
-            article={activeArticleModal}
-            onClose={() => setActiveArticleModal(null)}
-            onEdit={onOpenAdminCMS ? () => onOpenAdminCMS() : undefined}
-            trustIndicator={authArt ? 'authority' : 'official'}
-            submittedByAuthority={authArt?.submittedBy || null}
-            updatedAt={authArt?.updatedAt || activeArticleModal.lastUpdated}
-            correctionNotice={authArt?.correctionNotice || undefined}
-            fullPage
-            onReport={() => { setActiveArticleModal(null); openReport(activeArticleModal); }}
-          />
-        );
-      })()}
 
       {/* Report This News (regular users; server-validated, never auto-deletes) */}
       {reportTarget && (

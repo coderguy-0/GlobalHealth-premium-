@@ -266,18 +266,28 @@ export async function partnerCompleteReset(resetToken: string, newPassword: stri
  * check + stock decrement + server-recalculated totals in one synchronous
  * section (overselling impossible). Client totals are never trusted.
  */
+export interface MarketplaceOrderPricing {
+  itemsSubtotal: number;
+  discount?: number;
+  couponCode?: string;
+  deliveryFee: number;
+  tax: number;
+  grandTotal: number;
+}
+
 export async function placeMarketplaceOrder(
   items: ValidationItem[],
-  deliveryFee: number
+  deliveryFee: number,
+  couponCode?: string
 ): Promise<
-  | { ok: true; orderId: string; pricing: { itemsSubtotal: number; deliveryFee: number; tax: number; grandTotal: number } }
+  | { ok: true; orderId: string; pricing: MarketplaceOrderPricing }
   | { ok: false; code?: string; error?: string; medicineName?: string; availableQuantity?: number }
 > {
   try {
     const res = await fetch('/api/pharmacy-marketplace/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items, deliveryFee })
+      body: JSON.stringify({ items, deliveryFee, ...(couponCode ? { couponCode } : {}) })
     });
     const data = await res.json().catch(() => null);
     if (!res.ok || !data?.success) {
@@ -354,5 +364,33 @@ export async function fetchPartnerInventoryAudit(
     return { ok: true, records: data.records || [] };
   } catch {
     return { ok: false, records: [], error: 'Audit trail temporarily unavailable.' };
+  }
+}
+
+/**
+ * Previews a coupon against the LIVE pharmacy prices of the given lines. The
+ * server is authoritative: the same rule is re-run when the order is placed,
+ * so a code that cannot actually be used is never applied.
+ */
+export async function validateMarketplaceCoupon(
+  code: string,
+  items: ValidationItem[]
+): Promise<
+  | { ok: true; code: string; description: string; discount: number; itemsSubtotal: number }
+  | { ok: false; code?: string; error: string }
+> {
+  try {
+    const res = await fetch('/api/pharmacy-marketplace/coupons/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, items })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.success) {
+      return { ok: false, code: data?.code, error: data?.error || 'This coupon could not be applied.' };
+    }
+    return { ok: true, code: data.coupon.code, description: data.coupon.description, discount: Number(data.discount) || 0, itemsSubtotal: Number(data.itemsSubtotal) || 0 };
+  } catch {
+    return { ok: false, error: 'Coupons are temporarily unavailable. Please try again.' };
   }
 }

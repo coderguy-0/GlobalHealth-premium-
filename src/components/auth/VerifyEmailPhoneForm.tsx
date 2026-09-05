@@ -8,6 +8,11 @@ interface VerifyEmailPhoneFormProps {
   userId: string;
   contactTarget?: string;
   type?: 'email' | 'phone';
+  /**
+   * Development-only: the server returns the simulated delivery code when no
+   * email/SMS provider is configured. Never present in production responses.
+   */
+  devCode?: string;
   onSuccess: (user: PublicUserAccount, token?: string) => void;
   onNavigate: (view: 'login' | 'signup') => void;
   onRequestHelp?: () => void;
@@ -18,6 +23,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   userId,
   contactTarget = 'your registered address',
   type = 'email',
+  devCode,
   onSuccess,
   onNavigate,
   onRequestHelp,
@@ -35,6 +41,11 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
   // Limited attempts (spec): 5 tries before the code is locked and a resend is required.
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [attemptsLocked, setAttemptsLocked] = useState(false);
+  const [simulatedCode, setSimulatedCode] = useState<string | undefined>(devCode);
+
+  useEffect(() => {
+    setSimulatedCode(devCode);
+  }, [devCode]);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -127,6 +138,7 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
       setCanResend(false);
       setAttemptsLeft(5);
       setAttemptsLocked(false);
+      setSimulatedCode(result.devCode);
       setInfoMessage(result.message || 'A new 6-digit code has been dispatched.');
     } else {
       setErrorMessage(result.error || 'Failed to resend verification code.');
@@ -176,6 +188,15 @@ export const VerifyEmailPhoneForm: React.FC<VerifyEmailPhoneFormProps> = ({
                 <span className="font-semibold block mb-0.5">Verification Error</span>
                 {errorMessage}
               </div>
+            </div>
+          )}
+
+          {/* Development-only simulated delivery (server never returns this in production). */}
+          {simulatedCode && (
+            <div className="mb-4 rounded-xl border border-dashed border-amber-300 bg-amber-50 px-3 py-2.5 text-left text-[11px] text-amber-800">
+              <Mail className="mr-1 inline h-3 w-3" />
+              <strong>Simulated {type === 'phone' ? 'SMS' : 'email'} delivery</strong> (development environment): your code is{' '}
+              <span className="font-mono text-sm font-bold tracking-widest">{simulatedCode}</span>
             </div>
           )}
 

@@ -13,6 +13,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { PharmacyOrder } from '../../types/pharmacyMarketplace';
+import { openInvoice } from './BuyMedicineWorkspace';
 
 interface OrderTrackingModalProps {
   order: PharmacyOrder | null;
@@ -164,7 +165,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           {/* Action Footer */}
           <div className="flex items-center justify-between pt-3 border-t border-slate-100">
             <button
-              onClick={() => alert(`Downloading official pharmacy invoice for Order ${order.id}...`)}
+              onClick={() => openInvoice(order)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
             >
               <Download className="h-3.5 w-3.5 text-slate-500" />
