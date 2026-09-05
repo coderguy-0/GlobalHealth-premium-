@@ -151,11 +151,16 @@ export interface PharmacyOrder {
     subtotalMRP: number;
     totalDiscount: number;
     itemsSubtotal: number;
+    /** Coupon discount applied by the server (0 when no coupon). */
+    couponDiscount?: number;
+    couponCode?: string;
     deliveryFee: number;
     tax: number;
     grandTotal: number;
   };
   prescriptionId?: string;
+  /** Customer-facing prescription state recorded on the order. */
+  prescriptionStatus?: 'Not Required' | 'Pending Verification' | 'Verified' | 'Rejected';
   paymentMethod: 'UPI' | 'Credit / Debit Card' | 'Net Banking' | 'Cash on Delivery';
   paymentStatus: 'Paid' | 'Pending on Delivery';
   status: 'Order Placed' | 'Prescription Verified' | 'Dispensing & Packed' | 'Dispatched' | 'Out for Delivery' | 'Delivered' | 'Cancelled';

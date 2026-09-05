@@ -6345,6 +6345,79 @@ Request ID: ${requestId}`,
   // never trusted.
   const MARKET_ORDERS: Map<string, any> = new Map();
 
+  // ---- Coupons (server-authoritative) ----
+  // A discount is only ever applied by the server against the server-computed
+  // subtotal. The client may *preview* a coupon through /coupons/validate but
+  // the final order recomputes it, so an unusable code can never reduce the
+  // payable amount.
+  interface MarketCoupon {
+    code: string;
+    description: string;
+    type: 'PERCENT' | 'FLAT';
+    value: number;
+    minSubtotal: number;
+    maxDiscount?: number;
+    active: boolean;
+  }
+  const MARKET_COUPONS: Map<string, MarketCoupon> = new Map(
+    (
+      [
+        { code: 'GHFIRST10', description: '10% off your first verified-pharmacy order (max ₹100)', type: 'PERCENT', value: 10, minSubtotal: 99, maxDiscount: 100, active: true },
+        { code: 'HEALTH50', description: 'Flat ₹50 off on orders above ₹499', type: 'FLAT', value: 50, minSubtotal: 499, active: true },
+        { code: 'CARE5', description: '5% off any order (max ₹60)', type: 'PERCENT', value: 5, minSubtotal: 0, maxDiscount: 60, active: true },
+        { code: 'EXPIRED2025', description: 'Expired seasonal promotion', type: 'FLAT', value: 100, minSubtotal: 0, active: false }
+      ] as MarketCoupon[]
+    ).map((c) => [c.code, c])
+  );
+
+  const computeCouponDiscount = (
+    rawCode: string | undefined,
+    itemsSubtotal: number
+  ): { ok: true; coupon: MarketCoupon; discount: number } | { ok: false; code: string; error: string } => {
+    const code = String(rawCode || '').trim().toUpperCase();
+    if (!code) return { ok: false, code: 'NO_COUPON', error: 'Enter a coupon code.' };
+    const coupon = MARKET_COUPONS.get(code);
+    if (!coupon || !coupon.active) {
+      return { ok: false, code: 'COUPON_INVALID', error: 'This coupon code is invalid or has expired.' };
+    }
+    if (itemsSubtotal < coupon.minSubtotal) {
+      return { ok: false, code: 'COUPON_MIN_NOT_MET', error: `This coupon needs a medicine subtotal of at least ₹${coupon.minSubtotal}.` };
+    }
+    let discount = coupon.type === 'PERCENT' ? (itemsSubtotal * coupon.value) / 100 : coupon.value;
+    if (coupon.maxDiscount !== undefined) discount = Math.min(discount, coupon.maxDiscount);
+    discount = Math.min(discount, itemsSubtotal);
+    return { ok: true, coupon, discount: Number(discount.toFixed(2)) };
+  };
+
+  // Preview a coupon against the LIVE pharmacy prices for the given lines.
+  app.post('/api/pharmacy-marketplace/coupons/validate', (req, res) => {
+    try {
+      const items = Array.isArray(req.body?.items) ? req.body.items : [];
+      let itemsSubtotal = 0;
+      for (const item of items) {
+        const product = findProductVariant(item?.productId);
+        if (!product) continue;
+        const rec = MARKET_INVENTORY.get(invKey(String(item?.pharmacyId), product.id));
+        const qty = Math.max(1, Math.floor(Number(item?.quantity) || 1));
+        if (rec) itemsSubtotal += rec.price * qty;
+      }
+      itemsSubtotal = Number(itemsSubtotal.toFixed(2));
+      const result = computeCouponDiscount(req.body?.code, itemsSubtotal);
+      if (!result.ok) {
+        return res.status(400).json({ success: false, code: result.code, error: result.error });
+      }
+      return res.json({
+        success: true,
+        coupon: { code: result.coupon.code, description: result.coupon.description },
+        discount: result.discount,
+        itemsSubtotal
+      });
+    } catch (err: any) {
+      console.error('Coupon validation failed:', err);
+      return res.status(503).json({ success: false, error: 'Coupons are temporarily unavailable. Please try again.' });
+    }
+  });
+
   app.post('/api/pharmacy-marketplace/orders', (req, res) => {
     try {
       const items = Array.isArray(req.body?.items) ? req.body.items : [];
@@ -6379,8 +6452,22 @@ Request ID: ${requestId}`,
       // Atomic commit: decrement every line (all lines re-verified above; the
       // synchronous section guarantees no interleaved writer).
       const itemsSubtotal = Number(lines.reduce((sum, l) => sum + l.lineTotal, 0).toFixed(2));
-      const tax = Number((itemsSubtotal * taxRate).toFixed(2));
-      const grandTotal = Number((itemsSubtotal + deliveryFee + tax).toFixed(2));
+      // Coupon: recomputed here against the server subtotal. A code that is
+      // no longer usable rejects the order instead of silently charging more
+      // than the amount the customer reviewed.
+      let discount = 0;
+      let appliedCoupon: string | undefined;
+      if (req.body?.couponCode) {
+        const couponResult = computeCouponDiscount(String(req.body.couponCode), itemsSubtotal);
+        if (!couponResult.ok) {
+          return res.status(409).json({ success: false, code: couponResult.code, error: couponResult.error });
+        }
+        discount = couponResult.discount;
+        appliedCoupon = couponResult.coupon.code;
+      }
+      const taxableAmount = Number(Math.max(0, itemsSubtotal - discount).toFixed(2));
+      const tax = Number((taxableAmount * taxRate).toFixed(2));
+      const grandTotal = Number((taxableAmount + deliveryFee + tax).toFixed(2));
       for (const l of lines) {
         l.rec.stockQuantity -= l.quantity;
         l.rec.stockStatus = deriveStatus(l.rec.stockQuantity);
@@ -6414,7 +6501,7 @@ Request ID: ${requestId}`,
           quantity: l.quantity, unitPrice: l.rec.price, lineTotal: l.lineTotal,
           prescriptionRequired: !!l.product.prescriptionRequired
         })),
-        pricing: { itemsSubtotal, deliveryFee, tax, grandTotal }
+        pricing: { itemsSubtotal, discount, couponCode: appliedCoupon, deliveryFee, tax, grandTotal }
       });
 
       return res.status(201).json({
