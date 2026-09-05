@@ -714,6 +714,21 @@ async function startServer() {
   };
 
   // 1. LOGIN ENDPOINT
+  // Public-account verification codes have no outbound email/SMS provider in
+  // this deployment. Production keeps them server-side only (fail closed);
+  // development returns them so the flow can be completed end to end.
+  const devVerificationDelivery = (code: string, channel: 'email' | 'phone', recipient: string) =>
+    IS_PRODUCTION
+      ? {}
+      : {
+          devCode: code,
+          demoDelivery: {
+            channel: channel === 'phone' ? 'Simulated SMS (dev only)' : 'Simulated email (dev only)',
+            recipient,
+            code
+          }
+        };
+
   app.post('/api/auth/login', (req, res) => {
     const entryRl = hitRateLimit('auth-login', String(req.ip || 'anonymous'), 30, 5 * 60 * 1000);
     if (!entryRl.allowed) {
@@ -802,13 +817,25 @@ async function startServer() {
       });
     }
     if (foundUser.accountStatus === 'EMAIL_VERIFICATION_REQUIRED') {
+      // Re-issue a fresh code if the previous one expired so the user is not
+      // stuck on an account that can never be verified.
+      if (!foundUser.verificationCode || foundUser.verificationCode.expiresAt < Date.now()) {
+        foundUser.verificationCode = {
+          code: String(Math.floor(100000 + Math.random() * 900000)),
+          type: 'email',
+          expiresAt: Date.now() + 15 * 60 * 1000
+        };
+        PUBLIC_USERS.set(foundUser.id, foundUser);
+        persistRuntimeAccounts();
+      }
       return res.status(200).json({
         success: true,
         verificationRequired: true,
         verificationType: 'email',
         userId: foundUser.id,
         email: foundUser.email,
-        message: 'Email verification required before accessing your dashboard.'
+        message: 'Email verification required before accessing your dashboard.',
+        ...devVerificationDelivery(foundUser.verificationCode!.code, 'email', foundUser.email)
       });
     }
 
@@ -1010,7 +1037,12 @@ async function startServer() {
       verificationRequired: true,
       verificationType: 'email',
       userId,
-      email: cleanEmail
+      email: cleanEmail,
+      // The verification code must never reach the browser in production; it
+      // is delivered only through the configured contact channel. Development
+      // builds surface it (same convention as News MFA / reset tokens) so the
+      // signup flow can actually be completed locally and in smoke tests.
+      ...devVerificationDelivery(verificationCode, 'email', cleanEmail)
     });
   });
 
@@ -1145,7 +1177,8 @@ async function startServer() {
 
     return res.json({
       success: true,
-      message: `A new 6-digit verification code has been dispatched to your registered ${type === 'phone' ? 'mobile number' : 'email address'}.`
+      message: `A new 6-digit verification code has been dispatched to your registered ${type === 'phone' ? 'mobile number' : 'email address'}.`,
+      ...devVerificationDelivery(freshCode, type === 'phone' ? 'phone' : 'email', type === 'phone' ? (user.phoneNumber || user.email) : user.email)
     });
   });
 

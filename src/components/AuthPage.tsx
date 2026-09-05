@@ -76,6 +76,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     userId: string;
     contactTarget?: string;
     type: 'email' | 'phone';
+    /** Development-only simulated delivery of the code (never sent in production). */
+    devCode?: string;
   } | null>(null);
 
   // Reset password token handover
@@ -320,7 +322,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       setVerificationData({
                         userId: data.userId,
                         contactTarget: data.email || data.phone || 'your registered contact',
-                        type: data.type
+                        type: data.type,
+                        devCode: data.devCode
                       });
                       setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
                     }}
@@ -333,7 +336,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       setVerificationData({
                         userId: data.userId,
                         contactTarget: data.email,
-                        type: data.type
+                        type: data.type,
+                        devCode: data.devCode
                       });
                       setActiveSubView(data.type === 'phone' ? 'verify-phone' : 'verify-email');
                     }}
@@ -372,6 +376,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     userId={verificationData?.userId || ''}
                     contactTarget={verificationData?.contactTarget || 'your registered email/number'}
                     type={activeSubView === 'verify-phone' ? 'phone' : 'email'}
+                    devCode={verificationData?.devCode}
                     onSuccess={(user, token) => {
                       onLoginSuccess(user, token);
                       onNavigateToDashboard();

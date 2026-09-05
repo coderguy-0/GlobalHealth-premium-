@@ -10,7 +10,7 @@ interface LoginFormProps {
   onNavigate: (view: 'signup' | 'forgot-password' | 'verify-email' | 'verify-phone') => void;
   onRequestHelp?: () => void;
   onOpenLegal?: (tab: 'terms' | 'privacy-policy') => void;
-  onRequiresVerification?: (data: { userId: string; email?: string; phone?: string; type: 'email' | 'phone' }) => void;
+  onRequiresVerification?: (data: { userId: string; email?: string; phone?: string; type: 'email' | 'phone'; devCode?: string }) => void;
   /** Lets the animated assistant react to what the user is doing. */
   onAvatarInteract?: (expression: AvatarExpression, message?: string) => void;
 }
@@ -62,7 +62,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         onRequiresVerification({
           userId: result.userId,
           email: result.email,
-          type: result.verificationType || 'email'
+          type: result.verificationType || 'email',
+          devCode: result.devCode
         });
         return;
       }
