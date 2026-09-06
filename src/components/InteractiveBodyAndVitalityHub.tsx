@@ -22,9 +22,10 @@ import { useLocalization } from '../context/LocalizationContext';
 
 interface InteractiveBodyAndVitalityHubProps {
   onTabChange: (tab: NavigationTab) => void;
+  onOpenNewsArticle?: (articleId: string) => void;
 }
 
-export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityHubProps> = ({ onTabChange }) => {
+export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityHubProps> = ({ onTabChange, onOpenNewsArticle }) => {
   const { t, formatNumber, isRTL } = useLocalization();
 
   // 1. Organ Systems & Body Map State
@@ -503,7 +504,7 @@ export const InteractiveBodyAndVitalityHub: React.FC<InteractiveBodyAndVitalityH
 
         {/* SECTION 4: Live Health News Question & Knowledge Spotlight */}
         <div id="home-news-question-section">
-          <HomeNewsQuestionSpotlight onTabChange={onTabChange} />
+          <HomeNewsQuestionSpotlight onTabChange={onTabChange} onOpenNewsArticle={onOpenNewsArticle} />
         </div>
 
       </div>

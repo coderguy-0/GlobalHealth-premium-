@@ -10,10 +10,11 @@ import { ErrorState } from '../ui/States';
 
 interface UpdatesSectionProps {
   onTabChange: (tab: NavigationTab) => void;
+  onOpenArticle?: (articleId: string) => void;
 }
 
 /** Section 16 — "Healthcare Updates". Data comes from the news service (CMS-backed). */
-export const UpdatesSection: React.FC<UpdatesSectionProps> = ({ onTabChange }) => {
+export const UpdatesSection: React.FC<UpdatesSectionProps> = ({ onTabChange, onOpenArticle }) => {
   const [articles, setArticles] = useState<NewsArticle[] | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -72,7 +73,10 @@ export const UpdatesSection: React.FC<UpdatesSectionProps> = ({ onTabChange }) =
                 <Reveal key={a.id} delay={i * 50}>
                   <button
                     type="button"
-                    onClick={() => onTabChange('news')}
+                    onClick={() => {
+                      if (onOpenArticle) onOpenArticle(a.id);
+                      else onTabChange('news');
+                    }}
                     className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-soft transition duration-200 hover:-translate-y-0.5 hover:border-medical-200 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medical-500"
                   >
                     {a.featuredImage ? (

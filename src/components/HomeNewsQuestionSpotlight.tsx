@@ -28,19 +28,20 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import { NavigationTab, NewsArticle, HealthNewsQuestion, ResearchQuestionFormat } from '../types';
+import { NavigationTab, HealthNewsQuestion, ResearchQuestionFormat } from '../types';
 import { healthResearchQuestionService } from '../services/healthResearchQuestionService';
 import { newsService } from '../services/newsService';
-import { ArticlePreviewModal } from './news-admin/ArticlePreviewModal';
 
 interface HomeNewsQuestionSpotlightProps {
   onTabChange: (tab: NavigationTab) => void;
   compact?: boolean;
+  onOpenNewsArticle?: (articleId: string) => void;
 }
 
 export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps> = ({
   onTabChange,
-  compact = false
+  compact = false,
+  onOpenNewsArticle,
 }) => {
   // Current active question state
   const [currentQuestion, setCurrentQuestion] = useState<HealthNewsQuestion | null>(null);
@@ -61,8 +62,7 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
   // Evidence panel collapse/expand
   const [showFullEvidence, setShowFullEvidence] = useState<boolean>(false);
 
-  // Reader Modal state
-  const [activeArticleModal, setActiveArticleModal] = useState<NewsArticle | null>(null);
+  // Reader state is now full-screen workspace (no modal)
   
   // User Lifetime Stats
   const [stats, setStats] = useState<{ totalAnswered: number; correctCount: number; accuracyRate: number }>({
@@ -196,30 +196,16 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
     setStats(healthResearchQuestionService.getUserStats());
   };
 
-  // Open Full Article Preview Modal
+  // Open Full-Screen News Workspace (replaces PUBLIC READER PREVIEW per blueprint)
   const handleOpenArticleModal = () => {
     if (!currentQuestion) return;
-
-    // Check if article exists in newsService or construct one
-    const matched = newsService.getArticleById(currentQuestion.articleId);
-    if (matched) {
-      setActiveArticleModal(matched);
+    const targetId = currentQuestion.articleId;
+    const matched = newsService.getArticleById(targetId);
+    const openId = matched ? (matched.slug || matched.id) : targetId;
+    if (onOpenNewsArticle) {
+      onOpenNewsArticle(openId);
     } else {
-      const synthArticle: NewsArticle = {
-        id: currentQuestion.articleId,
-        title: currentQuestion.articleTitle,
-        source: currentQuestion.articleSource,
-        date: currentQuestion.articleDate,
-        category: currentQuestion.specialty,
-        summary: currentQuestion.articleSummary || currentQuestion.explanation,
-        content: `### Clinical Study Overview\n\n**Journal:** ${currentQuestion.evidenceSummary.journalName}\n**Published:** ${currentQuestion.evidenceSummary.publishedDate}\n**DOI:** ${currentQuestion.evidenceSummary.studyDoi || '10.1016/gh.research.2026'}\n\n#### Study Population & Methods\n${currentQuestion.evidenceSummary.populationAndSample || 'Evaluated in prospective multicenter clinical cohort.'}\n\n#### Key Findings\n${currentQuestion.evidenceSummary.mainFinding}\n\n#### Clinical Significance\n${currentQuestion.evidenceSummary.clinicalSignificance}\n\n#### Methodological Limitations\n${currentQuestion.evidenceSummary.limitations || 'Findings should be interpreted alongside individual patient risk profiles.'}`,
-        readTime: '4 min read',
-        status: 'published',
-        visibility: 'Public',
-        author: currentQuestion.evidenceSummary.authorsList || 'Clinical Research Consortium',
-        featuredImage: currentQuestion.articleImageUrl
-      };
-      setActiveArticleModal(synthArticle);
+      window.location.hash = `news/${encodeURIComponent(openId)}`;
     }
   };
 
@@ -658,14 +644,8 @@ export const HomeNewsQuestionSpotlight: React.FC<HomeNewsQuestionSpotlightProps>
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. READER MODAL WHEN USER CLICKS "READ FULL RESEARCH ARTICLE" */}
+      {/* 3. FULL-SCREEN NEWS WORKSPACE - now opened via hash routing per blueprint */}
       {/* ========================================================================= */}
-      {activeArticleModal && (
-        <ArticlePreviewModal
-          article={activeArticleModal}
-          onClose={() => setActiveArticleModal(null)}
-        />
-      )}
 
       {/* ========================================================================= */}
       {/* 4. ADMIN QUESTION POOL & ROTATION INSPECTOR MODAL */}
