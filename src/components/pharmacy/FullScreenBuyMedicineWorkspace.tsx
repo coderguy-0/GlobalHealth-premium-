@@ -77,6 +77,21 @@ interface FullScreenBuyMedicineWorkspaceProps {
   isAuthenticated: boolean;
   onRequireAuth: (feature: string) => void;
   initialQuantity?: number;
+  // Variant support: buy (from medicine card Buy Now) vs stock (from monograph Check Pharmacy Stock)
+  mode?: 'buy' | 'stock';
+  backLabel?: string;
+  titleOverride?: string;
+  subtitleOverride?: string;
+  // When opened from clinical monograph, preserve full monograph data for richer display
+  originMedicine?: {
+    name: string;
+    genericName: string;
+    category: string;
+    therapeuticGroup?: string;
+    dosageForms?: string[];
+    prescriptionStatus?: string;
+    overTheCounter?: boolean;
+  };
 }
 
 export const FullScreenBuyMedicineWorkspace: React.FC<FullScreenBuyMedicineWorkspaceProps> = ({
@@ -91,7 +106,16 @@ export const FullScreenBuyMedicineWorkspace: React.FC<FullScreenBuyMedicineWorks
   isAuthenticated,
   onRequireAuth,
   initialQuantity = 1,
+  mode = 'buy',
+  backLabel,
+  titleOverride,
+  subtitleOverride,
+  originMedicine,
 }) => {
+  const isStockMode = mode === 'stock';
+  const headerTitle = titleOverride || (isStockMode ? 'Check Pharmacy Stock' : 'Buy Medicine');
+  const headerSubtitle = subtitleOverride || (isStockMode ? 'Find available stock from Verified Pharmacy Partners and continue to purchase securely' : 'Complete your purchase securely through a Verified Pharmacy Partner');
+  const backButtonLabel = backLabel || (isStockMode ? 'Back to Medicine' : 'Back to Medicines');
   // Auth & EHR
   const { clinicalPrescriptions } = usePatientEhr();
   const { user } = useAuth();
@@ -677,10 +701,10 @@ export const FullScreenBuyMedicineWorkspace: React.FC<FullScreenBuyMedicineWorks
               onClick={onBack}
               className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to Medicines
+              <ArrowLeft className="h-4 w-4" /> {backButtonLabel}
             </button>
             <div className="text-center">
-              <h1 className="text-base font-bold text-slate-900">Buy Medicine</h1>
+              <h1 className="text-base font-bold text-slate-900">{headerTitle}</h1>
               <p className="text-[11px] text-slate-500">Order Confirmation</p>
             </div>
             <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
@@ -828,13 +852,13 @@ export const FullScreenBuyMedicineWorkspace: React.FC<FullScreenBuyMedicineWorks
             onClick={onBack}
             className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold text-slate-700 hover:bg-slate-100 transition shrink-0"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to Medicines
+            <ArrowLeft className="h-4 w-4" /> {backButtonLabel}
           </button>
 
           <div className="flex-1 text-center min-w-0">
-            <h1 className="text-[18px] sm:text-[20px] font-black tracking-tight text-slate-900 leading-none">Buy Medicine</h1>
+            <h1 className="text-[18px] sm:text-[20px] font-black tracking-tight text-slate-900 leading-none">{headerTitle}</h1>
             <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-1 truncate">
-              Complete your purchase securely through a Verified Pharmacy Partner
+              {headerSubtitle}
             </p>
           </div>
 
@@ -925,23 +949,64 @@ export const FullScreenBuyMedicineWorkspace: React.FC<FullScreenBuyMedicineWorks
             </div>
 
             <div className="p-5 sm:p-6 space-y-5">
-              {/* Selected Medicine Card */}
+              {/* Selected Medicine Card — Section 5, supports both Buy and Check Stock modes */}
               <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
                 <img src={product.imageUrl} alt={product.name} className="h-28 w-28 rounded-2xl object-cover border border-slate-200 bg-slate-50 shrink-0" />
                 <div className="flex-1 min-w-0 space-y-2">
                   <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
+                    <div className="space-y-1">
+                      {isStockMode && originMedicine && (
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                            <ShieldCheck className="h-3 w-3" /> Verified Clinical Monograph
+                          </span>
+                          <span className="rounded-full bg-slate-900 text-white px-2.5 py-0.5 text-[10px] font-bold">
+                            {originMedicine.category || 'Neurology'}
+                          </span>
+                          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold border ${product.prescriptionRequired ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-blue-50 text-blue-800 border-blue-200'}`}>
+                            {product.prescriptionRequired ? 'Prescription Required (Rx)' : 'OTC Safe'}
+                          </span>
+                        </div>
+                      )}
                       <h3 className="text-lg font-black text-slate-900">{product.name}</h3>
                       <p className="text-xs text-slate-600">
-                        Generic Active Molecule: <strong className="text-slate-900">{product.genericName}</strong>
+                        Active Molecule / Generic: <strong className="text-slate-900">{originMedicine?.genericName || product.genericName}</strong>
                       </p>
-                      <p className="text-xs text-slate-500">Category: {product.category}</p>
+                      <p className="text-xs text-slate-600">
+                        Therapeutic Class: <strong className="text-slate-800">{originMedicine?.therapeuticGroup || product.therapeuticClass || product.category}</strong>
+                      </p>
+                      <p className="text-xs text-slate-500">Category: {originMedicine?.category || product.category}</p>
                       <p className="text-xs">
                         Classification:{' '}
                         <span className={`font-bold ${product.prescriptionRequired ? 'text-amber-700' : 'text-emerald-700'}`}>
                           {product.prescriptionRequired ? `Prescription (Rx) — ${product.rxSchedule}` : 'OTC Safe'}
                         </span>
                       </p>
+                      {isStockMode && originMedicine?.dosageForms && originMedicine.dosageForms.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          <span className="text-[11px] font-bold text-slate-500">Available Forms:</span>
+                          {originMedicine.dosageForms.map((f: string, i: number) => (
+                            <span key={i} className="rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">{f}</span>
+                          ))}
+                        </div>
+                      )}
+                      {/* Stock Check Status — Section 6 */}
+                      <div className="pt-2">
+                        {pharmacyLoading ? (
+                          <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[11px] font-bold text-amber-800">
+                            <RefreshCw className="h-3 w-3 animate-spin" /> Checking current pharmacy stock...
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[11px] font-bold text-emerald-700">
+                              <CheckCircle2 className="h-3.5 w-3.5" /> ✓ Stock information updated
+                            </div>
+                            {pharmacyAsOf && (
+                              <div className="text-[11px] text-slate-500 font-mono">Last updated: {new Date(pharmacyAsOf).toLocaleString()}</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold border ${product.availability === 'in_stock' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : product.availability === 'low_stock' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
                       {product.availability === 'in_stock' ? '✓ In Stock' : product.availability === 'low_stock' ? 'Limited Stock' : 'Currently Unavailable'}

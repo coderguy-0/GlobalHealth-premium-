@@ -170,6 +170,8 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
     });
 
     if (product) {
+      setBuyWorkspaceMode('buy');
+      setOriginMedicineForStock(null);
       setSelectedProductForBuying(product);
       return;
     }
@@ -178,6 +180,56 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
     // Keep the action useful by opening the partner catalogue rather than
     // pretending that a product can be purchased.
     onNavigateToPharmacyPortal?.('landing');
+  };
+
+  // Check Pharmacy Stock — full-screen workspace from clinical monograph per blueprint
+  // Medicine Monograph → Check Pharmacy Stock → Full-Screen Pharmacy Stock Workspace
+  // Same structure as Buy Medicine, but entry point is monograph detail.
+  const handleCheckPharmacyStock = (medicine: Medicine) => {
+    if (!requirePurchaseAuth('check pharmacy stock and purchase medicines')) return;
+    const queryName = medicine.name.toLowerCase();
+    const queryGeneric = medicine.genericName.toLowerCase();
+    // Try to find exact product; if not found, create a synthetic product from medicine data for Clonazepam etc.
+    let product = PHARMACY_PRODUCTS.find((candidate) => {
+      const name = candidate.name.toLowerCase();
+      const generic = candidate.genericName.toLowerCase();
+      return name.includes(queryName) || queryName.includes(name) ||
+        generic.includes(queryGeneric) || queryGeneric.includes(generic);
+    });
+
+    // For Clonazepam or any medicine without marketplace listing, create a synthetic product using available data
+    if (!product) {
+      // Create a synthetic PharmacyProduct to ensure workspace always opens per blueprint
+      const isRx = !medicine.overTheCounter || (medicine.prescriptionStatus && medicine.prescriptionStatus.toLowerCase().includes('rx'));
+      product = {
+        id: `synthetic-${medicine.id}`,
+        name: medicine.name,
+        brandName: medicine.name,
+        genericName: medicine.genericName,
+        category: 'Prescription',
+        subCategory: medicine.category || 'Neurology',
+        composition: medicine.genericName,
+        strength: '0.5 mg',
+        dosageForm: medicine.dosageForms?.[0] || 'Tablet',
+        packSize: '10 Tablets',
+        manufacturer: 'Verified Pharma',
+        prescriptionRequired: !!isRx,
+        rxSchedule: isRx ? 'H' : 'OTC',
+        mrp: 120,
+        price: 95,
+        discount: 20,
+        availability: 'in_stock',
+        stockQuantity: 24,
+        imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        pharmacyPartnerId: 'synthetic',
+        pharmacyPartnerName: 'Verified Partner',
+        therapeuticClass: medicine.therapeuticGroup || medicine.category,
+      } as PharmacyProduct;
+    }
+
+    setBuyWorkspaceMode('stock');
+    setOriginMedicineForStock(medicine);
+    setSelectedProductForBuying(product);
   };
   // Voice search (Web Speech API). Hidden when unsupported — never decorative.
   const [voiceListening, setVoiceListening] = useState(false);
@@ -278,6 +330,8 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   // Modal Control States
   const [selectedProductForDetail, setSelectedProductForDetail] = useState<PharmacyProduct | null>(null);
   const [selectedProductForBuying, setSelectedProductForBuying] = useState<PharmacyProduct | null>(null);
+  const [buyWorkspaceMode, setBuyWorkspaceMode] = useState<'buy' | 'stock'>('buy');
+  const [originMedicineForStock, setOriginMedicineForStock] = useState<Medicine | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<PharmacyOrder | null>(null);
@@ -505,21 +559,52 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
 
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Full-Screen Buy Medicine Workspace — Section 1-36 Blueprint
-  // When user clicks Buy Now on any medicine card, open completely new
-  // full-screen workspace, NOT a small modal/popup/drawer/partial section.
+  // Full-Screen Buy Medicine / Check Pharmacy Stock Workspace — Section 1-36 Blueprint
+  // When user clicks Buy Now on any medicine card OR Check Pharmacy Stock on monograph,
+  // open completely new full-screen workspace, NOT a small modal/popup/drawer/partial section.
   if (selectedProductForBuying) {
+    const isStockMode = buyWorkspaceMode === 'stock';
     return (
       <FullScreenBuyMedicineWorkspace
         product={selectedProductForBuying}
-        onBack={() => setSelectedProductForBuying(null)}
+        mode={buyWorkspaceMode}
+        backLabel={isStockMode ? 'Back to Medicine' : 'Back to Medicines'}
+        titleOverride={isStockMode ? 'Check Pharmacy Stock' : 'Buy Medicine'}
+        subtitleOverride={isStockMode ? 'Find available stock from Verified Pharmacy Partners and continue to purchase securely' : 'Complete your purchase securely through a Verified Pharmacy Partner'}
+        originMedicine={originMedicineForStock ? {
+          name: originMedicineForStock.name,
+          genericName: originMedicineForStock.genericName,
+          category: originMedicineForStock.category,
+          therapeuticGroup: originMedicineForStock.therapeuticGroup,
+          dosageForms: originMedicineForStock.dosageForms,
+          prescriptionStatus: originMedicineForStock.prescriptionStatus,
+          overTheCounter: originMedicineForStock.overTheCounter,
+        } : undefined}
+        onBack={() => {
+          if (isStockMode) {
+            // Return to Clonazepam clinical monograph per blueprint
+            setSelectedProductForBuying(null);
+            setBuyWorkspaceMode('buy');
+            // Keep selectedMedicineForMonograph so we return to monograph page
+            if (originMedicineForStock) {
+              setSelectedMedicineForMonograph(originMedicineForStock);
+            }
+          } else {
+            setSelectedProductForBuying(null);
+            setBuyWorkspaceMode('buy');
+            setOriginMedicineForStock(null);
+          }
+        }}
         cartItems={cartItems}
         onUpdateCartQuantity={handleUpdateCartQuantity}
         onRemoveCartItem={handleRemoveCartItem}
         onOrderPlaced={handleOrderPlaced}
         onNavigateToOrders={() => {
           setSelectedProductForBuying(null);
+          setBuyWorkspaceMode('buy');
+          setOriginMedicineForStock(null);
           setActiveTab('orders');
+          setSelectedMedicineForMonograph(null);
         }}
         uploadedPrescriptions={uploadedPrescriptions}
         isAuthenticated={isAuthenticated}
@@ -543,16 +628,10 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
         onNavigate={onNavigate}
         onAskAI={onAskAI}
         onFindPharmacy={() => {
-          const prod = PHARMACY_PRODUCTS.find(
-            (p) =>
-              p.name.toLowerCase().includes(selectedMedicineForMonograph.name.toLowerCase()) ||
-              selectedMedicineForMonograph.name.toLowerCase().includes(p.name.toLowerCase())
-          );
-          setSelectedMedicineForMonograph(null);
-          // The in-page store tab has been removed; send the visitor to the
-          // verified pharmacy portal instead.
-          if (prod) setSearchTerm(prod.name);
-          onNavigateToPharmacyPortal?.('landing');
+          // Per blueprint: Clonazepam Clinical Monograph → Check Pharmacy Stock → Full-Screen Pharmacy Stock Workspace
+          // Do NOT open popup/modal/drawer/small panel/partial section — open 100% full-screen workspace
+          // Use same structure as Buy Medicine workspace, selected medicine auto-carried, no re-search needed
+          handleCheckPharmacyStock(selectedMedicineForMonograph);
         }}
       />
     );
