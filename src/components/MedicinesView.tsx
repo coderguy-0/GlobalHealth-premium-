@@ -58,6 +58,7 @@ import { VerifiedPartnerSelectModal } from './pharmacy/VerifiedPartnerSelectModa
 import { PharmacyCartSlideOver } from './pharmacy/PharmacyCartSlideOver';
 import { PharmacyCheckoutModal } from './pharmacy/PharmacyCheckoutModal';
 import { OrderTrackingModal } from './pharmacy/OrderTrackingModal';
+import { FullScreenBuyMedicineWorkspace } from './pharmacy/FullScreenBuyMedicineWorkspace';
 
 interface MedicinesViewProps {
   savedIds: string[];
@@ -503,6 +504,29 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   };
 
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Full-Screen Buy Medicine Workspace — Section 1-36 Blueprint
+  // When user clicks Buy Now on any medicine card, open completely new
+  // full-screen workspace, NOT a small modal/popup/drawer/partial section.
+  if (selectedProductForBuying) {
+    return (
+      <FullScreenBuyMedicineWorkspace
+        product={selectedProductForBuying}
+        onBack={() => setSelectedProductForBuying(null)}
+        cartItems={cartItems}
+        onUpdateCartQuantity={handleUpdateCartQuantity}
+        onRemoveCartItem={handleRemoveCartItem}
+        onOrderPlaced={handleOrderPlaced}
+        onNavigateToOrders={() => {
+          setSelectedProductForBuying(null);
+          setActiveTab('orders');
+        }}
+        uploadedPrescriptions={uploadedPrescriptions}
+        isAuthenticated={isAuthenticated}
+        onRequireAuth={(feature) => onRequireAuth?.(feature)}
+      />
+    );
+  }
 
   // If a medicine is selected, render the dedicated full-page MedicineDetailPage
   if (selectedMedicineForMonograph) {
@@ -1082,16 +1106,8 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
         />
       )}
 
-      {/* 2. Verified Pharmacy Partner Selector Modal (Opens after clicking "Buy Medicine") */}
-      {selectedProductForBuying && (
-        <VerifiedPartnerSelectModal
-          product={selectedProductForBuying}
-          onClose={() => setSelectedProductForBuying(null)}
-          onSelectPartnerAndProceed={(product, partner) => {
-            handleAddToCartWithPartner(product, partner);
-          }}
-        />
-      )}
+      {/* 2. Verified Pharmacy Partner Selector Modal — REPLACED by FullScreenBuyMedicineWorkspace per blueprint (Buy Now opens 100% viewport workspace, not modal) */}
+      {/* Full-screen workspace now handles pharmacy selection with live inventory sync */}
 
       {/* 3. Cart Slide-Over */}
       <PharmacyCartSlideOver
