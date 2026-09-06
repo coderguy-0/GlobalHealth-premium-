@@ -110,6 +110,9 @@ const NewsAuthorityPortal = lazy(() =>
 const PersonalDetailsView = lazy(() =>
   import('./components/PersonalDetailsView').then((m) => ({ default: m.PersonalDetailsView }))
 );
+const FullScreenNewsWorkspace = lazy(() =>
+  import('./components/news/FullScreenNewsWorkspace').then((m) => ({ default: m.FullScreenNewsWorkspace }))
+);
 
 /** Shared spinner shown while a lazy workspace chunk loads. */
 const RouteFallback: React.FC = () => (
@@ -299,9 +302,8 @@ export default function App() {
       // ignore storage failures
     }
   };
-  const [targetNewsArticleId, setTargetNewsArticleId] = useState<string | undefined>(undefined);
-
-
+  // Full-screen news workspace article id (replaces PUBLIC READER PREVIEW)
+  const [activeNewsArticleId, setActiveNewsArticleId] = useState<string | null>(null);
 
   // ---- Hash-based deep linking + back-button protection for protected URLs ----
   const VALID_TABS: NavigationTab[] = [
@@ -311,20 +313,72 @@ export default function App() {
     'pharmacy-portal', 'privacy', 'doctor-consent', 'doctor-console', 'my-history', 'news-authority', 'news-management', 'auth', 'terms', 'privacy-policy'
   ];
 
-  const tabFromHash = useCallback((): NavigationTab | null => {
-    const raw = window.location.hash.replace(/^#\/?/, '').split('?')[0];
-    if (!raw) return null;
-    return (VALID_TABS as string[]).includes(raw) ? (raw as NavigationTab) : null;
+  const parseHash = useCallback((): { tab: NavigationTab | null; newsArticleId?: string } => {
+    const rawHash = window.location.hash.replace(/^#\/?/, '');
+    if (!rawHash) {
+      // Also check pathname for /news/<id> direct URL per spec section 21
+      const path = window.location.pathname;
+      if (path.startsWith('/news/')) {
+        const parts = path.split('/').filter(Boolean);
+        if (parts.length >= 2) {
+          const id = decodeURIComponent(parts.slice(1).join('/'));
+          if (id) return { tab: 'news', newsArticleId: id };
+        }
+      }
+      return { tab: null };
+    }
+    const withoutQuery = rawHash.split('?')[0];
+    // Support #news/<id> or #/news/<id>
+    if (withoutQuery.startsWith('news/')) {
+      const id = decodeURIComponent(withoutQuery.slice(5));
+      if (id) return { tab: 'news', newsArticleId: id };
+    }
+    // Exact tab match
+    if ((VALID_TABS as string[]).includes(withoutQuery)) {
+      return { tab: withoutQuery as NavigationTab };
+    }
+    // Fallback: first segment is tab, second is article id
+    const segs = withoutQuery.split('/').filter(Boolean);
+    if (segs.length >= 2 && segs[0] === 'news') {
+      const id = decodeURIComponent(segs.slice(1).join('/'));
+      return { tab: 'news', newsArticleId: id };
+    }
+    // Check pathname as fallback when hash is just #news but pathname has /news/<id>
+    const path = window.location.pathname;
+    if (path.startsWith('/news/')) {
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length >= 2) {
+        const id = decodeURIComponent(parts.slice(1).join('/'));
+        if (id) return { tab: 'news', newsArticleId: id };
+      }
+    }
+    return { tab: null };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const tabFromHash = useCallback((): NavigationTab | null => {
+    const parsed = parseHash();
+    return parsed.tab;
+  }, [parseHash]);
 
   const applyingHashRef = useRef(false);
 
   useEffect(() => {
     const apply = () => {
       if (applyingHashRef.current) return;
-      const tab = tabFromHash();
+      const { tab, newsArticleId } = parseHash();
       if (!tab) return;
+      // News article deep-link
+      if (tab === 'news' && newsArticleId) {
+        setActiveNewsArticleId(newsArticleId);
+        setOverlayTab(null);
+        setCurrentTabState('news');
+        return;
+      }
+      if (tab === 'news' && !newsArticleId) {
+        // Listing - clear article
+        setActiveNewsArticleId(null);
+      }
       if (isOverlayTab(tab)) {
         setOverlayTab(tab);
         setCurrentTabState((prev) => (isOverlayTab(prev) ? 'home' : prev));
@@ -336,8 +390,13 @@ export default function App() {
     };
     apply();
     window.addEventListener('hashchange', apply);
-    return () => window.removeEventListener('hashchange', apply);
-  }, [tabFromHash]);
+    // Also handle popstate for pathname /news/<id> direct navigation
+    window.addEventListener('popstate', apply);
+    return () => {
+      window.removeEventListener('hashchange', apply);
+      window.removeEventListener('popstate', apply);
+    };
+  }, [parseHash]);
 
   const [dashboardViewMode, setDashboardViewMode] = useState<DashboardViewMode>('dashboard');
 
@@ -361,22 +420,49 @@ export default function App() {
     [requireAuth]
   );
 
-  const writeHash = (tab: NavigationTab) => {
-    const next = `#${tab}`;
-    if (window.location.hash.replace(/^#\/?/, '').split('?')[0] !== tab) {
+  const writeHash = (tab: NavigationTab, newsArticleId?: string | null) => {
+    let next: string;
+    if (tab === 'news' && newsArticleId) {
+      next = `#news/${encodeURIComponent(newsArticleId)}`;
+    } else {
+      next = `#${tab}`;
+    }
+    const currentRaw = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+    const desiredRaw = next.replace(/^#\/?/, '');
+    if (currentRaw !== desiredRaw) {
       applyingHashRef.current = true;
       window.location.hash = next;
       window.setTimeout(() => {
         applyingHashRef.current = false;
       }, 0);
     }
+    // If we are on a direct /news/<id> pathname, push to history to clear pathname when going back to listing
+    if (window.location.pathname.startsWith('/news/') && !(tab === 'news' && newsArticleId)) {
+      try {
+        window.history.pushState({}, '', next);
+      } catch {}
+    }
   };
 
   const closeOverlay = useCallback(() => {
     setOverlayTab(null);
-    writeHash(currentTab);
+    writeHash(currentTab, activeNewsArticleId && currentTab === 'news' ? activeNewsArticleId : null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTab]);
+  }, [currentTab, activeNewsArticleId]);
+
+  const openNewsArticle = useCallback((articleId: string) => {
+    setActiveNewsArticleId(articleId);
+    setOverlayTab(null);
+    setCurrentTabState('news');
+    writeHash('news', articleId);
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, []);
+
+  const closeNewsArticle = useCallback(() => {
+    setActiveNewsArticleId(null);
+    setCurrentTabState('news');
+    writeHash('news', null);
+  }, []);
 
   const setCurrentTab = useCallback((tab: NavigationTab, dashboardMode?: DashboardViewMode) => {
     if (dashboardMode) {
@@ -392,9 +478,6 @@ export default function App() {
     }
     if (isOverlayTab(tab)) {
       if (tab === 'pharmacy-portal') {
-        // Deep links from the Medicines directory keep their destination;
-        // everywhere else the partner portal opens on its public directory so
-        // the normal user experience never starts at a separate login.
         const deepLink = pharmacyDeepLinkRef.current;
         pharmacyDeepLinkRef.current = null;
         setPharmacyPortalScreen(deepLink || 'landing');
@@ -403,11 +486,15 @@ export default function App() {
       writeHash(tab);
       return;
     }
+    // Leaving news article view when navigating elsewhere
+    if (tab !== 'news') {
+      setActiveNewsArticleId(null);
+    }
     setOverlayTab(null);
     setCurrentTabState(tab);
     if (tab === 'ai-assistant') setHasOpenedAssistant(true);
-    writeHash(tab);
-  }, [currentUser, openGate]);
+    writeHash(tab, tab === 'news' ? activeNewsArticleId : null);
+  }, [currentUser, openGate, activeNewsArticleId]);
 
   // Navbar / footer navigation wrapper — clears any contextual AI prompt when
   // the user opens the assistant directly (not from a context page).
@@ -761,6 +848,7 @@ export default function App() {
             onTabChange={setCurrentTab}
             currentUser={currentUser}
             onOpenAuth={handleOpenAuthModal}
+            onOpenNewsArticle={openNewsArticle}
           />
         )}
 
@@ -915,10 +1003,22 @@ export default function App() {
           />
         )}
 
-        {currentTab === 'news' && (
+        {currentTab === 'news' && activeNewsArticleId && (
+          <Suspense fallback={<RouteFallback />}>
+            <FullScreenNewsWorkspace
+              articleId={activeNewsArticleId}
+              onBack={closeNewsArticle}
+              onNavigateToSearch={() => {
+                // Focus search in hero or open news search
+                window.dispatchEvent(new CustomEvent('gh:focus-search'));
+              }}
+            />
+          </Suspense>
+        )}
+        {currentTab === 'news' && !activeNewsArticleId && (
           <NewsView 
             onOpenAdminCMS={() => setCurrentTab('news-management')} 
-            initialArticleId={targetNewsArticleId}
+            onOpenArticle={openNewsArticle}
           />
         )}
 

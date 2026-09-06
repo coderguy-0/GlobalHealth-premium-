@@ -55,7 +55,7 @@ export const ArticlePreviewModal: React.FC<ArticlePreviewModalProps> = ({
         <div className="bg-slate-900 text-white px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-bold text-teal-400">PUBLIC READER PREVIEW</span>
+            <span className="font-bold text-teal-400">NEWS WORKSPACE</span>
             <span className="text-slate-400">| Status: {article.status}</span>
           </div>
 

@@ -130,7 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'nav-hospitals', tab: 'hospitals', label: 'Hospitals', icon: <Building2 className="h-4 w-4" /> },
     { id: 'nav-blood-banks', tab: 'medical-map', label: 'MAP', icon: <Droplets className="h-4 w-4" /> },
     { id: 'nav-community', tab: 'community', label: 'Community', icon: <Users className="h-4 w-4" /> },
-    { id: 'nav-pharmacy', tab: 'pharmacy-portal', label: 'Pharmacies', icon: <ShoppingBag className="h-4 w-4" /> },
   ];
 
   const isMoreActive = moreMenu.some((m) => currentTab === m.tab) || currentTab === 'dashboard' || currentTab === 'privacy' || currentTab === 'doctor-consent' || currentTab === 'my-history' || currentTab === 'doctor-portal' || currentTab === 'hospital-portal' || currentTab === 'medauth' || currentTab === 'news-management' || currentTab === 'news-admin' || currentTab === 'news-authority' || currentTab === 'doctor-console';
@@ -466,7 +465,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 { id: 'm-calculators', tab: 'calculators' as NavigationTab, label: 'Health Tools', icon: <Calculator className="h-4 w-4" /> },
                 { id: 'm-wellness', tab: 'wellness' as NavigationTab, label: 'Wellness & Fitness', icon: <Activity className="h-4 w-4" /> },
                 { id: 'm-hospitals', tab: 'hospitals' as NavigationTab, label: 'Hospitals', icon: <Building2 className="h-4 w-4" /> },
-                { id: 'm-pharmacy', tab: 'pharmacy-portal' as NavigationTab, label: 'Pharmacies', icon: <ShoppingBag className="h-4 w-4" /> },
               ].map((item) => {
                 const active = currentTab === item.tab;
                 return (

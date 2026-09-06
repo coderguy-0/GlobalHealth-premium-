@@ -2,31 +2,18 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   Newspaper,
   Clock,
-  ExternalLink,
   Search,
-  Sparkles,
   Flame,
   ShieldCheck,
   Star,
-  Settings,
-  ArrowRight,
-  User,
-  Filter,
-  Bookmark,
-  Share2,
-  Calendar,
-  Layers,
   ChevronRight,
-  Shield,
-  Lock
 } from 'lucide-react';
 import { newsService } from '../services/newsService';
 import { NewsArticle } from '../types';
-import { ArticlePreviewModal } from './news-admin/ArticlePreviewModal';
 import { useLocalization } from '../context/LocalizationContext';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch } from '../services/authClient';
-import { Flag, Building2, Loader2, CheckCircle2 } from 'lucide-react';
+import { Flag, Loader2, CheckCircle2 } from 'lucide-react';
 
 interface AuthorityArticle {
   articleRef: string;
@@ -60,15 +47,14 @@ const REPORT_REASONS: { id: string; label: string }[] = [
 
 interface NewsViewProps {
   onOpenAdminCMS?: () => void;
-  initialArticleId?: string;
+  onOpenArticle?: (articleId: string) => void;
 }
 
-export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArticleId }) => {
-  const { t, formatNumber } = useLocalization();
+export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, onOpenArticle }) => {
+  const { t } = useLocalization();
   const { user: currentUser, requireAuth } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [activeArticleModal, setActiveArticleModal] = useState<NewsArticle | null>(null);
   const [authorityArticles, setAuthorityArticles] = useState<AuthorityArticle[]>([]);
   const [reportTarget, setReportTarget] = useState<NewsArticle | null>(null);
   const [reportReason, setReportReason] = useState('');
@@ -83,12 +69,6 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
       .then((d) => setAuthorityArticles((d.articles || []) as AuthorityArticle[]))
       .catch(() => {});
   }, []);
-
-  const authorityByRef = useMemo(() => {
-    const m = new Map<string, AuthorityArticle>();
-    authorityArticles.forEach((a) => m.set(a.articleRef, a));
-    return m;
-  }, [authorityArticles]);
 
   // Load articles dynamically from newsService (filtered strictly to published status for public view)
   const allArticles = useMemo(() => newsService.getArticles(), []);
@@ -109,13 +89,15 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
       author: a.submittedBy ? a.submittedBy.name : a.publishedBy,
       status: 'published' as const,
       visibility: 'Public' as const,
-      showMedicalDisclaimer: true
+      showMedicalDisclaimer: true,
+      slug: a.articleRef,
     }));
     const seen = new Set(fromAuthority.map((a) => a.id));
     return [...fromAuthority, ...cms.filter((a) => !seen.has(a.id))];
   }, [allArticles, authorityArticles]);
 
-  const openReport = (art: NewsArticle) => {
+  const openReport = (art: NewsArticle, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (!currentUser) {
       requireAuth({ feature: 'report a news article to the editorial team' }, 'login');
       return;
@@ -143,15 +125,6 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
     }
   };
 
-  useEffect(() => {
-    if (initialArticleId) {
-      const matched = publishedArticles.find((a) => a.id === initialArticleId);
-      if (matched) {
-        setActiveArticleModal(matched);
-      }
-    }
-  }, [initialArticleId, publishedArticles]);
-
   const categories = useMemo(() => {
     const list = Array.from(new Set(publishedArticles.map((a) => a.category)));
     return ['All', ...list];
@@ -177,18 +150,27 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
     return true;
   });
 
+  const handleOpenArticle = (art: NewsArticle) => {
+    if (onOpenArticle) {
+      onOpenArticle(art.slug || art.id);
+    } else {
+      // Fallback: update hash to #news/<id> which App will pick up
+      window.location.hash = `news/${encodeURIComponent(art.slug || art.id)}`;
+    }
+  };
+
   return (
     <div className="py-8 bg-slate-50 min-h-screen animate-in fade-in duration-200">
       <div className="mx-auto max-w-7xl px-4 lg:px-8 space-y-8">
         
-        {/* Breaking News Ticker if Active */}
+        {/* Breaking News Ticker if Active - now opens full-screen workspace */}
         {breakingNews.length > 0 && (
           <div className="flex items-center gap-3 p-3 rounded-2xl bg-rose-600 text-white shadow-md animate-in fade-in duration-300">
             <span className="flex items-center gap-1 bg-white text-rose-600 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 animate-pulse">
               <Flame className="h-3 w-3" /> {t('Breaking News')}
             </span>
             <div 
-              onClick={() => setActiveArticleModal(breakingNews[0])}
+              onClick={() => handleOpenArticle(breakingNews[0])}
               className="text-xs sm:text-sm font-bold truncate flex-1 cursor-pointer hover:underline"
             >
               {breakingNews[0].title}
@@ -245,10 +227,10 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
           ))}
         </div>
 
-        {/* Featured Top Story Banner */}
+        {/* Featured Top Story Banner - opens full-screen workspace */}
         {featuredArticle && !searchTerm && selectedCategory === 'All' && (
           <div 
-            onClick={() => setActiveArticleModal(featuredArticle)}
+            onClick={() => handleOpenArticle(featuredArticle)}
             className="cursor-pointer group rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-teal-400 transition grid grid-cols-1 lg:grid-cols-12"
           >
             <div className="lg:col-span-6 relative bg-slate-900 overflow-hidden min-h-[260px] lg:min-h-[340px]">
@@ -301,12 +283,12 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
           </div>
         )}
 
-        {/* News Cards Grid */}
+        {/* News Cards Grid - each opens full-screen workspace */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredNews.map((art) => (
             <div
               key={art.id}
-              onClick={() => setActiveArticleModal(art)}
+              onClick={() => handleOpenArticle(art)}
               className="cursor-pointer group rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-2xs hover:border-teal-300 hover:shadow-md transition flex flex-col justify-between"
             >
               <div>
@@ -317,10 +299,15 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
                       alt={art.imageAlt || art.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                     />
-                    <div className="absolute top-2 left-2">
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5">
                       <span className="rounded-md bg-white/90 backdrop-blur-xs px-2 py-0.5 text-[10px] font-bold text-slate-800 shadow-2xs">
                         {art.category}
                       </span>
+                      {art.isBreaking && (
+                        <span className="rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-black text-white flex items-center gap-1">
+                          <Flame className="h-3 w-3" /> BREAKING
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -355,29 +342,26 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
                     <Clock className="h-3.5 w-3.5 text-slate-400" /> {art.readTime}
                   </span>
                 </div>
+                {/* Quick report action - prevents modal, uses full-screen workspace for reading */}
+                <button
+                  onClick={(e) => openReport(art, e)}
+                  className="mt-3 w-full rounded-xl border border-slate-200 bg-white py-2 text-[11px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition flex items-center justify-center gap-1.5"
+                >
+                  <Flag className="h-3 w-3" /> Report This News
+                </button>
               </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Reader Modal (with public trust indicators + reporting) */}
-      {activeArticleModal && (() => {
-        const authArt = authorityByRef.get(activeArticleModal.id);
-        return (
-          <ArticlePreviewModal
-            article={activeArticleModal}
-            onClose={() => setActiveArticleModal(null)}
-            onEdit={onOpenAdminCMS ? () => onOpenAdminCMS() : undefined}
-            trustIndicator={authArt ? 'authority' : 'official'}
-            submittedByAuthority={authArt?.submittedBy || null}
-            updatedAt={authArt?.updatedAt || activeArticleModal.lastUpdated}
-            correctionNotice={authArt?.correctionNotice || undefined}
-            fullPage
-            onReport={() => { setActiveArticleModal(null); openReport(activeArticleModal); }}
-          />
-        );
-      })()}
+        {filteredNews.length === 0 && (
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center">
+            <Newspaper className="mx-auto h-10 w-10 text-slate-300" />
+            <h3 className="mt-3 text-sm font-bold text-slate-700">No news articles found</h3>
+            <p className="mt-1 text-xs text-slate-500">Try adjusting your search or category filter.</p>
+          </div>
+        )}
+      </div>
 
       {/* Report This News (regular users; server-validated, never auto-deletes) */}
       {reportTarget && (
@@ -417,7 +401,7 @@ export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, initialArtic
                   onChange={(e) => setReportDetail(e.target.value)}
                   rows={2}
                   placeholder="Optional: add details to help the editorial team…"
-                  className="inp mt-3"
+                  className="w-full mt-3 rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-800 focus:border-rose-300 focus:outline-none"
                 />
                 <div className="mt-4 flex gap-2">
                   <button disabled={reportBusy} onClick={() => setReportTarget(null)} className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">

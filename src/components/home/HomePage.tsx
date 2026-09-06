@@ -19,6 +19,7 @@ interface HomePageProps {
   onTabChange: (tab: NavigationTab, mode?: 'details' | 'dashboard' | 'ehr' | 'saved') => void;
   currentUser: UserAccount | null;
   onOpenAuth: (mode?: 'login' | 'signup') => void;
+  onOpenNewsArticle?: (articleId: string) => void;
 }
 
 /**
@@ -27,7 +28,7 @@ interface HomePageProps {
  * health information, medicines, doctors, medical map, lab tests, healthcare
  * updates, community, personal health space, final CTA, footer.
  */
-export const HomePage: React.FC<HomePageProps> = ({ onTabChange, currentUser, onOpenAuth }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onTabChange, currentUser, onOpenAuth, onOpenNewsArticle }) => {
   return (
     <>
       <HeroSection onTabChange={onTabChange} />
@@ -40,7 +41,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange, currentUser, on
       <DoctorsSection onTabChange={onTabChange} />
       <MedicalMapSection onTabChange={onTabChange} />
       <LabTestsSection onTabChange={onTabChange} />
-      <UpdatesSection onTabChange={onTabChange} />
+      <UpdatesSection onTabChange={onTabChange} onOpenArticle={onOpenNewsArticle} />
       <CommunitySection onTabChange={onTabChange} />
       <PersonalHealthSpace onTabChange={onTabChange} currentUser={currentUser} onOpenAuth={onOpenAuth} />
       <FinalCtaSection onTabChange={onTabChange} currentUser={currentUser} onOpenAuth={onOpenAuth} />
