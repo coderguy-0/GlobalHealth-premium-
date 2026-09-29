@@ -1,4 +1,4 @@
-export type PublicUserRole = 'PUBLIC_USER' | 'VERIFIED_USER';
+export type PublicUserRole = 'PUBLIC_USER' | 'VERIFIED_USER' | 'DOCTOR' | 'HOSPITAL' | 'PHARMACY' | 'NEWS';
 
 export type AccountStatus = 
   | 'ACTIVE'
@@ -55,6 +55,7 @@ export interface SecurityAuditLogEntry {
 }
 
 export interface PublicUserAccount {
+  portalRole?: import('../core/platformRoles').PlatformRole;
   id: string;
   username: string;
   fullName: string;

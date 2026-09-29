@@ -63,7 +63,6 @@ import { FullScreenBuyMedicineWorkspace } from './pharmacy/FullScreenBuyMedicine
 interface MedicinesViewProps {
   savedIds: string[];
   onToggleSave: (id: string) => void;
-  onNavigateToPharmacyPortal?: (targetScreen?: 'landing' | 'apply' | 'track' | 'login' | 'dashboard') => void;
   isAuthenticated?: boolean;
   onRequireAuth?: (feature: string) => void;
   onNavigate?: (tab: NavigationTab) => void;
@@ -97,13 +96,13 @@ function medicineShortSummary(med: Medicine): string {
 export const MedicinesView: React.FC<MedicinesViewProps> = ({ 
   savedIds, 
   onToggleSave,
-  onNavigateToPharmacyPortal,
   isAuthenticated = false,
   onRequireAuth,
   onNavigate,
   onAskAI
 }) => {
   const { t, formatNumber } = useLocalization();
+  const [purchaseNotice, setPurchaseNotice] = useState('');
 
   // Purchasing / checkout / orders are transactional → require an account.
   const requirePurchaseAuth = (feature: string): boolean => {
@@ -156,9 +155,9 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
 
   // Start the real pharmacy purchase flow from any medicine card. The
   // monograph catalogue is larger than the currently listed marketplace
-  // products, so fall back to the partner portal when a live listing is not
-  // available instead of showing a dead or misleading checkout button.
+  // products. Never send shoppers into a professional partner workspace.
   const handleBuyMedicine = (medicine: Medicine) => {
+    setPurchaseNotice('');
     if (!requirePurchaseAuth('buy medicines from a verified pharmacy')) return;
     const queryName = medicine.name.toLowerCase();
     const queryGeneric = medicine.genericName.toLowerCase();
@@ -176,10 +175,7 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
       return;
     }
 
-    // No verified, live marketplace listing exists for this monograph yet.
-    // Keep the action useful by opening the partner catalogue rather than
-    // pretending that a product can be purchased.
-    onNavigateToPharmacyPortal?.('landing');
+    setPurchaseNotice(`No verified marketplace listing is available for ${medicine.name} yet. Please try another medicine or check again later.`);
   };
 
   // Check Pharmacy Stock — full-screen workspace from clinical monograph per blueprint
@@ -640,6 +636,10 @@ export const MedicinesView: React.FC<MedicinesViewProps> = ({
   return (
     <div className="py-6 sm:py-8 bg-slate-50 min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+        {purchaseNotice && <div role="status" className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <p>{purchaseNotice}</p><button type="button" onClick={() => setPurchaseNotice('')} className="font-semibold">Dismiss</button>
+        </div>}
+
         
         {/* ========================================================================= */}
         {/* Top Statutory Medical Notice Strip */}

@@ -522,7 +522,7 @@ export const DirectoryPage: React.FC<HealthDirectoryPageProps> = ({
               </span>
               <span className="text-slate-300 font-medium">User Access: Strictly Read-Only</span>
               <span className="hidden sm:inline text-slate-600">•</span>
-              <span className="hidden sm:inline text-slate-400">Hospital Staff & Admins edit via Hospital Portal</span>
+              <span className="hidden sm:inline text-slate-400">Verified institutions maintain their own facility information</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold text-slate-300">

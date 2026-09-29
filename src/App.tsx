@@ -1,5 +1,8 @@
+import { guestAuthEntry } from './core/authEntry';
+import { PrivatePortal } from './components/portal/PrivatePortal';
+import { ROLE_DESTINATIONS, roleForDestination, type PlatformRole } from './core/platformRoles';
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
-import { Newspaper as NewspaperIcon, UserPlus } from 'lucide-react';
+import { Newspaper as NewspaperIcon } from 'lucide-react';
 import { NavigationTab } from './types';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -9,17 +12,12 @@ import { GlobalHealthAIAssistant } from './components/ai/GlobalHealthAIAssistant
 import { TermsPage } from './components/legal/TermsPage';
 import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
 import { LanguageModal } from './components/LanguageModal';
-import { AuthGate } from './components/auth/AuthGate';
 import { ProtectedScreen, AuthLoading, SessionExpiredModal } from './components/auth/ProtectedScreen';
 import { WorkspaceOverlay } from './components/WorkspaceOverlay';
-import { PortalCredentialForm } from './components/portals/PortalCredentialForm';
-import { NewsStaffSignupScreen } from './components/news/NewsWorkspaceAccessScreens';
-import { NewsManagementLogin } from './components/NewsManagementLogin';
 import { useLocalization } from './context/LocalizationContext';
 import { useAuth, toUserAccount } from './context/AuthContext';
 import { AuthSubView } from './types/auth';
 import { TERMS_VERSION } from './lib/policyVersions';
-import { newsAuthService } from './services/newsAuthService';
 
 // Heavy workspaces (portals, CMS, health-records suite) are code-split so the
 // public homepage never downloads them until a visitor actually opens one.
@@ -71,9 +69,6 @@ const AuthPage = lazy(() =>
 const AIAssistantView = lazy(() =>
   import('./components/AIAssistantView').then((m) => ({ default: m.AIAssistantView }))
 );
-const NewsManagementCMS = lazy(() =>
-  import('./components/NewsManagementCMS').then((m) => ({ default: m.NewsManagementCMS }))
-);
 const DashboardView = lazy(() =>
   import('./components/DashboardView').then((m) => ({ default: m.DashboardView }))
 );
@@ -83,29 +78,11 @@ const AppointmentsView = lazy(() =>
 const MyHistoryView = lazy(() =>
   import('./components/MyHistoryView').then((m) => ({ default: m.MyHistoryView }))
 );
-const HospitalPortalApp = lazy(() =>
-  import('./components/hospital-portal/HospitalPortalApp').then((m) => ({ default: m.HospitalPortalApp }))
-);
-const MedAuthView = lazy(() =>
-  import('./components/medauth/MedAuthView').then((m) => ({ default: m.MedAuthView }))
-);
-const DoctorPortalApp = lazy(() =>
-  import('./components/doctor-portal/DoctorPortalApp').then((m) => ({ default: m.DoctorPortalApp }))
-);
-const PharmacyPortalApp = lazy(() =>
-  import('./components/pharmacy-portal/PharmacyPortalApp').then((m) => ({ default: m.PharmacyPortalApp }))
-);
 const PrivacyConsentView = lazy(() =>
   import('./components/PrivacyConsentView').then((m) => ({ default: m.PrivacyConsentView }))
 );
 const DoctorAccessConsentPage = lazy(() =>
   import('./components/DoctorAccessConsentPage').then((m) => ({ default: m.DoctorAccessConsentPage }))
-);
-const DoctorConsentConsole = lazy(() =>
-  import('./components/DoctorConsentConsole').then((m) => ({ default: m.DoctorConsentConsole }))
-);
-const NewsAuthorityPortal = lazy(() =>
-  import('./components/NewsAuthorityPortal').then((m) => ({ default: m.NewsAuthorityPortal }))
 );
 const PersonalDetailsView = lazy(() =>
   import('./components/PersonalDetailsView').then((m) => ({ default: m.PersonalDetailsView }))
@@ -253,8 +230,10 @@ const OVERLAY_META: Partial<Record<NavigationTab, { title: string; subtitle: str
 
 export default function App() {
   const { currentLanguage, direction } = useLocalization();
-  const { user: currentUser, publicUser, setPublicUser, initializing, requireAuth, gateOpen, logout, authenticate, closeGate } = useAuth();
-  const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
+  const { user: currentUser, publicUser, setPublicUser, initializing, requireAuth, gateOpen, gateMode, logout, authenticate, closeGate } = useAuth();
+  const [authRole, setAuthRole] = useState<PlatformRole>('user');
+  const activeRole: PlatformRole = publicUser?.portalRole || 'user';
+  const [currentTab, setCurrentTabState] = useState<NavigationTab>('auth');
   const [overlayTab, setOverlayTab] = useState<NavigationTab | null>(null);
   // Optional prompt pre-filled when a user asks AI from a context page (e.g. a disease).
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
@@ -264,20 +243,8 @@ export default function App() {
   const [hasOpenedAssistant, setHasOpenedAssistant] = useState(false);
   // Which view the dedicated authentication page (#auth) opens on.
   const [authInitialView, setAuthInitialView] = useState<AuthSubView>('login');
-  const [pharmacyPortalScreen, setPharmacyPortalScreen] = useState<'landing' | 'apply' | 'track' | 'login' | 'dashboard'>('landing');
   // Which section of Activity & Security History the account menu requested.
   const [historyInitialTab, setHistoryInitialTab] = useState<string>('all');
-  // Editorial staff unlock for the News Management workspace (validated via
-  // newsAuthService — independent of the patient account gate).
-  const [newsStaffUnlocked, setNewsStaffUnlocked] = useState(false);
-
-  // News Management pre-login account screens: null = editorial sign-in card,
-  // 'signup' = apply for a staff account, 'forgot' = password recovery.
-  const [newsGateScreen, setNewsGateScreen] = useState<'signup' | 'forgot' | null>(null);
-  // Marks an explicit pharmacy deep-link (landing/apply/track/dashboard) coming
-  // from the public Medicines directory, so the Portals menu default (login)
-  // does not clobber it.
-  const pharmacyDeepLinkRef = useRef<'landing' | 'apply' | 'track' | 'login' | 'dashboard' | null>(null);
   // Saved library is strictly per-user. Keyed namespacing + reset on identity
   // change guarantees one account never sees another's saved content and that
   // logging out fully clears the visible saved library.
@@ -333,6 +300,8 @@ export default function App() {
       const id = decodeURIComponent(withoutQuery.slice(5));
       if (id) return { tab: 'news', newsArticleId: id };
     }
+    const legacyPortal = withoutQuery.split('/')[0];
+    if (roleForDestination(legacyPortal) && withoutQuery.includes('/')) return { tab: legacyPortal as NavigationTab };
     // Exact tab match
     if ((VALID_TABS as string[]).includes(withoutQuery)) {
       return { tab: withoutQuery as NavigationTab };
@@ -362,10 +331,27 @@ export default function App() {
   }, [parseHash]);
 
   const applyingHashRef = useRef(false);
+  const entryResolvedRef = useRef(false);
+  const [entryReady, setEntryReady] = useState(false);
 
   useEffect(() => {
     const apply = () => {
-      if (applyingHashRef.current) return;
+      if (initializing || applyingHashRef.current) return;
+      // Every fresh signed-out visit starts at the same role-selecting page.
+      // After entry, public navigation (including legal links) remains usable.
+      if (!entryResolvedRef.current) {
+        entryResolvedRef.current = true;
+        setEntryReady(true);
+        if (!currentUser) {
+          const entry = guestAuthEntry(window.location.hash);
+          setAuthRole(entry.role);
+          setAuthInitialView(entry.mode);
+          setOverlayTab(null);
+          setCurrentTabState('auth');
+          window.history.replaceState({}, '', '/#auth');
+          return;
+        }
+      }
       const { tab, newsArticleId } = parseHash();
       if (!tab) return;
       // News article deep-link
@@ -381,7 +367,7 @@ export default function App() {
       }
       if (isOverlayTab(tab)) {
         setOverlayTab(tab);
-        setCurrentTabState((prev) => (isOverlayTab(prev) ? 'home' : prev));
+        setCurrentTabState((prev) => (isOverlayTab(prev) || prev === 'auth' ? 'home' : prev));
       } else {
         setOverlayTab(null);
         setCurrentTabState(tab);
@@ -396,20 +382,12 @@ export default function App() {
       window.removeEventListener('hashchange', apply);
       window.removeEventListener('popstate', apply);
     };
-  }, [parseHash]);
+  }, [parseHash, initializing, currentUser]);
 
   const [dashboardViewMode, setDashboardViewMode] = useState<DashboardViewMode>('dashboard');
 
-  // Re-lock the News Management workspace whenever the visitor leaves it, so
-  // opening the portal again always starts at the editorial sign-in.
-  useEffect(() => {
-    if (overlayTab !== 'news-management' && overlayTab !== 'news-admin') {
-      setNewsStaffUnlocked(false);
-      setNewsGateScreen(null);
-    }
-  }, [overlayTab]);
-
   // Track the destination the visitor wanted when the gate was shown.
+  const restoredPortalRef = useRef(false);
   const intendedTabRef = useRef<NavigationTab | null>(null);
   const intendedModeRef = useRef<DashboardViewMode | undefined>(undefined);
   const openGate = useCallback(
@@ -477,11 +455,7 @@ export default function App() {
       return;
     }
     if (isOverlayTab(tab)) {
-      if (tab === 'pharmacy-portal') {
-        const deepLink = pharmacyDeepLinkRef.current;
-        pharmacyDeepLinkRef.current = null;
-        setPharmacyPortalScreen(deepLink || 'landing');
-      }
+      setCurrentTabState(prev => prev === 'auth' ? 'home' : prev);
       setOverlayTab(tab);
       writeHash(tab);
       return;
@@ -507,43 +481,27 @@ export default function App() {
   );
 
 
-  // If a signed-in visitor lands on the auth page, take them to their
-  // dashboard instead of showing a login form. Defined BEFORE the gate-login
-  // routing effect so it never clobbers an intended protected destination:
-  // when a login just completed (intendedTabRef pending), we skip and let the
-  // routing effect below send the user to the page they originally wanted.
+  // Authentication entry points and legacy portal URLs all resolve here.
   useEffect(() => {
-    if (
-      currentUser &&
-      currentTab === 'auth' &&
-      authInitialView !== 'security' &&
-      !intendedTabRef.current
-    ) {
-      setCurrentTab('dashboard');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, currentTab, authInitialView]);
-
-
-  // After a successful gate login, return the user to their intended destination.
-  useEffect(() => {
-    if (currentUser) {
-      const intended = intendedTabRef.current || tabFromHash();
-      if (intended && PROTECTED_TABS.includes(intended)) {
-        if (intendedModeRef.current) setDashboardViewMode(intendedModeRef.current);
-        if (isOverlayTab(intended)) {
-          setOverlayTab(intended);
-          writeHash(intended);
-        } else {
-          setCurrentTabState(intended);
-          writeHash(intended);
-        }
-      }
+    if (initializing || !entryReady) return;
+    const destination = overlayTab || currentTab;
+    const requestedRole = roleForDestination(destination);
+    if (!currentUser && (gateOpen || requestedRole)) {
+      setAuthRole(requestedRole || 'user');
+      const suffix = window.location.hash.split('/')[1]?.split('?')[0];
+      const mode = suffix === 'signup' ? 'signup' : suffix === 'forgot-password' ? 'forgot-password' : suffix === 'reset-password' ? 'reset-password' : gateMode;
+      setAuthInitialView(mode);
+      closeGate();
       intendedTabRef.current = null;
-      intendedModeRef.current = undefined;
+      setOverlayTab(null);
+      setCurrentTabState('auth');
+      writeHash('auth');
+    } else if (currentUser && (destination === 'auth' && (authInitialView !== 'security' || activeRole !== 'user') || (destination === 'home' && !restoredPortalRef.current && (!tabFromHash() || tabFromHash() === 'home')))) {
+      restoredPortalRef.current = true;
+      intendedTabRef.current = null;
+      setCurrentTab(ROLE_DESTINATIONS[activeRole] as NavigationTab);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, gateOpen]);
+  }, [currentUser, initializing, entryReady, gateOpen, gateMode, overlayTab, currentTab, activeRole, authInitialView]);
 
   // All authentication routes through the secure, server-validated gate.
   // There is no client-side credential checking and no plaintext secret
@@ -581,7 +539,8 @@ export default function App() {
   // While the session is being verified, show a neutral loading state for
   // protected destinations — never flash private content.
   const isProtected = PROTECTED_TABS.includes(currentTab) || (overlayTab ? PROTECTED_TABS.includes(overlayTab) : false);
-  const showSecureLoading = initializing && isProtected;
+  const showSecureLoading = !entryReady || (initializing && (isProtected || currentTab === 'auth'));
+  const deniedPage = !!currentUser && !!roleForDestination(currentTab) && roleForDestination(currentTab) !== activeRole;
 
   const persistUserPatch = (updated: typeof currentUser) => {
     if (!updated) return;
@@ -643,56 +602,17 @@ export default function App() {
     </div>
   ) : null;
 
-  // Editorial credential gate — shown before the News Management CMS.
-  // Authentication is fully SERVER-SIDE (/api/news/login with real MFA,
-  // rate limiting and audit); an administrator unlocks the CMS, a verified
-  // authority is routed to their own dashboard. No client-side credential
-  // checks and no demo MFA bypass.
-  const renderNewsGate = () => {
-    if (newsGateScreen === 'signup') {
-      return <NewsStaffSignupScreen onBack={() => setNewsGateScreen(null)} />;
-    }
-
-    return (
-      <div className="flex min-h-full items-center justify-center bg-slate-950 p-4">
-        <div className="w-full max-w-md space-y-3">
-          <button
-            type="button"
-            onClick={() => setNewsGateScreen('signup')}
-            className="mx-auto flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 px-3 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition cursor-pointer"
-          >
-            <UserPlus className="h-3.5 w-3.5" />
-            Apply for a Verified Authority account
-          </button>
-          <NewsManagementLogin
-            standalone
-            onAuthenticated={(result) => {
-              if (result.accountType === 'admin') {
-                // Seed the CMS workspace session from the SERVER identity.
-                newsAuthService.adoptServerAccount({
-                  accountType: 'admin',
-                  id: result.admin?.adminId || '',
-                  name: result.admin?.name || 'Administrator',
-                  email: result.admin?.email || '',
-                  role: result.admin?.role || 'SUPER_ADMIN'
-                });
-                setNewsStaffUnlocked(true);
-              } else {
-                // Authorities never enter the admin CMS — their dashboard.
-                window.location.hash = 'news-authority';
-              }
-            }}
-            onExit={closeOverlay}
-          />
-        </div>
-      </div>
-    );
-  };
-
   const renderOverlayBody = () => {
     if (!overlayTab) return null;
 
-    if (showSecureLoading) return <AuthLoading />;
+    if (initializing) return <AuthLoading />;
+    const requiredRole = roleForDestination(overlayTab);
+    if (requiredRole && !currentUser) return <AuthLoading />;
+    if (requiredRole && activeRole !== requiredRole) return (
+      <div role="alert" className="p-12 text-center"><h2 className="text-2xl font-bold">Access denied</h2><p className="mt-3 text-slate-600">Your account is not authorized for this portal.</p><button className="mt-6 font-semibold text-medical-700" onClick={() => setCurrentTab(ROLE_DESTINATIONS[activeRole] as NavigationTab)}>Open my portal</button></div>
+    );
+    if (requiredRole && requiredRole !== 'user') return <PrivatePortal key={`${currentUser?.id}:${requiredRole}`} role={requiredRole} onExit={closeOverlay} />;
+
 
     if (overlayTab === 'dashboard' && !currentUser) {
       return (
@@ -706,14 +626,14 @@ export default function App() {
     if (overlayTab === 'dashboard' && currentUser) {
       if (dashboardViewMode === 'details') {
         return (
-          <PersonalDetailsView
+          <PersonalDetailsView key={currentUser?.id}
             currentUser={currentUser}
             onUpdateUser={persistUserPatch}
           />
         );
       }
       return (
-        <DashboardView
+        <DashboardView key={currentUser?.id}
           savedIds={savedIds}
           onToggleSave={handleToggleSave}
           currentUser={currentUser}
@@ -737,44 +657,7 @@ export default function App() {
       );
     }
     if (overlayTab === 'privacy' && currentUser) {
-      return <PrivacyConsentView />;
-    }
-
-    if (overlayTab === 'doctor-console') {
-      return <DoctorConsentConsole onExit={closeOverlay} />;
-    }
-
-    if (overlayTab === 'news-authority') {
-      return <NewsAuthorityPortal onExit={closeOverlay} />;
-    }
-
-    if (overlayTab === 'news-management' || overlayTab === 'news-admin') {
-      return newsStaffUnlocked ? (
-        <NewsManagementCMS onBackToPublicNews={closeOverlay} />
-      ) : (
-        renderNewsGate()
-      );
-    }
-
-    if (overlayTab === 'doctor-portal') {
-      return <DoctorPortalApp onBackToGlobalHealth={closeOverlay} />;
-    }
-
-    if (overlayTab === 'medauth') {
-      return <MedAuthView onBackToGlobalHealth={closeOverlay} />;
-    }
-
-    if (overlayTab === 'pharmacy-portal') {
-      return (
-        <PharmacyPortalApp
-          initialScreen={pharmacyPortalScreen}
-          onReturnToMainApp={closeOverlay}
-        />
-      );
-    }
-
-    if (overlayTab === 'hospital-portal') {
-      return <HospitalPortalApp onBackToGlobalHealth={closeOverlay} />;
+      return <PrivacyConsentView key={currentUser?.id} />;
     }
 
     return null;
@@ -798,6 +681,7 @@ export default function App() {
         onTabChange={handleNavTabChange}
         savedCount={savedIds.length}
         currentUser={currentUser}
+        accountDestination={ROLE_DESTINATIONS[activeRole] as NavigationTab}
         onOpenAuthModal={handleOpenAuthModal}
         onOpenAuthPage={handleOpenAuthPage}
         onOpenSecuritySettings={handleOpenSecuritySettings}
@@ -841,7 +725,8 @@ export default function App() {
 
         {showSecureLoading && !overlayTab && <AuthLoading />}
 
-        {!showSecureLoading && (
+        {deniedPage && <div role="alert" className="p-16 text-center"><h2 className="text-2xl font-bold">Access denied</h2><p className="mt-3">Your account cannot access this workspace.</p></div>}
+        {!showSecureLoading && !deniedPage && (
           <>
         {currentTab === 'home' && (
           <HomePage
@@ -898,18 +783,6 @@ export default function App() {
               setAiInitialPrompt(prompt);
               setCurrentTab('ai-assistant');
             }}
-            onNavigateToPharmacyPortal={(screen) => {
-              // Purchasing / orders / prescription upload require an account.
-              const purchaseScreens = ['login', 'dashboard', 'track'];
-              if (screen && purchaseScreens.includes(screen) && !currentUser) {
-                requireAuth({ feature: 'purchase medicines and track your orders' }, 'login');
-                return;
-              }
-              if (screen) {
-                pharmacyDeepLinkRef.current = screen as 'landing' | 'apply' | 'track' | 'login' | 'dashboard';
-              }
-              setCurrentTab('pharmacy-portal');
-            }}
           />
         )}
 
@@ -929,10 +802,16 @@ export default function App() {
           <Suspense fallback={<RouteFallback />}>
             <AuthPage
               initialView={authInitialView}
+              initialRole={authRole}
               currentUser={publicUser}
               onLoginSuccess={(user, token) => {
                 authenticate(toUserAccount(user), token || '', user);
-                if (!intendedTabRef.current) setCurrentTab('dashboard');
+                intendedTabRef.current = null;
+                const destination = ROLE_DESTINATIONS[user.portalRole || 'user'] as NavigationTab;
+                restoredPortalRef.current = true;
+                setCurrentTabState('home');
+                setOverlayTab(destination);
+                writeHash(destination);
               }}
               onLogout={async () => {
                 await logout();
@@ -1017,7 +896,6 @@ export default function App() {
         )}
         {currentTab === 'news' && !activeNewsArticleId && (
           <NewsView 
-            onOpenAdminCMS={() => setCurrentTab('news-management')} 
             onOpenArticle={openNewsArticle}
           />
         )}
@@ -1044,7 +922,7 @@ export default function App() {
         )}
         {currentTab === 'appointments' && currentUser && (
           <Suspense fallback={<RouteFallback />}>
-            <AppointmentsView
+            <AppointmentsView key={currentUser?.id}
               onTabChange={setCurrentTab}
               isAuthenticated={!!currentUser}
               onRequireAuth={(feature) => requireAuth({ feature }, 'login')}
@@ -1061,14 +939,6 @@ export default function App() {
 
       {/* Global 100-Language Selector Modal */}
       <LanguageModal />
-
-      {/* Global Authentication Gate (login / create account / access control).
-          Sign-up and password recovery intentionally stay inside the same
-          unified GlobalHealth auth flow. */}
-      <AuthGate
-        onOpenFullSignup={() => { closeGate(); handleOpenAuthPage('signup'); }}
-        onOpenForgotPassword={() => { closeGate(); handleOpenAuthPage('forgot-password'); }}
-      />
 
       {/* Session-expired overlay */}
       <SessionExpiredModal />

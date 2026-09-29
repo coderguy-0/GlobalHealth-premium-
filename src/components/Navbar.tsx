@@ -43,6 +43,8 @@ interface NavbarProps {
   onTabChange: (tab: NavigationTab, subMode?: 'details' | 'dashboard' | 'ehr' | 'saved') => void;
   savedCount: number;
   currentUser: UserAccount | null;
+  /** Server-verified session destination; never a public portal directory. */
+  accountDestination?: NavigationTab;
   onOpenAuthModal: (mode?: 'login' | 'signup') => void;
   /** Open the dedicated full-page authentication experience (#auth). */
   onOpenAuthPage: (mode?: 'login' | 'signup') => void;
@@ -65,6 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onTabChange,
   savedCount,
   currentUser,
+  accountDestination = 'dashboard',
   onOpenAuthModal,
   onOpenAuthPage,
   onOpenSecuritySettings,
@@ -285,6 +288,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <p className="font-mono text-[11px] text-slate-500">@{currentUser.username}</p>
                     </div>
                     <div className="mt-1 space-y-0.5">
+                      {accountDestination !== 'dashboard' ? (
+                        <button onClick={() => go(accountDestination)} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-medical-700 hover:bg-medical-50">
+                          <LayoutDashboard className="h-4 w-4" /> My workspace
+                        </button>
+                      ) : <>
+
                       <button onClick={() => go('dashboard', 'dashboard')} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
                         <LayoutDashboard className="h-4 w-4 text-medical-600" /> My Dashboard
                       </button>
@@ -314,6 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button onClick={() => { setUserDropdownOpen(false); onOpenSecuritySettings(); }} className="flex w-full items-center gap-2 rounded-xl p-2 text-left font-semibold text-slate-700 transition hover:bg-slate-50">
                         <ShieldCheck className="h-4 w-4 text-emerald-600" /> Account Settings
                       </button>
+                      </>}
                     </div>
                     <div className="mt-1 border-t border-slate-100 pt-1">
                       <button
@@ -365,7 +375,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {currentUser ? (
                 <button
                   type="button"
-                  onClick={() => go('dashboard', 'dashboard')}
+                  onClick={() => go(accountDestination)}
                   className="grid h-10 w-10 place-items-center rounded-xl bg-medical-50 text-medical-700"
                   aria-label="Your dashboard"
                 >
@@ -489,18 +499,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="grid grid-cols-2 gap-1.5">
                 <button type="button" onClick={() => go('dashboard', 'dashboard')} className="flex items-center gap-2 rounded-xl bg-teal-50 p-2.5 text-xs font-semibold text-teal-900">
                   <FileHeart className="h-4 w-4 text-teal-600" /> Health Records
-                </button>
-                <button type="button" onClick={() => go('doctor-portal')} className="flex items-center gap-2 rounded-xl bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-900">
-                  <Stethoscope className="h-4 w-4 text-emerald-600" /> Doctor Portal
-                </button>
-                <button type="button" onClick={() => go('hospital-portal')} className="flex items-center gap-2 rounded-xl bg-indigo-50 p-2.5 text-xs font-semibold text-indigo-900">
-                  <Building2 className="h-4 w-4 text-indigo-600" /> Hospital Portal
-                </button>
-                <button type="button" onClick={() => go('pharmacy-portal')} className="flex items-center gap-2 rounded-xl bg-teal-50 p-2.5 text-xs font-semibold text-teal-900">
-                  <ShoppingBag className="h-4 w-4 text-teal-600" /> Pharmacy Porter
-                </button>
-                <button type="button" onClick={() => go('news-management')} className="flex items-center gap-2 rounded-xl bg-purple-50 p-2.5 text-xs font-semibold text-purple-900">
-                  <Newspaper className="h-4 w-4 text-purple-600" /> News Management
                 </button>
                 <button type="button" onClick={() => go('appointments')} className="flex items-center gap-2 rounded-xl bg-slate-100 p-2.5 text-xs font-semibold text-slate-700">
                   <Calendar className="h-4 w-4 text-slate-500" /> Appointments
