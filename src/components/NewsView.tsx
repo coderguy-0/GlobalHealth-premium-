@@ -46,11 +46,10 @@ const REPORT_REASONS: { id: string; label: string }[] = [
 ];
 
 interface NewsViewProps {
-  onOpenAdminCMS?: () => void;
   onOpenArticle?: (articleId: string) => void;
 }
 
-export const NewsView: React.FC<NewsViewProps> = ({ onOpenAdminCMS, onOpenArticle }) => {
+export const NewsView: React.FC<NewsViewProps> = ({ onOpenArticle }) => {
   const { t } = useLocalization();
   const { user: currentUser, requireAuth } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');

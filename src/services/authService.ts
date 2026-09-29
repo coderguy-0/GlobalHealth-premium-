@@ -295,7 +295,7 @@ export async function logoutUser(sessionId?: string) {
     if (sessionId) {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ sessionId })
       });
     }

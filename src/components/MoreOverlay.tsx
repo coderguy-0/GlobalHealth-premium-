@@ -106,10 +106,10 @@ export const MoreOverlay: React.FC<MoreOverlayProps> = ({
               <span className="gh-eyebrow">Workspaces</span>
             </div>
             <h3 id="more-workspaces-title" className="mt-3 text-lg font-bold tracking-tight text-slate-900">
-              Specialized portals
+              Personal health workspace
             </h3>
             <p className="mt-1 text-sm text-slate-500">
-              Authorized workspaces open over the website and return you here when closed.
+              Sign in to access your own health records and personal dashboard.
             </p>
             <div className="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
               {WORKSPACE_ITEMS.map((item) => (

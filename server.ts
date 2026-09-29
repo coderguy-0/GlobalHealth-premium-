@@ -3,6 +3,7 @@
 // visible to the server and the AI Assistant fails with a 500.
 import 'dotenv/config';
 import express from 'express';
+import { AUTH_REALMS, isPlatformRole, ROLE_DESTINATIONS, type PlatformRole } from './src/core/platformRoles';
 import path from 'path';
 import fs from 'fs';
 import { createHash, createHmac, randomBytes } from 'crypto';
@@ -73,6 +74,41 @@ async function startServer() {
 
   // High payload parser for base64 medical certificate uploads
   app.use(express.json({ limit: '15mb' }));
+
+  // One public authentication dispatcher; legacy API URLs remain compatible.
+  app.use((req, res, next) => {
+    if (req.method === 'POST' && ['/api/news/admin/login', '/api/news/authority/login'].includes(req.path)) req.url = '/api/news/login';
+    const match = req.path.match(/^\/api\/auth\/portal\/([^/]+)\/([^/]+)$/);
+    if (!match) return next();
+    const [, role, action] = match;
+    if (req.method !== 'POST' || !isPlatformRole(role) || !Object.hasOwn(AUTH_REALMS[role], action)) {
+      return res.status(400).json({ success: false, code: 'INVALID_AUTH_FLOW', error: 'Unknown authentication flow.' });
+    }
+    const rate = hitRateLimit('unified-auth', String(req.ip || 'anonymous'), 40, 5 * 60 * 1000);
+    if (!rate.allowed) {
+      res.setHeader('Retry-After', Math.ceil(rate.retryInMs / 1000));
+      return res.status(429).json({ success: false, code: 'RATE_LIMITED', error: 'Too many authentication requests. Please try again later.' });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    req.url = AUTH_REALMS[role][action];
+    next();
+  });
+  app.use('/api', (_req, res, next) => { res.setHeader('Cache-Control', 'no-store, private'); next(); });
+  app.use((req, res, next) => {
+    let expected: PlatformRole | null = null;
+    if (req.path.startsWith('/api/doctor/') && !req.path.startsWith('/api/doctor/auth/')) expected = 'doctor';
+    if (req.path.startsWith('/api/hospital-registry/') && !req.path.startsWith('/api/hospital-registry/public/')) expected = 'hospital';
+    if (req.path.startsWith('/api/pharmacy-partner/') && !req.path.startsWith('/api/pharmacy-partner/auth/')) expected = 'pharmacy';
+    if (/^\/api\/news\/(admin|authority)\//.test(req.path) && !/\/(login|register)$/.test(req.path)) expected = 'news';
+    if (req.path.startsWith('/api/me/')) expected = 'user';
+    if (!expected) return next();
+    const identity = platformIdentity(req);
+    if (!identity) return res.status(401).json({ success: false, code: 'AUTH_REQUIRED', error: 'Please sign in.' });
+    if (identity.role !== expected) return res.status(403).json({ success: false, code: 'ACCESS_DENIED', error: 'This role cannot access the requested workspace.' });
+    next();
+  });
+
+
   app.use(express.urlencoded({ extended: true }));
 
   // Enterprise request identity + basic security headers.
@@ -1546,11 +1582,16 @@ async function startServer() {
 
   // 12. LOGOUT ENDPOINT
   app.post('/api/auth/logout', (req, res) => {
-    const { sessionId } = req.body;
-    const token = sessionId || (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '');
+    const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
     if (token) {
       ACTIVE_SESSIONS.delete(token);
+      DOCTOR_SESSIONS.delete(token);
+      HOSPITAL_SESSIONS.delete(token);
+      PHARMACY_PARTNER_SESSIONS.delete(token);
+      NEWS_ADMIN_SESSIONS.delete(token);
+      AUTHORITY_SESSIONS.delete(token);
       persistRuntimeAccounts();
+      persistDomainState();
     }
     return res.json({
       success: true,
@@ -1745,6 +1786,7 @@ async function startServer() {
   // privacy-safe payload. Attaches req.authUser for downstream handlers.
   function requireAuth(req: any, res: any, next: any) {
     const user = authenticate(req);
+    if (!user && platformIdentity(req)) return res.status(403).json({ success: false, code: 'ACCESS_DENIED', error: 'This feature belongs to the User workspace.' });
     if (!user) {
       // Never cache unauthorized/private responses.
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -1799,15 +1841,15 @@ async function startServer() {
 
   // GET /api/auth/me — validate the current session and return the user.
   app.get('/api/auth/me', (req, res) => {
-    const user = authenticate(req);
-    if (!user) {
+    const identity = platformIdentity(req);
+    if (!identity) {
       return res.status(401).json({
         success: false,
         code: 'SESSION_EXPIRED',
         error: 'Your session has expired. Please sign in again.'
       });
     }
-    return res.json({ success: true, user: sanitizeUser(user) });
+    return res.json({ success: true, user: identity.user, portalRole: identity.role, destination: ROLE_DESTINATIONS[identity.role] });
   });
 
   // ---- Protected: create a server-scoped EHR access share token ----.
@@ -2854,7 +2896,7 @@ async function startServer() {
     const { oldPassword, newPassword } = req.body || {};
     if (!verifySecret(doctor.doctorId, String(oldPassword || ''), doctor.passwordHash)) {
       audit(req, { actorId: doctor.doctorId, actorRole: 'DOCTOR', eventType: 'DOCTOR_PASSWORD_CHANGE', result: 'failed', detail: 'Current password incorrect' });
-      return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
+      return res.status(400).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
     if (String(newPassword || '').length < 8) {
       return res.status(400).json({ success: false, code: 'WEAK_PASSWORD', error: 'New password must be at least 8 characters.' });
@@ -2894,6 +2936,10 @@ async function startServer() {
   // ---- Account provisioning (called by the portal's activation flow after
   // the Hospital Authority issues a single-use activation token). ----
   app.post('/api/doctor/auth/register', (req, res) => {
+    if (!process.env.GH_ADMIN_KEY || req.headers['x-admin-key'] !== process.env.GH_ADMIN_KEY) {
+      return res.status(403).json({ success: false, code: 'PROVISIONING_REQUIRED', error: 'This professional account must be provisioned by your verified organization. Contact your organization administrator.' });
+    }
+
     const b = req.body || {};
     const username = String(b.username || '').trim().toLowerCase();
     const password = String(b.password || '');
@@ -4862,7 +4908,8 @@ Request ID: ${requestId}`,
     }
     sess.lastActive = nowIso();
     AUTHORITY_SESSIONS.set(token, sess);
-    return AUTHORITIES.get(sess.authorityId) || null;
+    const authority = AUTHORITIES.get(sess.authorityId);
+    return authority && !authority.suspended && !['SUSPENDED', 'REVOKED', 'REJECTED'].includes(authority.state) ? authority : null;
   };
   const requireAuthority = (req: any, res: any, next: any) => {
     const authority = authenticateAuthority(req);
@@ -4884,7 +4931,8 @@ Request ID: ${requestId}`,
     }
     sess.lastActive = nowIso();
     NEWS_ADMIN_SESSIONS.set(token, sess);
-    return NEWS_ADMINS.get(sess.adminId) || null;
+    const admin = NEWS_ADMINS.get(sess.adminId);
+    return admin?.status === 'active' ? admin : null;
   };
   const requireNewsAdmin = (req: any, res: any, next: any) => {
     const admin = authenticateNewsAdmin(req);
@@ -6589,7 +6637,7 @@ Request ID: ${requestId}`,
     const account: PharmacyPartnerAccount = req.marketPartnerAccount;
     const { oldPassword, newPassword } = req.body || {};
     if (!verifySecret(account.username, String(oldPassword || ''), account.passwordHash)) {
-      return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
+      return res.status(400).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
     if (String(newPassword || '').length < 8) {
       return res.status(400).json({ success: false, code: 'WEAK_PASSWORD', error: 'New password must be at least 8 characters.' });
@@ -7364,6 +7412,80 @@ Request ID: ${requestId}`,
     next();
   };
 
+  // Resolve exactly one role/account from the opaque token. No role, account ID,
+  // organization ID or permissions supplied by the browser are trusted here.
+  function platformIdentity(req: any): { role: PlatformRole; user: any; profile: any } | null {
+    const publicUser = authenticate(req);
+    if (publicUser) return { role: 'user', user: { ...sanitizeUser(publicUser), portalRole: 'user' }, profile: sanitizeUser(publicUser) };
+    const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+    let role: PlatformRole;
+    let id: string;
+    let name: string;
+    let email: string;
+    let profile: any;
+    const doctor = authenticateDoctor(req);
+    const hs = HOSPITAL_SESSIONS.get(token);
+    const ps = PHARMACY_PARTNER_SESSIONS.get(token);
+    const admin = authenticateNewsAdmin(req);
+    const authority = authenticateAuthority(req);
+    if (doctor) {
+      role = 'doctor'; id = doctor.doctorId; name = doctor.fullName; email = doctor.email || ''; profile = publicDoctorView(doctor);
+    } else if (hs && hs.expiresAt > Date.now()) {
+      const account = HOSPITAL_ACCOUNTS.get(hs.username);
+      if (!account || account.status !== 'ACTIVE' || account.hospitalId !== hs.hospitalId) return null;
+      hs.expiresAt = Date.now() + HOSPITAL_SESSION_TTL_MS;
+      role = 'hospital'; id = account.username; name = account.hospitalName; email = account.email; profile = publicHospitalAccount(account);
+    } else if (ps && ps.expiresAt > Date.now()) {
+      const account = PHARMACY_PARTNER_ACCOUNTS.get(ps.username);
+      if (!account || account.status !== 'VERIFIED' || account.partnerId !== ps.partnerId || !MARKET_PARTNERS.get(ps.partnerId)?.active) return null;
+      ps.expiresAt = Date.now() + PHARMACY_PARTNER_SESSION_TTL_MS;
+      role = 'pharmacy'; id = account.username; name = account.pharmacyName; email = account.username; profile = publicPartnerAccount(account);
+    } else if (admin && admin.status === 'active') {
+      role = 'news'; id = admin.adminId; name = admin.name; email = admin.email; profile = adminPublicView(admin);
+    } else if (authority && !authority.suspended && !['SUSPENDED', 'REVOKED', 'REJECTED'].includes(authority.state)) {
+      role = 'news'; id = authority.authorityId; name = authority.profile.orgName; email = authority.profile.contactEmail; profile = publicAuthorityView(authority);
+    } else return null;
+    return { role, profile, user: {
+      id: `${role}:${id}`, username: id, fullName: name, firstName: name, lastName: '', email,
+      role: role.toUpperCase(), portalRole: role, accountStatus: 'ACTIVE',
+      isEmailVerified: true, isPhoneVerified: false, twoFactor: { enabled: !!admin?.mfaEnabled },
+      createdAt: '', lastLoginAt: '',
+    } };
+  }
+
+  app.get('/api/portals/:role/workspace', (req, res) => {
+    const identity = platformIdentity(req);
+    if (!identity) return res.status(401).json({ success: false, code: 'AUTH_REQUIRED', error: 'Please sign in.' });
+    if (!isPlatformRole(req.params.role) || identity.role !== req.params.role) {
+      return res.status(403).json({ success: false, code: 'ACCESS_DENIED', error: 'This account cannot access that workspace.' });
+    }
+    // Account profile only, never the shared demo datasets used by the old
+    // portal prototypes. Domain APIs retain their own resource-level guards.
+    const { role, profile, user } = identity;
+    const accountId = user.username;
+    const records: Array<{ id: string; title: string; status: string }> = [];
+    let activity: Array<{ id: string; title: string; at: string }> = [];
+    let notifications: Array<{ id: string; title: string; body: string }> = [];
+    if (role === 'doctor') {
+      notifications = (DOCTOR_NOTIFICATIONS.get(accountId) || []).map(n => ({ id: n.id, title: n.title, body: n.body }));
+      for (const requests of CONSENT_REQUESTS.values()) for (const r of requests) {
+        if (r.doctorId === accountId) records.push({ id: r.requestId, title: 'Patient consent request', status: r.status });
+      }
+    } else if (role === 'hospital') {
+      const hospital = HOSPITAL_REGISTRY.get(profile.hospitalId);
+      if (hospital) records.push({ id: profile.hospitalId, title: hospital.identity.name, status: 'Organization profile' });
+      activity = HOSPITAL_AUDIT.filter(a => a.userId === accountId && a.hospitalId === profile.hospitalId).map(a => ({ id: a.id, title: a.reason || a.section, at: a.changedAt }));
+    } else if (role === 'pharmacy') {
+      for (const r of MARKET_INVENTORY.values()) if (r.pharmacyId === profile.partnerId) records.push({ id: r.medicineId, title: r.medicineName, status: r.stockStatus });
+      activity = INVENTORY_AUDIT.filter(a => a.actorId === accountId && a.pharmacyId === profile.partnerId).map(a => ({ id: a.id, title: a.reason || a.medicineName, at: a.changedAt }));
+    } else if (role === 'news') {
+      for (const r of NEWS_SUBMISSIONS.values()) if (r.authorityId === accountId) records.push({ id: r.submissionId, title: r.headline, status: r.status });
+      activity = NEWS_AUDIT.filter(a => a.actorId === accountId).map(a => ({ id: a.id, title: a.action, at: a.timestamp || a.at }));
+      notifications = (AUTHORITY_NOTIFICATIONS.get(accountId) || []).map(n => ({ id: n.id, title: n.title, body: n.body }));
+    }
+    return res.json({ success: true, role, accountId: user.id, profile, records: records.slice(-200), activity: activity.slice(-50).reverse(), notifications: notifications.slice(0, 50) });
+  });
+
   // ---- Hospital portal auth endpoints ----
   app.post('/api/hospital-portal/auth/login', (req, res) => {
     const { identifier, password } = req.body || {};
@@ -7451,7 +7573,7 @@ Request ID: ${requestId}`,
     const account: HospitalPortalAccount = req.hospitalAccount;
     const { oldPassword, newPassword } = req.body || {};
     if (!verifySecret(account.username, String(oldPassword || ''), account.passwordHash)) {
-      return res.status(401).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
+      return res.status(400).json({ success: false, code: 'OLD_PASSWORD_WRONG', error: 'Current password entered is incorrect.' });
     }
     if (String(newPassword || '').length < 8) {
       return res.status(400).json({ success: false, code: 'WEAK_PASSWORD', error: 'New password must be at least 8 characters.' });
@@ -7471,6 +7593,10 @@ Request ID: ${requestId}`,
 
   // Account provisioning from the hospital application → activation flow.
   app.post('/api/hospital-portal/auth/register', (req, res) => {
+    if (!process.env.GH_ADMIN_KEY || req.headers['x-admin-key'] !== process.env.GH_ADMIN_KEY) {
+      return res.status(403).json({ success: false, code: 'PROVISIONING_REQUIRED', error: 'This professional account must be provisioned by your verified organization. Contact your organization administrator.' });
+    }
+
     const b = req.body || {};
     const username = String(b.username || '').trim().toLowerCase();
     const password = String(b.password || '');
@@ -8173,6 +8299,8 @@ Format responses cleanly with short markdown headings, brief paragraphs, and bul
     });
   };
   {
+    // Demo professional credentials are never valid on a fresh production deployment.
+    if (IS_PRODUCTION) { DOCTORS.clear(); HOSPITAL_ACCOUNTS.clear(); PHARMACY_PARTNER_ACCOUNTS.clear(); }
     const persisted = readJsonFile<Record<string, any>>(RUNTIME_DOMAIN_STORE, {});
     const apply = (entries: any, setter: (key: any, value: any) => void) => {
       if (!Array.isArray(entries)) return;

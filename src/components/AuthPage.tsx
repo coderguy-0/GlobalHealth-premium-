@@ -1,3 +1,5 @@
+import { PLATFORM_ROLES, ROLE_NAMES, type PlatformRole } from '../core/platformRoles';
+import { ProfessionalAuthForm } from './auth/ProfessionalAuthForm';
 import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck,
@@ -21,6 +23,7 @@ import { DoctorAvatar, AvatarExpression } from './auth/DoctorAvatar';
 
 interface AuthPageProps {
   initialView?: AuthSubView;
+  initialRole?: PlatformRole;
   currentUser: PublicUserAccount | null;
   onLoginSuccess: (user: PublicUserAccount, token?: string) => void;
   onLogout: () => void;
@@ -59,6 +62,7 @@ function avatarStateFor(view: AuthSubView): AvatarState {
 
 export const AuthPage: React.FC<AuthPageProps> = ({
   initialView = 'login',
+  initialRole = 'user',
   currentUser,
   onLoginSuccess,
   onLogout,
@@ -67,6 +71,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   onNavigateToDashboard,
   onOpenLegalPage
 }) => {
+  const [selectedRole, setSelectedRole] = useState<PlatformRole>(initialRole);
+  useEffect(() => setSelectedRole(initialRole), [initialRole]);
   const [activeSubView, setActiveSubView] = useState<AuthSubView>(initialView);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [avatarState, setAvatarState] = useState<AvatarState>(() => avatarStateFor(activeSubView));
@@ -93,7 +99,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   }, [activeSubView]);
 
   // If user is already authenticated and opens security
-  if (currentUser && activeSubView === 'security') {
+  if (currentUser && (!currentUser.portalRole || currentUser.portalRole === 'user') && activeSubView === 'security') {
     return (
       <div className="min-h-screen bg-slate-50 py-6">
         <AccountSecurityView
@@ -110,6 +116,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       </div>
     );
   }
+
+  // Do not flash credentials while the app routes an existing session.
+  if (currentUser) return <div role="status" className="p-16 text-center">Opening your authorized portal…</div>;
 
   const switchView = (view: AuthSubView) => setActiveSubView(view);
 
@@ -177,8 +186,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 Welcome back to GlobalHealth.
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                Access your health dashboard, records, appointments, saved information, and personalized healthcare
-                tools.
+                One GlobalHealth account session connects you directly to your authorized portal. Your identity, records, and workspace stay private.
               </p>
             </div>
 
@@ -265,6 +273,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 <DoctorAvatar expression={avatarState.expression} message={avatarState.message} size="md" />
               </div>
 
+              <fieldset className="mb-6">
+                <legend className="mb-3 text-sm font-bold text-slate-800">Choose your account role</legend>
+                <div className="flex flex-wrap gap-2">
+                  {PLATFORM_ROLES.map(role => <button key={role} type="button" aria-pressed={selectedRole === role}
+                    onClick={() => { setSelectedRole(role); setVerificationData(null); setRecoveryToken(''); if (!['login', 'signup', 'forgot-password'].includes(activeSubView)) setActiveSubView('login'); }}
+                    className={`rounded-xl border px-3 py-2 text-sm font-semibold ${selectedRole === role ? 'border-medical-700 bg-medical-700 text-white' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                    {ROLE_NAMES[role]}
+                  </button>)}
+                </div>
+                <p className="mt-2 text-xs text-slate-500">Your account credentials determine access. Roles cannot be switched after sign-in.</p>
+              </fieldset>
               {/* Secondary Tab Switcher */}
               {(activeSubView === 'login' || activeSubView === 'signup' || activeSubView === 'forgot-password') && (
                 <div className="mb-6 flex rounded-2xl bg-medical-50/80 p-1 text-xs font-bold text-slate-600" role="tablist" aria-label="Authentication mode">
@@ -288,7 +307,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       activeSubView === 'signup' ? 'bg-white text-medical-800 shadow-soft' : 'hover:text-slate-900'
                     }`}
                   >
-                    Create Account
+                    Sign Up
                   </button>
                   <button
                     type="button"
@@ -299,18 +318,19 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       activeSubView === 'forgot-password' ? 'bg-white text-medical-800 shadow-soft' : 'hover:text-slate-900'
                     }`}
                   >
-                    Recover
+                    Recover Password
                   </button>
                 </div>
               )}
 
               {/* View Router — gentle fade/slide between Log In ↔ Sign Up ↔ Recover */}
-              <div key={activeSubView} className="gh-auth-view">
+              <div key={`${selectedRole}:${activeSubView}`} className="gh-auth-view">
+                {selectedRole !== 'user' ? <ProfessionalAuthForm role={selectedRole} mode={activeSubView} onMode={setActiveSubView} onSuccess={onLoginSuccess} /> : <>
                 {activeSubView === 'login' && (
                   <LoginForm
                     onSuccess={(user, token) => {
                       onLoginSuccess(user, token);
-                      onNavigateToDashboard();
+
                     }}
                     onNavigate={(view) => setActiveSubView(view)}
                     onRequestHelp={() => setShowHelpModal(true)}
@@ -374,7 +394,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     type={activeSubView === 'verify-phone' ? 'phone' : 'email'}
                     onSuccess={(user, token) => {
                       onLoginSuccess(user, token);
-                      onNavigateToDashboard();
+
                     }}
                     onNavigate={(view) => setActiveSubView(view)}
                     onRequestHelp={() => setShowHelpModal(true)}
@@ -388,6 +408,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     onReturnHome={onReturnToHome}
                   />
                 )}
+                </>}
               </div>
             </div>
           </div>
@@ -397,7 +418,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       {/* 3. Footer */}
       <footer className="relative z-10 w-full border-t border-medical-100/80 bg-white/80 px-4 py-4 text-center text-xs text-slate-500 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-          <p>© {new Date().getFullYear()} GlobalHealth Portal. All rights reserved. Strict Public User Security Policy.</p>
+          <p>© {new Date().getFullYear()} GlobalHealth Portal. All rights reserved. Role-based account access.</p>
           <div className="flex items-center gap-4 font-semibold text-slate-600">
             <button type="button" onClick={() => onOpenLegalPage?.('privacy-policy')} className="cursor-pointer transition hover:text-medical-700">Privacy Policy</button>
             <button type="button" onClick={() => onOpenLegalPage?.('terms')} className="cursor-pointer transition hover:text-medical-700">Terms &amp; Conditions</button>

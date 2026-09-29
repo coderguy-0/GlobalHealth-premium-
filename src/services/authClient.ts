@@ -101,8 +101,9 @@ interface RequestOptions {
 export async function apiFetch<T = any>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, auth = true } = options;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const requestToken = auth ? getStoredToken() : null;
   if (auth) {
-    const token = getStoredToken();
+    const token = requestToken;
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
@@ -148,7 +149,7 @@ export async function apiFetch<T = any>(path: string, options: RequestOptions = 
         : 'Please sign in to access this feature.';
     // If the user *was* signed in and the token is now invalid, surface the
     // secure session-expired experience and drop the stale session locally.
-    if (auth && getStoredToken()) {
+    if (auth && requestToken && getStoredToken() === requestToken) {
       clearStoredSession();
       try {
         window.dispatchEvent(

@@ -161,10 +161,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const authenticate = useCallback((u: UserAccount, token: string, pu?: PublicUserAccount | null) => {
     // One session token is the single source of truth for every user feature.
+    clearAllGlobalSessions();
     storeSession(token, u);
     setUser(u);
     setSessionId(token);
-    if (pu !== undefined) setPublicUser(pu);
+    setPublicUser(pu ?? null);
     setGateOpen(false);
     setSessionExpired(false);
   }, []);
@@ -216,19 +217,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (e.key !== 'globalhealth_auth_token') return;
       const token = getStoredToken();
       if (!token) {
+        setInitializing(false);
         // Logout happened in another tab.
         clearAllGlobalSessions();
         setUser(null);
         setPublicUser(null);
         setSessionId(null);
       } else if (token !== e.oldValue) {
+        setUser(null); setPublicUser(null); setSessionId(null); setInitializing(true);
         // Login / session changed in another tab — validate before trusting.
         try {
           const res = await apiFetch<{ success: boolean; user: any }>('/api/auth/me');
+          if (getStoredToken() !== token) return;
           setUser(res?.user ? toUserAccount(res.user) : null);
           setPublicUser((res?.user as PublicUserAccount) ?? null);
           setSessionId(res?.user ? token : null);
+          setInitializing(false);
         } catch {
+          if (getStoredToken() !== token) return;
+          setInitializing(false);
           clearAllGlobalSessions();
           setUser(null);
           setPublicUser(null);
@@ -256,7 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     userName: user?.fullName?.trim() || user?.username?.trim() || null,
     userEmail: user?.email?.trim() || null,
     userRole: (publicUser as any)?.role || (user ? 'USER' : null),
-    permissions: user ? ([...USER_PORTAL_PERMISSIONS] as UserPortalPermission[]) : [],
+    permissions: user && (!publicUser?.portalRole || publicUser.portalRole === 'user') ? ([...USER_PORTAL_PERMISSIONS] as UserPortalPermission[]) : [],
     isAuthenticated: !!user && !!sessionId,
     initializing,
     sessionExpired,

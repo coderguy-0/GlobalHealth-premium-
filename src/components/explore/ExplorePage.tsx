@@ -74,10 +74,10 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({ currentTab, onNavigate
             <span className="gh-eyebrow">Workspaces</span>
           </div>
           <h2 id="explore-page-workspaces-title" className="mt-2 text-lg font-bold tracking-tight text-slate-900">
-            Specialized portals
+            Personal health workspace
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Authorized workspaces open over the website and return you here when closed.
+            Sign in to access your own health records and personal dashboard.
           </p>
           <div className="mt-4 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
             {WORKSPACE_ITEMS.map((item) => (

@@ -24,7 +24,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
     },
     contact: {
       title: 'Contact',
-      body: 'Healthcare institutions and partners connect through the dedicated Doctor, Hospital and Pharmacy portals available in the navigation. For editorial and institutional announcements, use the News Management workspace. Emergency numbers are always available in the header and footer.',
+      body: 'Healthcare professionals and institutional partners sign in through the universal GlobalHealth authentication page. Your verified account determines which private workspace opens. Emergency numbers are always available in the header and footer.',
     },
     accessibility: {
       title: 'Accessibility',
